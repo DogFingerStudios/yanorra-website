@@ -9,7 +9,15 @@ interface AsciidocFile
   destination_file: string
 }
 
-export function asciidocPlugin(files: AsciidocFile[]): Plugin 
+const filesToConvert: AsciidocFile[] = 
+[
+  {
+    source_file: 'data/README.adoc',
+    destination_file: 'dist/data/README.html'
+  }
+]
+
+export function asciidocPlugin(): Plugin 
 {
   const asciidoctor = Asciidoctor()
 
@@ -19,7 +27,7 @@ export function asciidocPlugin(files: AsciidocFile[]): Plugin
     closeBundle() 
     {
       // Convert each ADOC file to HTML
-      for (const file of files)
+      for (const file of filesToConvert)
       {
         const sourceFile = path.resolve(__dirname, file.source_file)
         const outputFile = path.resolve(__dirname, file.destination_file)
