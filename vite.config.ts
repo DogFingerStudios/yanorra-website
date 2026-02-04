@@ -6,6 +6,7 @@ import { markdownPlugin } from './vite-plugin-markdown'
 // https://vite.dev/config/
 export default defineConfig(
 {
+  publicDir: 'dist',
   plugins: 
   [
     react(), 
