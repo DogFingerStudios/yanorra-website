@@ -19,7 +19,7 @@ function App() {
 
       <div style={{ padding: 24 }}>
         <h1>Yanorra</h1>
-        <p>Intalink-ready. Static deploy.</p>
+        <p>Intalink-ready. Static deploy. Auto Uploaded</p>
       </div>
 
       <div className="card">

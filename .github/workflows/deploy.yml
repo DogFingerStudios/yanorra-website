@@ -31,7 +31,7 @@ jobs:
           username: ${{ secrets.YANORRA_FTP_USERNAME }}
           password: ${{ secrets.YANORRA_FTP_PASSWORD }}
           server-dir: /yanorra/
-          local-dir: ${{github.workspace}}/dist
+          local-dir: ${{github.workspace}}/dist/
           exclude: |
             **/.git*
             **/.git*/**
