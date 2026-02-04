@@ -1,0 +1,37 @@
+name: build-and-deploy
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: 📂 FTP Installer
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.YANORRA_FTP_SERVER }}
+          username: ${{ secrets.YANORRA_FTP_USERNAME }}
+          password: ${{ secrets.YANORRA_FTP_PASSWORD }}
+          server-dir: /yanorra/
+          local-dir: ${{github.workspace}}/dist
+          exclude: |
+            **/.git*
+            **/.git*/**
