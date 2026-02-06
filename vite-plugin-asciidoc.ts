@@ -12,8 +12,8 @@ interface AsciidocFile
 const filesToConvert: AsciidocFile[] = 
 [
   {
-    source_file: 'data/README.adoc',
-    destination_file: 'dist/data/README.html'
+    source_file: 'Yanorra/README.adoc',
+    destination_file: 'dist/Yanorra.html'
   }
 ]
 

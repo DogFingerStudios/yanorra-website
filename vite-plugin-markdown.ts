@@ -9,13 +9,19 @@ interface MarkdownFile
   destination_file: string
 }
 
-const filesToConvert: MarkdownFile[] = 
-[
+const wikiDir = path.resolve(__dirname, 'Yanorra/Wiki')
+const filesToConvert: MarkdownFile[] = fs.readdirSync(wikiDir)
+  .filter((file) =>
   {
-    source_file: 'data/wiki/Lo-Disporum.md',
-    destination_file: 'dist/data/Lo-Disporum.html'
-  }
-]
+    return file.toLowerCase().endsWith('.md')
+  })
+  .map((file) =>
+  {
+    return {
+      source_file: path.join('Yanorra/Wiki', file),
+      destination_file: path.join('dist/wiki', file.replace(/\.md$/i, '.html'))
+    }
+  })
 
 export function markdownPlugin(): Plugin 
 {

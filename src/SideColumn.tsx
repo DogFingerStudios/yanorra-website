@@ -1,11 +1,33 @@
 import './SideColumn.css'
+import { docLinks } from './docsConfig'
 
-function SideColumn() {
+interface SideColumnProps
+{
+  onDocClick: (path: string) => void
+}
+
+function SideColumn({ onDocClick }: SideColumnProps) 
+{
   return (
     <aside className="side-column">
-      <h3>Side Column</h3>
-      <p>Add TOC, folder view, or other content here!!</p>
-      {/* TODO: Add table of contents, folder view, etc. */}
+      <h3>Documents</h3>
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {docLinks.map((doc) => (
+          <li key={doc.path} style={{ marginBottom: '0.5rem' }}>
+            <a
+              href="#"
+              onClick={(e) =>
+              {
+                e.preventDefault()
+                onDocClick(doc.path)
+              }}
+              style={{ color: '#000', textDecoration: 'none' }}
+            >
+              {doc.title}
+            </a>
+          </li>
+        ))}
+      </ul>
     </aside>
   )
 }

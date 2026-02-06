@@ -1,0 +1,3 @@
+[submodule "Yanorra"]
+	path = Yanorra
+	url = https://github.com/DogFingerStudios/Yanorra.git
