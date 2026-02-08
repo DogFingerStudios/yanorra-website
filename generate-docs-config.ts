@@ -82,5 +82,11 @@ export interface DocLink
 export const docLinks: DocLink[] = ${JSON.stringify(docLinks, null, 2)}
 `
 
-fs.writeFileSync(path.join(process.cwd(), 'src', 'docsConfig.ts'), output)
+const outputPath = path.join(process.cwd(), 'src', 'docsConfig.ts')
+if (fs.existsSync(outputPath))
+{
+  console.log('Existing docsConfig.ts found, deleting...')
+  fs.unlinkSync(outputPath)
+}
+fs.writeFileSync(outputPath, output)
 console.log('✓ Generated docsConfig.ts')
