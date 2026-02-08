@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsx generate-docs-config.ts && tsc -b && vite build",
+    "build": "tsc -b && vite build && tsx generate-docs-config.ts",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "npm run build && npm run dev"
