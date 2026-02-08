@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "tsx generate-docs-config.ts",
+    "prebuild": "tsx scripts/prebuild-docs.ts",
     "build": "tsc -b && vite build",
     "postbuild": "tsx scripts/postbuild-docs.ts",
     "lint": "eslint .",
