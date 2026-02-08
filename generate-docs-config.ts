@@ -98,8 +98,7 @@ export const docLinks: DocLink[] = ${JSON.stringify(docLinks, null, 2)}
   fs.writeFileSync(outputPath, output)
   console.log('✓ Generated docsConfig.ts')
 
-  const generatedConfig = fs.readFileSync(outputPath, 'utf-8')
-  console.log(generatedConfig)
+  // console.debug(fs.readFileSync(outputPath, 'utf-8'))
 }
 
 run().catch((err) =>

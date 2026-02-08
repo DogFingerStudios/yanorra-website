@@ -53,15 +53,3 @@ export const convertAsciidocFiles = (): void =>
     console.log(`✓ Converted ${sourceFile} → ${outputFile}`)
   }
 }
-
-export function asciidocPlugin(): Plugin 
-{
-  return {
-    name: 'vite-plugin-asciidoc',
-    
-    closeBundle() 
-    {
-      convertAsciidocFiles()
-    }
-  }
-}

@@ -61,6 +61,10 @@ export const docLinks: DocLink[] = [
     "path": "./wiki/S_Tsutodo.html"
   },
   {
+    "title": "Saint Aveline",
+    "path": "./wiki/Saint_Aveline.html"
+  },
+  {
     "title": "Samerland",
     "path": "./wiki/Samerland.html"
   },
@@ -71,6 +75,10 @@ export const docLinks: DocLink[] = [
   {
     "title": "The Drift",
     "path": "./wiki/The_Drift.html"
+  },
+  {
+    "title": "The Farlands",
+    "path": "./wiki/The_Farlands.html"
   },
   {
     "title": "The Three Sisters",

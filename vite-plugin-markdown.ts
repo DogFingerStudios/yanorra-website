@@ -52,15 +52,3 @@ export const convertMarkdownFiles = async (): Promise<void> =>
     console.log(`✓ Converted ${sourceFile} → ${outputFile}`)
   }
 }
-
-export function markdownPlugin(): Plugin 
-{
-  return {
-    name: 'vite-plugin-markdown',
-    
-    async closeBundle() 
-    {
-      await convertMarkdownFiles()
-    }
-  }
-}
