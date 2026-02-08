@@ -20,7 +20,7 @@ jobs:
       - name: Checkout Yanorra
         uses: actions/checkout@v4
         with:
-          repository: yanorra/yanorra
+          repository: DogFingerStudios/Yanorra
           ref: ${{ inputs.yanorra_sha || 'master' }}
           path: Yanorra
 
