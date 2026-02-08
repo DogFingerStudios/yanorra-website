@@ -45,6 +45,10 @@ export const docLinks: DocLink[] = [
     "path": "/wiki/Lo-Disporum.html"
   },
   {
+    "title": "Noxoch_Isle",
+    "path": "/wiki/Noxoch_Isle.html"
+  },
+  {
     "title": "Obetoku",
     "path": "/wiki/Obetoku.html"
   },
@@ -71,6 +75,10 @@ export const docLinks: DocLink[] = [
   {
     "title": "The_Drift",
     "path": "/wiki/The_Drift.html"
+  },
+  {
+    "title": "The_Three_Sisters",
+    "path": "/wiki/The_Three_Sisters.html"
   },
   {
     "title": "Thornbelt",

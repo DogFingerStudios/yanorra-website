@@ -2,7 +2,12 @@ name: build-and-deploy
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
+  workflow_dispatch:
+    inputs:
+      yanorra_sha:
+        description: "Commit SHA from Yanorra repo (optional)"
+        required: false
 
 jobs:
   build:
