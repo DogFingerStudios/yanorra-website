@@ -2,6 +2,7 @@ import type { Plugin } from 'vite'
 import * as fs from 'fs'
 import * as path from 'path'
 import { marked } from 'marked'
+import { fileURLToPath } from 'url'
 
 interface MarkdownFile
 {
@@ -9,6 +10,7 @@ interface MarkdownFile
   destination_file: string
 }
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const wikiDir = path.resolve(__dirname, 'Yanorra/Wiki')
 const filesToConvert: MarkdownFile[] = fs.readdirSync(wikiDir)
   .filter((file) =>
@@ -23,6 +25,34 @@ const filesToConvert: MarkdownFile[] = fs.readdirSync(wikiDir)
     }
   })
 
+export const convertMarkdownFiles = async (): Promise<void> =>
+{
+  // Convert each Markdown file to HTML
+  for (const file of filesToConvert)
+  {
+    const sourceFile = path.resolve(__dirname, file.source_file)
+    const outputFile = path.resolve(__dirname, file.destination_file)
+    const outputDir = path.dirname(outputFile)
+
+    // Read the Markdown file
+    const markdownContent = fs.readFileSync(sourceFile, 'utf-8')
+
+    // Convert to HTML
+    const html = await marked(markdownContent)
+
+    // Create output directory if it doesn't exist
+    if (!fs.existsSync(outputDir)) 
+    {
+      fs.mkdirSync(outputDir, { recursive: true })
+    }
+
+    // Write the HTML file
+    fs.writeFileSync(outputFile, html)
+
+    console.log(`✓ Converted ${sourceFile} → ${outputFile}`)
+  }
+}
+
 export function markdownPlugin(): Plugin 
 {
   return {
@@ -30,30 +60,7 @@ export function markdownPlugin(): Plugin
     
     async closeBundle() 
     {
-      // Convert each Markdown file to HTML
-      for (const file of filesToConvert)
-      {
-        const sourceFile = path.resolve(__dirname, file.source_file)
-        const outputFile = path.resolve(__dirname, file.destination_file)
-        const outputDir = path.dirname(outputFile)
-
-        // Read the Markdown file
-        const markdownContent = fs.readFileSync(sourceFile, 'utf-8')
-
-        // Convert to HTML
-        const html = await marked(markdownContent)
-
-        // Create output directory if it doesn't exist
-        if (!fs.existsSync(outputDir)) 
-        {
-          fs.mkdirSync(outputDir, { recursive: true })
-        }
-
-        // Write the HTML file
-        fs.writeFileSync(outputFile, html)
-
-        console.log(`✓ Converted ${sourceFile} → ${outputFile}`)
-      }
+      await convertMarkdownFiles()
     }
   }
 }
