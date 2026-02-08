@@ -1,12 +1,17 @@
 import './SideColumn.css'
 import { docLinks } from './docsConfig'
+import { Link } from 'react-router-dom'
 
-interface SideColumnProps
+const encodeDocPath = (docPath: string): string =>
 {
-  onDocClick: (path: string) => void
+  return docPath
+    .replace(/^\/+/, '')
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/')
 }
 
-function SideColumn({ onDocClick }: SideColumnProps) 
+function SideColumn() 
 {
   return (
     <aside className="side-column">
@@ -14,17 +19,9 @@ function SideColumn({ onDocClick }: SideColumnProps)
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {docLinks.map((doc) => (
           <li key={doc.path} style={{ marginBottom: '0.5rem' }}>
-            <a
-              href="#"
-              onClick={(e) =>
-              {
-                e.preventDefault()
-                onDocClick(doc.path)
-              }}
-              className="side-column-link"
-            >
+            <Link className="side-column-link" to={`/${encodeDocPath(doc.path)}`}>
               {doc.title}
-            </a>
+            </Link>
           </li>
         ))}
       </ul>

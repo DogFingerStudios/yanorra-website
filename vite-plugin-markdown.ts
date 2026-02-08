@@ -12,21 +12,33 @@ interface MarkdownFile
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const wikiDir = path.resolve(__dirname, 'Yanorra/Wiki')
-const filesToConvert: MarkdownFile[] = fs.readdirSync(wikiDir)
-  .filter((file) =>
+
+const getFilesToConvert = (): MarkdownFile[] =>
+{
+  if (!fs.existsSync(wikiDir))
   {
-    return file.toLowerCase().endsWith('.md')
-  })
-  .map((file) =>
-  {
-    return {
-      source_file: path.join('Yanorra/Wiki', file),
-      destination_file: path.join('public/wiki', file.replace(/\.md$/i, '.html'))
-    }
-  })
+    console.warn(`Warning: Wiki folder not found at ${wikiDir}`)
+    return []
+  }
+
+  return fs.readdirSync(wikiDir)
+    .filter((file) =>
+    {
+      return file.toLowerCase().endsWith('.md')
+    })
+    .map((file) =>
+    {
+      return {
+        source_file: path.join('Yanorra/Wiki', file),
+        destination_file: path.join('public/wiki', file.replace(/\.md$/i, '.html'))
+      }
+    })
+}
 
 export const convertMarkdownFiles = async (): Promise<void> =>
 {
+  const filesToConvert = getFilesToConvert()
+
   // Convert each Markdown file to HTML
   for (const file of filesToConvert)
   {

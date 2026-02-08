@@ -31,6 +31,12 @@ export const convertAsciidocFiles = (): void =>
     const outputFile = path.resolve(__dirname, file.destination_file)
     const outputDir = path.dirname(outputFile)
 
+    if (!fs.existsSync(sourceFile))
+    {
+      console.warn(`Warning: Asciidoc source not found at ${sourceFile}`)
+      continue
+    }
+
     // Read the ADOC file
     const adocContent = fs.readFileSync(sourceFile, 'utf-8')
 

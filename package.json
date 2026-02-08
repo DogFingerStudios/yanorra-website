@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "tsx scripts/prebuild-docs.ts && vite",
     "prebuild": "tsx scripts/prebuild-docs.ts",
     "build": "tsc -b && vite build",
     "postbuild": "tsx scripts/postbuild-docs.ts",
@@ -14,7 +14,8 @@
   },
   "dependencies": {
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^6.30.0"
   },
   "devDependencies": {
     "@asciidoctor/core": "^3.0.4",
