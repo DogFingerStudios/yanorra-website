@@ -29,22 +29,35 @@ const docLinks: DocLink[] =
   }
 ]
 
+const excludedFiles = ['TEMPLATE']
+
+const isExcludedFile = (fileName: string): boolean =>
+{
+  const normalizedFileName = fileName.toLowerCase()
+  return excludedFiles.some((excludedFile) =>
+  {
+    return normalizedFileName.startsWith(excludedFile.toLowerCase())
+  })
+}
+
 // Scan folders for HTML files
 docFolders.forEach((docFolder) => 
 {
-    console.log(`Scanning folder: ${docFolder.folder} for HTML files...`)
+  console.log(`Scanning folder: ${docFolder.folder} for HTML files...`)
   const folderPath = path.join(process.cwd(), 'dist', docFolder.folder)
   try 
   {
     const files = fs.readdirSync(folderPath)
     files.forEach((file: string) => 
     {
-      if (file.toLowerCase().endsWith('.html'))
+      if (file.toLowerCase().endsWith('.html') 
+        && !isExcludedFile(file))
       {
         console.log(`Adding file: ${file} from folder: ${docFolder.folder}`)
+
         docLinks.push(
         {
-          title: file.replace(/\.html$/i, ''),  
+          title: file.replace(/\.html$/i, '').replace(/_/g, ' '),  
           path: `${docFolder.folder}/${file}`
         })
       }

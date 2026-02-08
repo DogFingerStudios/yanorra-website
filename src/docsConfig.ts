@@ -17,11 +17,11 @@ export const docLinks: DocLink[] = [
     "path": "/wiki/Barrel.html"
   },
   {
-    "title": "Bharim_Islands",
+    "title": "Bharim Islands",
     "path": "/wiki/Bharim_Islands.html"
   },
   {
-    "title": "Bibi_Shirif",
+    "title": "Bibi Shirif",
     "path": "/wiki/Bibi_Shirif.html"
   },
   {
@@ -37,7 +37,7 @@ export const docLinks: DocLink[] = [
     "path": "/wiki/Hav.html"
   },
   {
-    "title": "Land_of_Water",
+    "title": "Land of Water",
     "path": "/wiki/Land_of_Water.html"
   },
   {
@@ -45,7 +45,7 @@ export const docLinks: DocLink[] = [
     "path": "/wiki/Lo-Disporum.html"
   },
   {
-    "title": "Noxoch_Isle",
+    "title": "Noxoch Isle",
     "path": "/wiki/Noxoch_Isle.html"
   },
   {
@@ -57,7 +57,7 @@ export const docLinks: DocLink[] = [
     "path": "/wiki/Ronobetu.html"
   },
   {
-    "title": "S_Tsutodo",
+    "title": "S Tsutodo",
     "path": "/wiki/S_Tsutodo.html"
   },
   {
@@ -69,15 +69,11 @@ export const docLinks: DocLink[] = [
     "path": "/wiki/Stanshonia.html"
   },
   {
-    "title": "TEMPLATE",
-    "path": "/wiki/TEMPLATE.html"
-  },
-  {
-    "title": "The_Drift",
+    "title": "The Drift",
     "path": "/wiki/The_Drift.html"
   },
   {
-    "title": "The_Three_Sisters",
+    "title": "The Three Sisters",
     "path": "/wiki/The_Three_Sisters.html"
   },
   {

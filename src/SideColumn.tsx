@@ -10,7 +10,7 @@ function SideColumn({ onDocClick }: SideColumnProps)
 {
   return (
     <aside className="side-column">
-      <h3>Documents</h3>
+      <h3>Yanorra</h3>
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {docLinks.map((doc) => (
           <li key={doc.path} style={{ marginBottom: '0.5rem' }}>
@@ -21,7 +21,7 @@ function SideColumn({ onDocClick }: SideColumnProps)
                 e.preventDefault()
                 onDocClick(doc.path)
               }}
-              style={{ color: '#000', textDecoration: 'none' }}
+              className="side-column-link"
             >
               {doc.title}
             </a>
