@@ -21,7 +21,7 @@ const filesToConvert: MarkdownFile[] = fs.readdirSync(wikiDir)
   {
     return {
       source_file: path.join('Yanorra/Wiki', file),
-      destination_file: path.join('dist/wiki', file.replace(/\.md$/i, '.html'))
+      destination_file: path.join('public/wiki', file.replace(/\.md$/i, '.html'))
     }
   })
 

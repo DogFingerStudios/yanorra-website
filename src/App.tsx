@@ -12,7 +12,7 @@ function App()
 
   useEffect(() =>
   {
-    setCurrentDoc('/Yanorra.html')
+    // setCurrentDoc('/Yanorra.html')
   }, [])
 
   const renderMainContent = () =>

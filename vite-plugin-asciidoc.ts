@@ -14,7 +14,7 @@ const filesToConvert: AsciidocFile[] =
 [
   {
     source_file: 'Yanorra/README.adoc',
-    destination_file: 'dist/Yanorra.html'
+    destination_file: 'public/Yanorra.html'
   }
 ]
 

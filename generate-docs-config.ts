@@ -19,7 +19,7 @@ const docFolders: DocFolder[] =
 [
   {
     name: 'Wiki',
-    folder: './wiki'
+    folder: 'wiki'
   }
 ]
 
@@ -51,7 +51,7 @@ const run = async (): Promise<void> =>
   docFolders.forEach((docFolder) => 
   {
     console.log(`Scanning folder: ${docFolder.folder} for HTML files...`)
-    const folderPath = path.join(process.cwd(), 'dist', docFolder.folder)
+    const folderPath = path.join(process.cwd(), 'public', docFolder.folder)
     try 
     {
       const files = fs.readdirSync(folderPath)
@@ -65,7 +65,7 @@ const run = async (): Promise<void> =>
           docLinks.push(
           {
             title: file.replace(/\.html$/i, '').replace(/_/g, ' '),  
-            path: `${docFolder.folder}/${file}`
+            path: `/${docFolder.folder}/${file}`
           })
         }
       })
