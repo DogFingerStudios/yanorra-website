@@ -71,3 +71,4 @@ coverage/
 # =========================
 *.log
 src/docsConfig.ts
+public/*
