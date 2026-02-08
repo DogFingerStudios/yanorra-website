@@ -17,10 +17,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Init Git Submodules
-        shell: bash
-        working-directory: ${{github.workspace}}
-        run: git submodule update --init --recursive
+      - name: Checkout Yanorra
+        uses: actions/checkout@v4
+        with:
+          repository: yanorra/yanorra
+          ref: ${{ inputs.yanorra_sha || 'master' }}
+          path: Yanorra
 
       - name: Setup Node
         uses: actions/setup-node@v4
