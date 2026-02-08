@@ -90,3 +90,6 @@ if (fs.existsSync(outputPath))
 }
 fs.writeFileSync(outputPath, output)
 console.log('✓ Generated docsConfig.ts')
+
+const generatedConfig = fs.readFileSync(outputPath, 'utf-8')
+console.log(generatedConfig)
