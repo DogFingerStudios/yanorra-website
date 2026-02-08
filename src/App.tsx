@@ -7,7 +7,7 @@ import SideColumn from './SideColumn'
 
 const normalizeDocPath = (docPath: string): string =>
 {
-  return docPath.replace(/^\/+/, '')
+  return docPath.replace(/^\//, '')
 }
 
 const encodeDocPath = (docPath: string): string =>
@@ -49,12 +49,12 @@ const HomeContent = () =>
           <h3>Generated Docs</h3>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             <li>
-              <Link to={`/${encodeDocPath('/Yanorra.html')}`}>
+              <Link to={`/doc/${encodeDocPath('/Yanorra.html')}`}>
                 README
               </Link>
             </li>
             <li>
-              <Link to={`/${encodeDocPath('/wiki/Lo-Disporum.html')}`}>
+              <Link to={`/doc/${encodeDocPath('/wiki/Lo-Disporum.html')}`}>
                 Lo-Disporum
               </Link>
             </li>
@@ -114,7 +114,7 @@ function App()
       <main className="main-content">
         <Routes>
           <Route path="/" element={<HomeContent />} />
-          <Route path="/*" element={<DocContent />} />
+          <Route path="/doc/*" element={<DocContent />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
