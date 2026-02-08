@@ -70,3 +70,4 @@ coverage/
 # Misc
 # =========================
 *.log
+src/docsConfig.ts
