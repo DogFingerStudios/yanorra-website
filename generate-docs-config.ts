@@ -17,7 +17,7 @@ const docFolders: DocFolder[] =
 [
   {
     name: 'Wiki',
-    folder: '/wiki'
+    folder: './wiki'
   }
 ]
 
