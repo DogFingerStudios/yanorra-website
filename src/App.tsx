@@ -4,6 +4,7 @@ import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import './App.css'
 import SideColumn from './SideColumn'
+import MapPanel from "./components/MapPanel.jsx";
 
 const normalizeDocPath = (docPath: string): string =>
 {
@@ -24,49 +25,61 @@ const HomeContent = () =>
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          {/* <img src={viteLogo} className="logo" alt="Vite logo" /> */}
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-
-      <div style={{ padding: 24 }}>
-        <h1>Yanorra</h1>
-        <p>Intalink-ready. Static deploy. Auto Uploaded. Wow!!!</p>
-      </div>
-
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-        <div style={{ marginTop: '2rem' }}>
-          <h3>Generated Docs</h3>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            <li>
-              <Link to={`/doc/${encodeDocPath('/Yanorra.html')}`}>
-                README
-              </Link>
-            </li>
-            <li>
-              <Link to={`/doc/${encodeDocPath('/wiki/Lo-Disporum.html')}`}>
-                Lo-Disporum
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <MapPanel fullScreen={true} />
     </>
   )
 }
+
+// const HomeContent = () =>
+// {
+//   const [count, setCount] = useState(0)
+
+//   return (
+//     <>
+//       <div>
+//         <a href="https://vite.dev" target="_blank">
+//           {/* <img src={viteLogo} className="logo" alt="Vite logo" /> */}
+//         </a>
+//         <a href="https://react.dev" target="_blank">
+//           <img src={reactLogo} className="logo react" alt="React logo" />
+//         </a>
+//       </div>
+
+//       <div style={{ padding: 24 }}>
+//         <h1>Yanorra</h1>
+//         <p>Intalink-ready. Static deploy. Auto Uploaded. Wow!!!</p>
+//       </div>
+
+//       <div className="card">
+//         <button onClick={() => setCount((count) => count + 1)}>
+//           count is {count}
+//         </button>
+//         <p>
+//           Edit <code>src/App.tsx</code> and save to test HMR
+//         </p>
+//         <div style={{ marginTop: '2rem' }}>
+//           <h3>Generated Docs</h3>
+//           <ul style={{ listStyle: 'none', padding: 0 }}>
+//             <li>
+//               <Link to={`/doc/${encodeDocPath('/Yanorra.html')}`}>
+//                 README
+//               </Link>
+//             </li>
+//             <li>
+//               <Link to={`/doc/${encodeDocPath('/wiki/Lo-Disporum.html')}`}>
+//                 Lo-Disporum
+//               </Link>
+//             </li>
+//           </ul>
+//         </div>
+//       </div>
+//       <MapPanel fullScreen={false} />
+//       <p className="read-the-docs">
+//         Click on the Vite and React logos to learn more
+//       </p>
+//     </>
+//   )
+// }
 
 const DocContent = () =>
 {
@@ -109,15 +122,16 @@ const DocContent = () =>
 function App()
 {
   return (
-    <div className="app-container">
-      <SideColumn />
-      <main className="main-content">
+    <div className="App">
+      {/* <SideColumn /> */}
+      <MapPanel fullScreen={true} />
+      {/* <main className="main-content">
         <Routes>
           <Route path="/" element={<HomeContent />} />
           <Route path="/doc/*" element={<DocContent />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </main>
+      </main> */}
     </div>
   )
 }
