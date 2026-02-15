@@ -4,7 +4,7 @@ import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import './App.css'
 import SideColumn from './SideColumn'
-// import MapPanel from "./components/MapPanel.jsx";
+import MapPanel from "./components/MapPanel.jsx";
 
 const normalizeDocPath = (docPath: string): string =>
 {
@@ -47,8 +47,9 @@ const HomeContent = () =>
 
       <div style={{ padding: 24 }}>
         <h1>Yanorra</h1>
-        <p>Intalink-ready. Static deploy. Auto Uploaded. Wow!!!</p>
       </div>
+
+      <MapPanel fullScreen={false} />
 
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
@@ -73,7 +74,6 @@ const HomeContent = () =>
           </ul>
         </div>
       </div>
-      {/* <MapPanel fullScreen={false} /> */}
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
@@ -123,6 +123,7 @@ function App()
 {
   return (
     <div className="app-container">
+      {/* <MapPanel fullScreen={false} /> */}
       <SideColumn />
       <main className="main-content">
         <Routes>
@@ -134,5 +135,22 @@ function App()
     </div>
   )
 }
+
+// function App()
+// {
+//   return (
+//     <div className="app-container">
+//       <SideColumn />
+//       {/* <MapPanel fullScreen={true} /> */}
+//       <main className="main-content">
+//         <Routes>
+//           {/* <Route path="/" element={<HomeContent />} />
+//           <Route path="/doc/*" element={<DocContent />} /> */}
+//           <Route path="*" element={<Navigate to="/" replace />} />
+//         </Routes>
+//       </main>
+//     </div>
+//   )
+// }
 
 export default App
