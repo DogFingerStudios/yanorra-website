@@ -21,6 +21,17 @@
   margin: 0 auto;
 }
 
+.app-container.fullscreen {
+  height: 100vh;
+}
+
+.main-content.fullscreen {
+  padding: 0;
+  max-width: none;
+  margin: 0;
+  overflow: hidden;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

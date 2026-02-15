@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Routes, Route, Navigate, useParams, useNavigate, Link } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams, useNavigate, Link, useLocation } from 'react-router-dom'
 import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import './App.css'
@@ -36,17 +36,13 @@ const HomeContent = () =>
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          {/* <img src={viteLogo} className="logo" alt="Vite logo" /> */}
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-
-      <div style={{ padding: 24 }}>
+      <div style={{ padding: 5 }}>
         <h1>Yanorra</h1>
+        <Link to="/fullscreen">
+          <button type="button">
+            Full Screen
+          </button>
+        </Link>
       </div>
 
       <MapPanel fullScreen={false} />
@@ -121,13 +117,24 @@ const DocContent = () =>
 
 function App()
 {
+  const location = useLocation()
+  const isFullscreenRoute = location.pathname === '/fullscreen'
+  let appContainerClassName = 'app-container'
+  let mainContentClassName = 'main-content'
+
+  if (isFullscreenRoute)
+  {
+    appContainerClassName = 'app-container fullscreen'
+    mainContentClassName = 'main-content fullscreen'
+  }
+
   return (
-    <div className="app-container">
-      {/* <MapPanel fullScreen={false} /> */}
-      <SideColumn />
-      <main className="main-content">
+    <div className={appContainerClassName}>
+      {!isFullscreenRoute && <SideColumn />}
+      <main className={mainContentClassName}>
         <Routes>
           <Route path="/" element={<HomeContent />} />
+          <Route path="/fullscreen" element={<App2 />} />
           <Route path="/doc/*" element={<DocContent />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -136,21 +143,20 @@ function App()
   )
 }
 
-// function App()
-// {
-//   return (
-//     <div className="app-container">
-//       <SideColumn />
-//       {/* <MapPanel fullScreen={true} /> */}
-//       <main className="main-content">
-//         <Routes>
-//           {/* <Route path="/" element={<HomeContent />} />
-//           <Route path="/doc/*" element={<DocContent />} /> */}
-//           <Route path="*" element={<Navigate to="/" replace />} />
-//         </Routes>
-//       </main>
-//     </div>
-//   )
-// }
+function App2()
+{
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      <div style={{ position: 'absolute', zIndex: 1000, top: '0.5rem', left: '50%', transform: 'translateX(-50%)' }}>
+        <Link to="/">
+          <button type="button">
+            Exit Full Screen
+          </button>
+        </Link>
+      </div>
+      <MapPanel fullScreen={true} />
+    </div>
+  )
+}
 
 export default App
