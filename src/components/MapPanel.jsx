@@ -35,10 +35,10 @@ const MapPanel = ({ fullScreen = true }) =>
         >
           <MapElements zoom={currentZoom} coords={coords} />
           <EventComponent updateZoom={updateZoom} updateCoords={updateCoords} />
-          <AttributionControl
+          {/* <AttributionControl
             position={"bottomright"}
             prefix={"Icons from Game-icons.net"}
-          />
+          /> */}
         </MapContainer>
         <div className="zoom-indicator">
           Zoom Level: {currentZoom}
@@ -70,10 +70,10 @@ const MapPanel = ({ fullScreen = true }) =>
         >
           <MapElements zoom={currentZoom} coords={coords} />
           <EventComponent updateZoom={updateZoom} updateCoords={updateCoords} />
-          <AttributionControl
+          {/* <AttributionControl
             position={"bottomright"}
             prefix={"Icons from Game-icons.net"}
-          />
+          /> */}
         </MapContainer>
       </div>
     );

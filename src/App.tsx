@@ -19,17 +19,6 @@ const encodeDocPath = (docPath: string): string =>
     .join('/')
 }
 
-// const HomeContent = () =>
-// {
-//   const [count, setCount] = useState(0)
-//   return (
-//     <>
-//       <MapPanel fullScreen={true} />
-//       <MapPanel fullScreen={false} />
-//     </>
-//   )
-// }
-
 const HomeContent = () =>
 {
   const [count, setCount] = useState(0)
@@ -115,6 +104,22 @@ const DocContent = () =>
   )
 }
 
+function FullScreenRender()
+{
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+      <div style={{ position: 'absolute', zIndex: 1000, top: '0.5rem', left: '50%', transform: 'translateX(-50%)' }}>
+        <Link to="/">
+          <button type="button">
+            Exit Full Screen
+          </button>
+        </Link>
+      </div>
+      <MapPanel fullScreen={true} />
+    </div>
+  )
+}
+
 function App()
 {
   const location = useLocation()
@@ -134,27 +139,11 @@ function App()
       <main className={mainContentClassName}>
         <Routes>
           <Route path="/" element={<HomeContent />} />
-          <Route path="/fullscreen" element={<App2 />} />
+          <Route path="/fullscreen" element={<FullScreenRender />} />
           <Route path="/doc/*" element={<DocContent />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
-    </div>
-  )
-}
-
-function App2()
-{
-  return (
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      <div style={{ position: 'absolute', zIndex: 1000, top: '0.5rem', left: '50%', transform: 'translateX(-50%)' }}>
-        <Link to="/">
-          <button type="button">
-            Exit Full Screen
-          </button>
-        </Link>
-      </div>
-      <MapPanel fullScreen={true} />
     </div>
   )
 }
