@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Routes, Route, Navigate, useParams, useNavigate, Link, useLocation } from 'react-router-dom'
 import './App.css'
 import SideColumn from './SideColumn'
-import MapPanel from "./components/MapPanel.jsx";
+import MapPanel from "./components/MapPanel.jsx"
+import MarkdownPage from "./components/MarkdownPage";
 
 const normalizeDocPath = (docPath: string): string =>
 {
@@ -59,8 +60,6 @@ const HomeContent = () =>
         </button>
       </div>
 
-      {renderMapPanel()}
-
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
@@ -81,9 +80,17 @@ const HomeContent = () =>
                 Lo-Disporum
               </Link>
             </li>
+            <li>
+              <Link to="/wiki/saint-aveline">
+                Saint Aveline (Markdown Test)
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
+
+      {renderMapPanel()}
+      
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
@@ -166,6 +173,10 @@ function App()
           <Route path="/" element={<HomeContent />} />
           <Route path="/fullscreen" element={<FullScreenRender />} />
           <Route path="/doc/*" element={<DocContent />} />
+          <Route 
+            path="/wiki/saint-aveline" 
+            element={<MarkdownPage markdownPath="/Yanorra/Wiki/Saint_Aveline.md" />} 
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

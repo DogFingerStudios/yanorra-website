@@ -21,11 +21,14 @@ import { markers } from "../../data/markers.jsx";
 import { borders } from "../../data/borders.jsx";
 import MapMarker from "./MapMarker";
 
-const MapElements = ({ zoom, coords }) => {
+const MapElements = ({ zoom, coords }) => 
+{
   let civilization = [];
   let wilderness = [];
-  markers.forEach((marker, index) => {
-    switch (marker.type) {
+  markers.forEach((marker, index) => 
+  {
+    switch (marker.type) 
+    {
       case CITY:
       case VILLAGE:
       case TOWN:
@@ -46,7 +49,7 @@ const MapElements = ({ zoom, coords }) => {
   return (
     <LayersControl position="topright">
       <LayersControl.BaseLayer checked name="Basemap">
-        <TileLayer url="tiles/{z}/{x}/{y}.png" noWrap={true} />
+        <TileLayer url="/tiles/{z}/{x}/{y}.png" noWrap={true} />
       </LayersControl.BaseLayer>
       <LayersControl.Overlay checked name="Borders" id="Borders">
         <LayerGroup>
