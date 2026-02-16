@@ -49,7 +49,10 @@ const HomeContent = () =>
       <div style={{ padding: 5 }}>
         <h1>Yanorra</h1>
         <Link to="/fullscreen">
-          <button type="button">
+          <button
+            type="button"
+            aria-label="View map in full screen"
+          >
             Full Screen
           </button>
         </Link>
