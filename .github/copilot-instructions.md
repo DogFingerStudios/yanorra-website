@@ -1,5 +1,5 @@
 # Copilot Instructions
 
-- When generating code, always put `{` on a new line.
+- When generating code, always put `{` on a new line, even in things like CSS code/files
 - Prefer using if-else statements instead of the ternary operator (`? :`)
 

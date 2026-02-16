@@ -152,7 +152,8 @@
   position: relative;
 }
 
-.leaflet-container-custom {
-  background-color: #b4d2f4;
+.leaflet-container-custom 
+{
+  background-color: #b4d2f4 !important;
 }
 
