@@ -140,28 +140,6 @@
   z-index: 999;
 }
 
-.containerized-button {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  z-index: 999;
-  transition: background-color 0.3s ease;
-}
-
-.containerized-button:hover {
-  background-color: #45a049;
-}
-
 .map-panel-fullscreen {
   width: 100%;
   height: 100%;
