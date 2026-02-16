@@ -26,6 +26,16 @@
   padding-top: 0rem;
 }
 
+.main-content p {
+  text-align: left;
+}
+
+.main-content h2,
+.main-content h3,
+.main-content h4 {
+  text-align: left;
+}
+
 .app-container.fullscreen {
   height: 100vh;
 }
