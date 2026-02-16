@@ -15,7 +15,9 @@ function SideColumn()
 {
   return (
     <aside className="side-column">
-      <h3>Yanorra</h3>
+      <Link to="/">
+        <h3>Yanorra</h3>
+      </Link>
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {docLinks.map((doc) => (
           <li key={doc.path} style={{ marginBottom: '0.5rem' }}>
