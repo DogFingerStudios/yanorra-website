@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { Routes, Route, Navigate, useParams, useNavigate, Link, useLocation } from 'react-router-dom'
-import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
 import './App.css'
 import SideColumn from './SideColumn'
 import MapPanel from "./components/MapPanel.jsx";
@@ -48,7 +46,7 @@ const HomeContent = () =>
     <>
       <div style={{ padding: 5 }}>
         <h1>Yanorra</h1>
-        <Link to="/fullscreen">
+        <Link to="/fullscreen" style={{ marginRight: '0.5rem' }}>
           <button
             type="button"
             aria-label="View map in full screen"

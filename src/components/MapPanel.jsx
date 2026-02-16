@@ -3,6 +3,7 @@ import { AttributionControl, MapContainer } from "react-leaflet";
 import { CRS } from "leaflet";
 import EventComponent from "./EventComponent";
 import MapElements from "./markers/MapElements";
+import 'leaflet/dist/leaflet.css'
 
 const MapPanel = ({ fullScreen = true }) => 
 {
