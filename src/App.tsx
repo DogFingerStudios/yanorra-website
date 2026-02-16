@@ -22,6 +22,27 @@ const encodeDocPath = (docPath: string): string =>
 const HomeContent = () =>
 {
   const [count, setCount] = useState(0)
+  const [mapVisible, setMapVisible] = useState(true)
+
+  const getMapButtonText = () => 
+  {
+    if (mapVisible)
+    {
+      return "Hide Map";
+    }
+
+    return "Show Map";
+  };
+
+  const renderMapPanel = () => 
+  {
+    if (mapVisible)
+    {
+      return <MapPanel fullScreen={false} />;
+    }
+
+    return null;
+  };
 
   return (
     <>
@@ -32,9 +53,12 @@ const HomeContent = () =>
             Full Screen
           </button>
         </Link>
+        <button type="button" onClick={() => setMapVisible(!mapVisible)}>
+          {getMapButtonText()}
+        </button>
       </div>
 
-      <MapPanel fullScreen={false} />
+      {renderMapPanel()}
 
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
