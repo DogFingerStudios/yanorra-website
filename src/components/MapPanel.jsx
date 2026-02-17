@@ -11,16 +11,36 @@ const MapPanel = ({
   initialCenter = [-55.94, 111.88],
   minZoom = 3,
   maxZoom = 6,
-  scrollWheelZoom = true
+  scrollWheelZoom = true,
+  debug = false
 }) => 
 {
-  console.log('MapPanel rendered with:', { fullScreen, initialZoom, initialCenter, minZoom, maxZoom, scrollWheelZoom });
+  console.log('MapPanel rendered with:', { fullScreen, initialZoom, initialCenter, minZoom, maxZoom, scrollWheelZoom, debug });
   
   const [currentZoom, setZoomLevel] = useState(initialZoom);
   const updateZoom = (newZoomLevel) => setZoomLevel(newZoomLevel);
 
   const [coords, setCoords] = useState(initialCenter);
   const updateCoords = (coords) => setCoords(coords);
+
+  const renderDebug = () =>
+  {
+    if (!debug)
+    {
+      return null;
+    }
+
+    return (
+      <>
+        <div className="zoom-indicator">
+          Zoom Level: {currentZoom}
+        </div>
+        <div className="coords-indicator">
+          Center: [{coords[0].toFixed(2)}, {coords[1].toFixed(2)}]
+        </div>
+      </>
+    );
+  };
 
   const renderFullscreen = () => 
   {
@@ -47,12 +67,7 @@ const MapPanel = ({
             prefix={"Icons from Game-icons.net"}
           /> */}
         </MapContainer>
-        <div className="zoom-indicator">
-          Zoom Level: {currentZoom}
-        </div>
-        <div className="coords-indicator">
-          Center: [{coords[0].toFixed(2)}, {coords[1].toFixed(2)}]
-        </div>
+        {renderDebug()}
       </div>
     );
   };
@@ -82,6 +97,7 @@ const MapPanel = ({
             prefix={"Icons from Game-icons.net"}
           /> */}
         </MapContainer>
+        {renderDebug()}
       </div>
     );
   };

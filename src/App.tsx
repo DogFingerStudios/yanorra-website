@@ -3,7 +3,8 @@ import { Routes, Route, Navigate, useParams, useNavigate, Link, useLocation } fr
 import './App.css'
 import SideColumn from './SideColumn'
 import MapPanel from "./components/MapPanel.jsx"
-import MarkdownPage from "./components/MarkdownPage";
+import MarkdownPage from "./components/MarkdownPage"
+import AsciiDocPage from "./components/AsciiDocPage";
 
 const normalizeDocPath = (docPath: string): string =>
 {
@@ -83,6 +84,11 @@ const HomeContent = () =>
             <li>
               <Link to="/wiki/saint-aveline">
                 Saint Aveline (Markdown Test)
+              </Link>
+            </li>
+            <li>
+              <Link to="/wiki/bibi-shirif">
+                Bibi Shirif (AsciiDoc Test)
               </Link>
             </li>
           </ul>
@@ -176,6 +182,10 @@ function App()
           <Route 
             path="/wiki/saint-aveline" 
             element={<MarkdownPage markdownPath="/Yanorra/Wiki/Saint_Aveline.md" />} 
+          />
+          <Route 
+            path="/wiki/bibi-shirif" 
+            element={<AsciiDocPage asciidocPath="/Yanorra/Wiki/Bibi_Shirif.adoc" />} 
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

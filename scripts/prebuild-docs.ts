@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { convertAsciidocFiles } from '../vite-plugin-asciidoc'
+// import { convertAsciidocFiles } from '../vite-plugin-asciidoc'
 import { convertMarkdownFiles } from '../vite-plugin-markdown'
 
 interface DocLink
@@ -44,7 +44,7 @@ const isExcludedFile = (fileName: string): boolean =>
 
 const run = async (): Promise<void> =>
 {
-  await convertAsciidocFiles()
+  // await convertAsciidocFiles()
   await convertMarkdownFiles()
 
   // Scan folders for HTML files

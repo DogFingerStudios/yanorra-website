@@ -121,7 +121,7 @@
 }
 
 .zoom-indicator {
-  position: fixed;
+  position: absolute;
   bottom: 20px;
   left: 20px;
   background-color: rgba(255, 255, 255, 0.9);
@@ -136,7 +136,7 @@
 }
 
 .coords-indicator {
-  position: fixed;
+  position: absolute;
   bottom: 20px;
   left: 200px;
   background-color: rgba(255, 255, 255, 0.9);

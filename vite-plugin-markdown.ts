@@ -38,7 +38,10 @@ const getFilesToConvert = (): MarkdownFile[] =>
 export const convertMarkdownFiles = async (): Promise<void> =>
 {
   const filesToConvert = getFilesToConvert()
-
+  filesToConvert.push({
+    source_file: 'Yanorra/README.md',
+    destination_file: 'public/Yanorra.html'
+  })
   // Convert each Markdown file to HTML
   for (const file of filesToConvert)
   {

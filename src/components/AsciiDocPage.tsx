@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { marked } from 'marked'
 import { createRoot } from 'react-dom/client'
+import Asciidoctor from '@asciidoctor/core'
 import MapPanel from './MapPanel'
 
-interface MarkdownPageProps
+interface AsciiDocPageProps
 {
-  markdownPath: string
+  asciidocPath: string
 }
 
 interface MapElementConfig
@@ -20,7 +20,7 @@ interface MapElementConfig
   debug?: string
 }
 
-const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
+const AsciiDocPage = ({ asciidocPath }: AsciiDocPageProps) =>
 {
   const navigate = useNavigate()
   const [html, setHtml] = useState<string>('')
@@ -30,27 +30,33 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
 
   useEffect(() =>
   {
-    const loadAndRenderMarkdown = async () =>
+    const loadAndRenderAsciidoc = async () =>
     {
       try
       {
         setLoading(true)
         setError(null)
 
-        // Fetch raw markdown from Yanorra folder
-        const response = await fetch(markdownPath)
+        // Fetch raw AsciiDoc file
+        const response = await fetch(asciidocPath)
         if (!response.ok)
         {
-          throw new Error(`Failed to load markdown: ${response.statusText}`)
+          throw new Error(`Failed to load AsciiDoc: ${response.statusText}`)
         }
 
-        const markdown = await response.text()
+        const adocContent = await response.text()
 
-        // Convert markdown to HTML with custom handling for <MapElement>
-        const rawHtml = await marked(markdown)
+        // Initialize Asciidoctor
+        const asciidoctor = Asciidoctor()
+
+        // Convert to HTML
+        const rawHtml = asciidoctor.convert(adocContent, {
+          safe: 'safe',
+          attributes: { showtitle: true }
+        })
 
         // Replace <MapElement> tags with placeholders
-        const processedHtml = rawHtml.replace(
+        const processedHtml = (rawHtml as string).replace(
           /<MapElement\s+([^>]+)\/>/gi,
           (_match, attrs) =>
           {
@@ -68,7 +74,6 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
             }
 
             // Create a placeholder div with data attributes
-            console.log('Created placeholder with config:', JSON.stringify(config))
             return `<div class="map-element-placeholder" data-config='${JSON.stringify(config)}'></div>`
           }
         )
@@ -85,8 +90,8 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
       }
     }
 
-    loadAndRenderMarkdown()
-  }, [markdownPath])
+    loadAndRenderAsciidoc()
+  }, [asciidocPath])
 
   // Hydrate map placeholders after HTML is rendered
   useEffect(() =>
@@ -205,4 +210,4 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
   )
 }
 
-export default MarkdownPage
+export default AsciiDocPage
