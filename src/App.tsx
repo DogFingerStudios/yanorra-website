@@ -21,7 +21,6 @@ const encodeDocPath = (docPath: string): string =>
 
 const HomeContent = () =>
 {
-  const [count, setCount] = useState(0)
   const [mapVisible, setMapVisible] = useState(true)
 
   const getMapButtonText = () => 
@@ -62,14 +61,7 @@ const HomeContent = () =>
       </div>
 
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
         <div style={{ marginTop: '2rem' }}>
-          <h3>Generated Docs</h3>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             <li>
               <Link to={`/doc/${encodeDocPath('/Yanorra.html')}`}>
@@ -97,9 +89,6 @@ const HomeContent = () =>
 
       {renderMapPanel()}
       
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
