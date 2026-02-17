@@ -4,7 +4,8 @@ import './App.css'
 import SideColumn from './SideColumn'
 import MapPanel from "./components/MapPanel.jsx"
 import MarkdownPage from "./components/MarkdownPage"
-import AsciiDocPage from "./components/AsciiDocPage";
+import AsciiDocPage from "./components/AsciiDocPage"
+import MapFullScreen from "./components/MapFullScreen";
 
 const normalizeDocPath = (docPath: string): string =>
 {
@@ -150,7 +151,7 @@ function FullScreenRender()
 function App()
 {
   const location = useLocation()
-  const isFullscreenRoute = location.pathname === '/fullscreen'
+  const isFullscreenRoute = location.pathname === '/fullscreen' || location.pathname === '/map'
   let appContainerClassName = 'app-container'
   let mainContentClassName = 'main-content'
 
@@ -167,6 +168,7 @@ function App()
         <Routes>
           <Route path="/" element={<HomeContent />} />
           <Route path="/fullscreen" element={<FullScreenRender />} />
+          <Route path="/map" element={<MapFullScreen />} />
           <Route path="/doc/*" element={<DocContent />} />
           <Route 
             path="/wiki/saint-aveline" 

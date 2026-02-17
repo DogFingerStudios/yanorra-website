@@ -1,0 +1,48 @@
+.map-fullscreen-container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.map-sidebar {
+  width: 60px;
+  min-width: 60px;
+  background-color: #fff;
+  border-right: 1px solid #ddd;
+  padding-top: 1rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.close-button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 1.5em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  transition: all 0.2s;
+}
+
+.close-button:hover {
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+
+.map-main {
+  flex: 1;
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
