@@ -1,12 +1,13 @@
 .side-column {
   width: 250px;
   min-width: 250px;
-  padding: 1.5rem;
+  padding-left: 1.5rem;
   background-color: #f5f5f5;
   border-right: 2px solid #cccccc;
   overflow-y: auto;
   text-align: left;
   height: 100vh;
+  flex-shrink: 0;
 }
 
 .side-column h3 {
