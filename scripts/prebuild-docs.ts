@@ -9,20 +9,6 @@ interface DocLink
   path: string
 }
 
-// interface DocFolder
-// {
-//   name: string
-//   folder: string
-// }
-
-// const docFolders: DocFolder[] = 
-// [
-//   {
-//     name: 'Wiki',
-//     folder: 'wiki'
-//   }
-// ]
-
 const docLinks: DocLink[] = 
 [
   {
@@ -71,37 +57,6 @@ const generateDocLinks = async (): Promise<void> =>
 
 const run = async (): Promise<void> =>
 {
-  // await convertMarkdownFiles()
-
-  // Scan folders for HTML files
-  // docFolders.forEach((docFolder) => 
-  // {
-  //   console.log(`Scanning folder: ${docFolder.folder} for HTML files...`)
-  //   const folderPath = path.join(process.cwd(), 'public', docFolder.folder)
-  //   try 
-  //   {
-  //     const files = fs.readdirSync(folderPath)
-  //     files.forEach((file: string) => 
-  //     {
-  //       if (file.toLowerCase().endsWith('.html') 
-  //         && !isExcludedFile(file))
-  //       {
-  //         console.log(`Adding file: ${file} from folder: ${docFolder.folder}`)
-
-  //         docLinks.push(
-  //         {
-  //           title: file.replace(/\.html$/i, '').replace(/_/g, ' '),  
-  //           path: `/${docFolder.folder}/${file.replace(/\.html$/i, '')}`
-  //         })
-  //       }
-  //     })
-  //   } 
-  //   catch (err) 
-  //   {
-  //     console.warn(`Warning: Could not read folder ${folderPath}`)
-  //   }
-  // })
-
   await generateDocLinks();
 
   // Generate the TypeScript config file
