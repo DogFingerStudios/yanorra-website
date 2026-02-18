@@ -111,15 +111,71 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
       {
         const config: MapElementConfig = JSON.parse(configStr)
         
-        // Parse zoom and center from config
-        const zoom = config.zoom ? parseInt(config.zoom, 10) : 3
-        const center = config.center 
-          ? config.center.split(',').map((c) => parseFloat(c.trim())) as [number, number]
-          : [-55.94, 111.88] as [number, number]
-        const minZoom = config.minZoom ? parseInt(config.minZoom, 10) : 3
-        const maxZoom = config.maxZoom ? parseInt(config.maxZoom, 10) : 6
-        const scrollWheelZoom = config.scrollWheelZoom !== 'false'
-        const debug = config.debug === 'true'
+        // Parse zoom, center, and zoom bounds from config with validation and defaults
+        let zoom = 3
+        if (typeof config.zoom === 'string')
+        {
+          const parsedZoom = parseInt(config.zoom, 10)
+          if (!Number.isNaN(parsedZoom))
+          {
+            zoom = parsedZoom
+          }
+        }
+
+        let center: [number, number] = [-55.94, 111.88]
+        if (typeof config.center === 'string')
+        {
+          const parts = config.center.split(',')
+          if (parts.length === 2)
+          {
+            const lat = parseFloat(parts[0].trim())
+            const lng = parseFloat(parts[1].trim())
+            if (!Number.isNaN(lat) && !Number.isNaN(lng))
+            {
+              center = [lat, lng]
+            }
+          }
+        }
+
+        let minZoom = 3
+        if (typeof config.minZoom === 'string')
+        {
+          const parsedMinZoom = parseInt(config.minZoom, 10)
+          if (!Number.isNaN(parsedMinZoom))
+          {
+            minZoom = parsedMinZoom
+          }
+        }
+
+        let maxZoom = 6
+        if (typeof config.maxZoom === 'string')
+        {
+          const parsedMaxZoom = parseInt(config.maxZoom, 10)
+          if (!Number.isNaN(parsedMaxZoom))
+          {
+            maxZoom = parsedMaxZoom
+          }
+        }
+
+        let scrollWheelZoom = true
+        if (typeof config.scrollWheelZoom === 'string')
+        {
+          const scrollValue = config.scrollWheelZoom.toLowerCase()
+          if (scrollValue === 'false')
+          {
+            scrollWheelZoom = false
+          }
+          else if (scrollValue === 'true')
+          {
+            scrollWheelZoom = true
+          }
+        }
+
+        let debug = false
+        if (config.debug === 'true')
+        {
+          debug = true
+        }
         
         // Create a container for the React map component
         const mapContainer = document.createElement('div')
