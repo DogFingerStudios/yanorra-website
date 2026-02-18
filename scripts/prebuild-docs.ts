@@ -1,7 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { fileURLToPath } from 'url'
-// import { convertMarkdownFiles } from '../vite-plugin-markdown'
 
 interface DocLink
 {
@@ -31,6 +30,8 @@ const isExcludedFile = (fileName: string): boolean =>
 const generateDocLinks = async (): Promise<void> =>
 {
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
+  
+  // TODO: __dirname may not be defined because of ES modules - need to use import.meta.url instead
   const wikiDir = path.resolve(__dirname, '../Yanorra/Wiki')
 
   if (!fs.existsSync(wikiDir))
