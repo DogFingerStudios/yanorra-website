@@ -140,7 +140,8 @@
   font-weight: 500;
   color: #333;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
   z-index: 999;
 }
 
@@ -155,8 +156,22 @@
   font-weight: 500;
   color: #333;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
   z-index: 999;
+}
+
+.copy-notification {
+  position: absolute;
+  bottom: 62px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  z-index: 1000;
 }
 
 .map-panel-fullscreen {

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { AttributionControl, MapContainer } from "react-leaflet";
+import { MapContainer } from "react-leaflet";
 import { CRS } from "leaflet";
 import EventComponent from "./EventComponent";
 import MapElements from "./markers/MapElements";
+import ResetViewControl from "./ResetViewControl";
 import 'leaflet/dist/leaflet.css'
 
 const MapPanel = ({ 
@@ -22,6 +23,47 @@ const MapPanel = ({
 
   const [coords, setCoords] = useState(initialCenter);
   const updateCoords = (coords) => setCoords(coords);
+  const [copyMessage, setCopyMessage] = useState("");
+
+  const copyToClipboard = async (value) =>
+  {
+    if (navigator.clipboard && navigator.clipboard.writeText)
+    {
+      await navigator.clipboard.writeText(value);
+      return;
+    }
+
+    const textArea = document.createElement("textarea");
+    textArea.value = value;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-9999px";
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
+  };
+
+  const copyZoom = async () =>
+  {
+    const zoomValue = `Zoom Level: ${currentZoom}`;
+    await copyToClipboard(zoomValue);
+    setCopyMessage("Copied zoom level");
+    setTimeout(() =>
+    {
+      setCopyMessage("");
+    }, 1200);
+  };
+
+  const copyCenter = async () =>
+  {
+    const centerValue = `Center: [${coords[0].toFixed(2)}, ${coords[1].toFixed(2)}]`;
+    await copyToClipboard(centerValue);
+    setCopyMessage("Copied center coords");
+    setTimeout(() =>
+    {
+      setCopyMessage("");
+    }, 1200);
+  };
 
   const renderDebug = () =>
   {
@@ -32,12 +74,13 @@ const MapPanel = ({
 
     return (
       <>
-        <div className="zoom-indicator">
+        <div className="zoom-indicator" onClick={copyZoom} title="Click to copy zoom value">
           Zoom Level: {currentZoom}
         </div>
-        <div className="coords-indicator">
+        <div className="coords-indicator" onClick={copyCenter} title="Click to copy center value">
           Center: [{coords[0].toFixed(2)}, {coords[1].toFixed(2)}]
         </div>
+        {copyMessage ? <div className="copy-notification">{copyMessage}</div> : null}
       </>
     );
   };
@@ -62,6 +105,7 @@ const MapPanel = ({
         >
           <MapElements zoom={currentZoom} coords={coords} />
           <EventComponent updateZoom={updateZoom} updateCoords={updateCoords} />
+          <ResetViewControl initialCenter={initialCenter} initialZoom={initialZoom} />
           {/* <AttributionControl
             position={"bottomright"}
             prefix={"Icons from Game-icons.net"}
@@ -92,6 +136,7 @@ const MapPanel = ({
         >
           <MapElements zoom={currentZoom} coords={coords} />
           <EventComponent updateZoom={updateZoom} updateCoords={updateCoords} />
+          <ResetViewControl initialCenter={initialCenter} initialZoom={initialZoom} />
           {/* <AttributionControl
             position={"bottomright"}
             prefix={"Icons from Game-icons.net"}
