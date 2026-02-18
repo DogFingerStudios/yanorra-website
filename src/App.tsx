@@ -151,7 +151,11 @@ function App()
       {!isFullscreenRoute && <SideColumn />}
       <main className={mainContentClassName}>
         <Routes>
-          <Route path="/" element={<HomeContent />} />
+          <Route 
+            path="/" 
+            element={<MarkdownPage markdownPath="/Yanorra/README.md" />} 
+          />
+          <Route path="/test" element={<HomeContent />} />
           <Route path="/map" element={<MapFullScreen />} />
           <Route path="/doc/*" element={<DocContent />} />
           <Route 

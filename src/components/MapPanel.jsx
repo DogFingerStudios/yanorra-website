@@ -18,6 +18,12 @@ const MapPanel = ({
 {
   console.log('MapPanel rendered with:', { fullScreen, initialZoom, initialCenter, minZoom, maxZoom, scrollWheelZoom, debug });
   
+  const maxBounds = [
+    [-120, 0],  // south-west [lat, lng]
+    [0, 224]    // north-east [lat, lng]
+  ];
+  const maxBoundsViscosity = 0.9;
+
   const [currentZoom, setZoomLevel] = useState(initialZoom);
   const updateZoom = (newZoomLevel) => setZoomLevel(newZoomLevel);
 
@@ -100,6 +106,8 @@ const MapPanel = ({
           style={mapStyle}
           crs={CRS.Simple}
           maxZoom={maxZoom}
+          maxBounds={maxBounds}
+          maxBoundsViscosity={maxBoundsViscosity}
           attributionControl={false}
           className="leaflet-container-custom"
         >
@@ -131,6 +139,8 @@ const MapPanel = ({
           style={mapStyle}
           crs={CRS.Simple}
           maxZoom={maxZoom}
+          maxBounds={maxBounds}
+          maxBoundsViscosity={maxBoundsViscosity}
           attributionControl={false}
           className="leaflet-container-custom"
         >
