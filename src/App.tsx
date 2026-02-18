@@ -2,7 +2,9 @@ import { useState } from 'react'
 import { Routes, Route, Navigate, useParams, useNavigate, Link, useLocation } from 'react-router-dom'
 import './App.css'
 import SideColumn from './SideColumn'
-import MapPanel from "./components/MapPanel.jsx";
+import MapPanel from "./components/MapPanel.jsx"
+import MarkdownPage from "./components/MarkdownPage"
+import MapFullScreen from "./components/MapFullScreen";
 
 const normalizeDocPath = (docPath: string): string =>
 {
@@ -17,9 +19,15 @@ const encodeDocPath = (docPath: string): string =>
     .join('/')
 }
 
+const WikiPage = () =>
+{
+  const { filename } = useParams<{ filename: string }>()
+  const markdownPath = `/Yanorra/Wiki/${filename}.md`
+  return <MarkdownPage markdownPath={markdownPath} />
+}
+
 const HomeContent = () =>
 {
-  const [count, setCount] = useState(0)
   const [mapVisible, setMapVisible] = useState(true)
 
   const getMapButtonText = () => 
@@ -46,7 +54,7 @@ const HomeContent = () =>
     <>
       <div style={{ padding: 5 }}>
         <h1>Yanorra</h1>
-        <Link to="/fullscreen" style={{ marginRight: '0.5rem' }}>
+        <Link to="/map" style={{ marginRight: '0.5rem' }}>
           <button
             type="button"
             aria-label="View map in full screen"
@@ -59,17 +67,8 @@ const HomeContent = () =>
         </button>
       </div>
 
-      {renderMapPanel()}
-
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
         <div style={{ marginTop: '2rem' }}>
-          <h3>Generated Docs</h3>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             <li>
               <Link to={`/doc/${encodeDocPath('/Yanorra.html')}`}>
@@ -81,12 +80,17 @@ const HomeContent = () =>
                 Lo-Disporum
               </Link>
             </li>
+            <li>
+              <Link to="/wiki/saint-aveline">
+                Saint Aveline (Markdown Test)
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+
+      {renderMapPanel()}
+      
     </>
   )
 }
@@ -129,26 +133,10 @@ const DocContent = () =>
   )
 }
 
-function FullScreenRender()
-{
-  return (
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      <div style={{ position: 'absolute', zIndex: 1000, top: '0.5rem', left: '50%', transform: 'translateX(-50%)' }}>
-        <Link to="/">
-          <button type="button">
-            Exit Full Screen
-          </button>
-        </Link>
-      </div>
-      <MapPanel fullScreen={true} />
-    </div>
-  )
-}
-
 function App()
 {
   const location = useLocation()
-  const isFullscreenRoute = location.pathname === '/fullscreen'
+  const isFullscreenRoute = location.pathname === '/fullscreen' || location.pathname === '/map'
   let appContainerClassName = 'app-container'
   let mainContentClassName = 'main-content'
 
@@ -164,8 +152,12 @@ function App()
       <main className={mainContentClassName}>
         <Routes>
           <Route path="/" element={<HomeContent />} />
-          <Route path="/fullscreen" element={<FullScreenRender />} />
+          <Route path="/map" element={<MapFullScreen />} />
           <Route path="/doc/*" element={<DocContent />} />
+          <Route 
+            path="/wiki/:filename" 
+            element={<WikiPage />} 
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

@@ -46,9 +46,9 @@ const run = (): void =>
     return
   }
 
-  copyRecursive(publicDir, distDir)
-  fs.rmSync(publicDir, { recursive: true, force: true })
-  console.log('✓ Moved public docs into dist and cleaned up public')
+  // copyRecursive(publicDir, distDir)
+  // fs.rmSync(publicDir, { recursive: true, force: true })
+  // console.log('✓ Moved public docs into dist and cleaned up public')
 }
 
 run()

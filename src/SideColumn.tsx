@@ -21,7 +21,7 @@ function SideColumn()
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {docLinks.map((doc) => (
           <li key={doc.path} style={{ marginBottom: '0.5rem' }}>
-            <Link className="side-column-link" to={`/doc/${encodeDocPath(doc.path)}`}>
+            <Link className="side-column-link" to={`/${encodeDocPath(doc.path)}`}>
               {doc.title}
             </Link>
           </li>
