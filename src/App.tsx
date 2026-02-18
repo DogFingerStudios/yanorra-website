@@ -20,6 +20,13 @@ const encodeDocPath = (docPath: string): string =>
     .join('/')
 }
 
+const WikiPage = () =>
+{
+  const { filename } = useParams<{ filename: string }>()
+  const markdownPath = `/Yanorra/Wiki/${filename}.md`
+  return <MarkdownPage markdownPath={markdownPath} />
+}
+
 const HomeContent = () =>
 {
   const [mapVisible, setMapVisible] = useState(true)
@@ -154,12 +161,8 @@ function App()
           <Route path="/map" element={<MapFullScreen />} />
           <Route path="/doc/*" element={<DocContent />} />
           <Route 
-            path="/wiki/saint-aveline" 
-            element={<MarkdownPage markdownPath="/Yanorra/Wiki/Saint_Aveline.md" />} 
-          />
-          <Route 
-            path="/wiki/bibi-shirif" 
-            element={<AsciiDocPage asciidocPath="/Yanorra/Wiki/Bibi_Shirif.adoc" />} 
+            path="/wiki/:filename" 
+            element={<WikiPage />} 
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

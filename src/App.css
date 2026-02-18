@@ -24,13 +24,24 @@
   padding-top: 0rem;
 }
 
-.main-content p {
+.main-content p,
+.main-content ul,
+.main-content ol,
+.main-content li,
+.main-content table,
+.main-content th,
+.main-content td,
+.main-content blockquote,
+.main-content div,
+.main-content a {
   text-align: left;
 }
 
 .main-content h2,
 .main-content h3,
-.main-content h4 {
+.main-content h4,
+.main-content h5,
+.main-content h6 {
   text-align: left;
 }
 
