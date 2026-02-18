@@ -18,6 +18,44 @@
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
+  justify-content: space-between;
+}
+
+.map-sidebar-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.map-sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-top: 1px solid #ddd;
+  width: 100%;
+}
+
+.numbered-button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 0.9em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  transition: all 0.2s;
+}
+
+.numbered-button:hover {
+  background-color: #f0f0f0;
+  border-color: #999;
 }
 
 .close-button {
@@ -26,7 +64,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #fff;
-  font-size: 1.5em;
+  font-size: 0.75em;
   cursor: pointer;
   display: flex;
   align-items: center;

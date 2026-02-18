@@ -44,7 +44,7 @@ const MapPanel = ({
 
   const renderFullscreen = () => 
   {
-    const mapStyle = { height: window.innerHeight, width: window.innerWidth };
+    const mapStyle = { height: "100%", width: "100%" };
 
     return (
       <div className="map-panel-fullscreen">
