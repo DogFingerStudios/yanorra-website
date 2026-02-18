@@ -48,7 +48,7 @@ const HomeContent = () =>
     <>
       <div style={{ padding: 5 }}>
         <h1>Yanorra</h1>
-        <Link to="/fullscreen" style={{ marginRight: '0.5rem' }}>
+        <Link to="/map" style={{ marginRight: '0.5rem' }}>
           <button
             type="button"
             aria-label="View map in full screen"
@@ -132,22 +132,6 @@ const DocContent = () =>
   )
 }
 
-function FullScreenRender()
-{
-  return (
-    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      <div style={{ position: 'absolute', zIndex: 1000, top: '0.5rem', left: '50%', transform: 'translateX(-50%)' }}>
-        <Link to="/">
-          <button type="button">
-            Exit Full Screen
-          </button>
-        </Link>
-      </div>
-      <MapPanel fullScreen={true} />
-    </div>
-  )
-}
-
 function App()
 {
   const location = useLocation()
@@ -167,7 +151,6 @@ function App()
       <main className={mainContentClassName}>
         <Routes>
           <Route path="/" element={<HomeContent />} />
-          <Route path="/fullscreen" element={<FullScreenRender />} />
           <Route path="/map" element={<MapFullScreen />} />
           <Route path="/doc/*" element={<DocContent />} />
           <Route 
