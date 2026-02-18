@@ -4,7 +4,6 @@ import './App.css'
 import SideColumn from './SideColumn'
 import MapPanel from "./components/MapPanel.jsx"
 import MarkdownPage from "./components/MarkdownPage"
-import AsciiDocPage from "./components/AsciiDocPage"
 import MapFullScreen from "./components/MapFullScreen";
 
 const normalizeDocPath = (docPath: string): string =>
@@ -84,11 +83,6 @@ const HomeContent = () =>
             <li>
               <Link to="/wiki/saint-aveline">
                 Saint Aveline (Markdown Test)
-              </Link>
-            </li>
-            <li>
-              <Link to="/wiki/bibi-shirif">
-                Bibi Shirif (AsciiDoc Test)
               </Link>
             </li>
           </ul>
