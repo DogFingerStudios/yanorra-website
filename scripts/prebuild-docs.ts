@@ -42,9 +42,12 @@ const isExcludedFile = (fileName: string): boolean =>
   })
 }
 
+const convertMarkdownFiles = async (): Promise<void> =>
+{
+}
+
 const run = async (): Promise<void> =>
 {
-  // await convertAsciidocFiles()
   await convertMarkdownFiles()
 
   // Scan folders for HTML files
@@ -65,7 +68,7 @@ const run = async (): Promise<void> =>
           docLinks.push(
           {
             title: file.replace(/\.html$/i, '').replace(/_/g, ' '),  
-            path: `/${docFolder.folder}/${file}`
+            path: `/${docFolder.folder}/${file.replace(/\.html$/i, '')}`
           })
         }
       })
