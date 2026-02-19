@@ -5,6 +5,7 @@ import EventComponent from "./EventComponent";
 import MapElements from "./markers/MapElements";
 import ResetViewControl from "./ResetViewControl";
 import MeasureDistanceControl from "./MeasureDistanceControl";
+import FullScreenLinkControl from "./FullScreenLinkControl";
 import 'leaflet/dist/leaflet.css'
 
 const MapPanel = ({ 
@@ -14,7 +15,8 @@ const MapPanel = ({
   minZoom = 3,
   maxZoom = 6,
   scrollWheelZoom = true,
-  debug = false
+  debug = false,
+  showFullScreenLink = false
 }) => 
 {
   console.log('MapPanel rendered with:', { fullScreen, initialZoom, initialCenter, minZoom, maxZoom, scrollWheelZoom, debug });
@@ -248,6 +250,7 @@ const MapPanel = ({
           <EventComponent updateZoom={updateZoom} updateCoords={updateCoords} onMapClick={handleMapClick} />
           <ResetViewControl initialCenter={initialCenter} initialZoom={initialZoom} />
           <MeasureDistanceControl isMeasureMode={isMeasureMode} onToggleMeasureMode={toggleMeasureMode} onClearMeasurements={clearMeasurements} />
+          <FullScreenLinkControl showFullScreenLink={showFullScreenLink} />
           {/* <AttributionControl
             position={"bottomright"}
             prefix={"Icons from Game-icons.net"}
@@ -284,6 +287,7 @@ const MapPanel = ({
           <EventComponent updateZoom={updateZoom} updateCoords={updateCoords} onMapClick={handleMapClick} />
           <ResetViewControl initialCenter={initialCenter} initialZoom={initialZoom} />
           <MeasureDistanceControl isMeasureMode={isMeasureMode} onToggleMeasureMode={toggleMeasureMode} onClearMeasurements={clearMeasurements} />
+          <FullScreenLinkControl showFullScreenLink={showFullScreenLink} />
           {/* <AttributionControl
             position={"bottomright"}
             prefix={"Icons from Game-icons.net"}

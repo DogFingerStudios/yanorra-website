@@ -17,6 +17,7 @@ interface MapElementConfig
   maxZoom?: string
   scrollWheelZoom?: string
   debug?: string
+  showFullScreenLink?: string
 }
 
 const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
@@ -174,6 +175,12 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
         {
           debug = true
         }
+
+        let showFullScreenLink = false
+        if (config.showFullScreenLink === 'true')
+        {
+          showFullScreenLink = true
+        }
         
         // Create a container for the React map component
         const mapContainer = document.createElement('div')
@@ -199,11 +206,12 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
             maxZoom={maxZoom}
             scrollWheelZoom={scrollWheelZoom}
             debug={debug}
+            showFullScreenLink={showFullScreenLink}
           />
         )
         roots.push(root)
         
-        console.log('Mounted MapPanel with config:', { zoom, center, minZoom, maxZoom, scrollWheelZoom, debug, original: config })
+        console.log('Mounted MapPanel with config:', { zoom, center, minZoom, maxZoom, scrollWheelZoom, debug, showFullScreenLink, original: config })
       }
       catch (err)
       {
