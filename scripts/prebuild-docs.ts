@@ -8,14 +8,15 @@ interface DocLink
   path: string
 }
 
-const docLinks: DocLink[] = 
-[
-  {
-    title: 'Yanorra',
-    path: '/Yanorra.html'
-  }
-]
+// const docLinks: DocLink[] = 
+// [
+//   {
+//     title: 'Yanorra',
+//     path: '/Yanorra.html'
+//   }
+// ]
 
+const docLinks: DocLink[] = []
 const excludedFiles = ['TEMPLATE']
 
 const isExcludedFile = (fileName: string): boolean =>
