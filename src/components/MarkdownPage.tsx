@@ -180,7 +180,7 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
         mapContainer.className = 'embedded-map'
         mapContainer.style.width = '100%'
         mapContainer.style.height = '500px'
-        mapContainer.style.margin = '20px 0'
+        mapContainer.style.margin = '1px 0'
         mapContainer.style.border = '2px solid #646cff'
         mapContainer.style.borderRadius = '8px'
         mapContainer.style.overflow = 'hidden'
@@ -240,7 +240,7 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
   }
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ padding: '0.5rem', maxWidth: '1200px', margin: '0 auto' }}>
       <div 
         ref={contentRef}
         dangerouslySetInnerHTML={

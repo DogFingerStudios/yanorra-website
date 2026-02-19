@@ -52,7 +52,7 @@ const HomeContent = () =>
 
   return (
     <>
-      <div style={{ padding: 5 }}>
+      <div style={{ padding: 1 }}>
         <h1>Yanorra</h1>
         <Link to="/map" style={{ marginRight: '0.5rem' }}>
           <button
