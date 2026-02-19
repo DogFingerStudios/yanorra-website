@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Routes, Route, Navigate, useParams, useNavigate, Link, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams, Link, useLocation } from 'react-router-dom'
 import './App.css'
 import SideColumn from './SideColumn'
 import MapPanel from "./components/MapPanel.jsx"
@@ -98,7 +98,6 @@ const HomeContent = () =>
 const DocContent = () =>
 {
   const { '*': docPath } = useParams()
-  const navigate = useNavigate()
 
   if (!docPath)
   {
@@ -115,18 +114,9 @@ const DocContent = () =>
 
   return (
     <div style={{ width: '100%', height: '100%' }}>
-      <button 
-        onClick={() => 
-        {
-          navigate('/')
-        }} 
-        style={{ marginBottom: '1rem' }}
-      >
-        ← Back
-      </button>
       <iframe 
         src={`/${resolvedDocPath}`} 
-        style={{ width: '100%', height: 'calc(100% - 50px)', border: 'none' }}
+        style={{ width: '100%', height: '100%', border: 'none' }}
         title="Document viewer"
       />
     </div>

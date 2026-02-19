@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { marked } from 'marked'
 import { createRoot } from 'react-dom/client'
 import MapPanel from './MapPanel'
@@ -22,7 +21,6 @@ interface MapElementConfig
 
 const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
 {
-  const navigate = useNavigate()
   const [html, setHtml] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -236,9 +234,6 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
   {
     return (
       <div style={{ padding: '2rem' }}>
-        <button onClick={() => navigate('/')} style={{ marginBottom: '1rem' }}>
-          ← Back
-        </button>
         <div style={{ color: 'red' }}>Error: {error}</div>
       </div>
     )
@@ -246,9 +241,6 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
 
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <button onClick={() => navigate('/')} style={{ marginBottom: '1rem' }}>
-        ← Back
-      </button>
       <div 
         ref={contentRef}
         dangerouslySetInnerHTML={

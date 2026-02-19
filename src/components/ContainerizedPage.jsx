@@ -2,13 +2,10 @@ import React from "react";
 import MapPanel from "./MapPanel";
 import "../styles/ContainerizedPage.css";
 
-const ContainerizedPage = ({ onBack }) => {
+const ContainerizedPage = () => {
   return (
     <div className="containerized-page">
       <div className="content-side-panel">
-        <button className="back-button" onClick={onBack}>
-          ← Back to Map
-        </button>
         <div className="page-content">
 
 

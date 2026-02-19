@@ -39,24 +39,6 @@
   align-items: center;
 }
 
-.back-button {
-  position: sticky;
-  top: 20px;
-  padding: 10px 20px;
-  background-color: #333;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  z-index: 2001;
-  margin-bottom: 20px;
-}
-
-.back-button:hover {
-  background-color: #555;
-}
-
 .page-content {
   max-width: 100%;
   line-height: 1.6;
