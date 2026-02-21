@@ -35,6 +35,16 @@ export default defineConfig(
           
           console.log('✓ Copied Wiki markdown/asciidoc files to public')
         }
+
+        const readmeSrc = path.resolve(__dirname, 'Yanorra', 'README.md')
+        const readmeDest = path.resolve(__dirname, 'public', 'Yanorra', 'README.md')
+
+        if (fs.existsSync(readmeSrc))
+        {
+          // fs.mkdirSync(path.dirname(readmeDest), { recursive: true })
+          fs.copyFileSync(readmeSrc, readmeDest)
+          console.log('✓ Copied Yanorra README.md to public')
+        }
       }
     }
   ],
