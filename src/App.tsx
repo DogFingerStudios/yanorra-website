@@ -1,22 +1,12 @@
-import { useState } from 'react'
-import { Routes, Route, Navigate, useParams, Link, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams, useLocation } from 'react-router-dom'
 import './App.css'
 import SideColumn from './SideColumn'
-import MapPanel from "./components/MapPanel.jsx"
 import MarkdownPage from "./components/MarkdownPage"
 import MapFullScreen from "./components/MapFullScreen";
 
 const normalizeDocPath = (docPath: string): string =>
 {
   return docPath.replace(/^\//, '')
-}
-
-const encodeDocPath = (docPath: string): string =>
-{
-  return normalizeDocPath(docPath)
-    .split('/')
-    .map((segment) => encodeURIComponent(segment))
-    .join('/')
 }
 
 const WikiPage = () =>
@@ -26,82 +16,14 @@ const WikiPage = () =>
   return <MarkdownPage markdownPath={markdownPath} />
 }
 
-const HomeContent = () =>
-{
-  const [mapVisible, setMapVisible] = useState(true)
-
-  const getMapButtonText = () => 
-  {
-    if (mapVisible)
-    {
-      return "Hide Map";
-    }
-
-    return "Show Map";
-  };
-
-  const renderMapPanel = () => 
-  {
-    if (mapVisible)
-    {
-      return <MapPanel fullScreen={false} />;
-    }
-
-    return null;
-  };
-
-  return (
-    <>
-      <div style={{ padding: 1 }}>
-        <h1>Yanorra</h1>
-        <Link to="/map" style={{ marginRight: '0.5rem' }}>
-          <button
-            type="button"
-            aria-label="View map in full screen"
-          >
-            Full Screen
-          </button>
-        </Link>
-        <button type="button" onClick={() => setMapVisible(!mapVisible)}>
-          {getMapButtonText()}
-        </button>
-      </div>
-
-      <div className="card">
-        <div style={{ marginTop: '2rem' }}>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            <li>
-              <Link to={`/doc/${encodeDocPath('/Yanorra.html')}`}>
-                README
-              </Link>
-            </li>
-            <li>
-              <Link to={`/doc/${encodeDocPath('/wiki/Lo-Disporum.html')}`}>
-                Lo-Disporum
-              </Link>
-            </li>
-            <li>
-              <Link to="/wiki/saint-aveline">
-                Saint Aveline (Markdown Test)
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      {renderMapPanel()}
-      
-    </>
-  )
-}
-
 const DocContent = () =>
 {
+  console.log("Rendering DocContent")
   const { '*': docPath } = useParams()
 
   if (!docPath)
   {
-    return <Navigate to="/" replace />
+    return <MarkdownPage markdownPath="/Yanorra/README.md" />
   }
 
   const decodedDocPath = decodeURIComponent(docPath)
@@ -109,7 +31,8 @@ const DocContent = () =>
 
   if (!resolvedDocPath)
   {
-    return <Navigate to="/" replace />
+    console.warn("No document path provided, defaulting to README.md")
+    return <MarkdownPage markdownPath="/Yanorra/README.md" />
   }
 
   return (
@@ -145,7 +68,6 @@ function App()
             path="/" 
             element={<MarkdownPage markdownPath="/Yanorra/README.md" />} 
           />
-          <Route path="/test" element={<HomeContent />} />
           <Route path="/map" element={<MapFullScreen />} />
           <Route path="/doc/*" element={<DocContent />} />
           <Route 

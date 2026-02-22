@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 import { marked } from 'marked'
-import { createRoot } from 'react-dom/client'
+import { createRoot, type Root } from 'react-dom/client'
 import MapPanel from './MapPanel'
 
 interface MarkdownPageProps
@@ -26,6 +27,8 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const mapRootsRef = useRef<Root[]>([])
+  const location = useLocation()
 
   useEffect(() =>
   {
@@ -33,6 +36,7 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
     {
       try
       {
+        console.log(`Loading markdown from: ${markdownPath}`)
         setLoading(true)
         setError(null)
 
@@ -43,7 +47,14 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
           throw new Error(`Failed to load markdown: ${response.statusText}`)
         }
 
+        const contentType = response.headers.get('content-type')?.toLowerCase() ?? ''
         const markdown = await response.text()
+        const looksLikeHtmlDocument = /^\s*<!doctype html>|^\s*<html[\s>]/i.test(markdown)
+        const requestsMarkdownFile = markdownPath.toLowerCase().endsWith('.md')
+        if (requestsMarkdownFile && (contentType.includes('text/html') || looksLikeHtmlDocument))
+        {
+          throw new Error(`Markdown file not found: ${markdownPath}`)
+        }
 
         // Convert markdown to HTML with custom handling for <MapElement>
         const rawHtml = await marked(markdown)
@@ -67,7 +78,6 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
             }
 
             // Create a placeholder div with data attributes
-            console.log('Created placeholder with config:', JSON.stringify(config))
             return `<div class="map-element-placeholder" data-config='${JSON.stringify(config)}'></div>`
           }
         )
@@ -90,13 +100,22 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
   // Hydrate map placeholders after HTML is rendered
   useEffect(() =>
   {
-    if (!contentRef.current || !html)
+    if (loading || !contentRef.current || !html)
     {
       return
     }
 
     const placeholders = contentRef.current.querySelectorAll('.map-element-placeholder')
-    const roots: any[] = []
+    if (placeholders.length === 0)
+    {
+      return
+    }
+
+    mapRootsRef.current.forEach((root) =>
+    {
+      root.unmount()
+    })
+    mapRootsRef.current = []
     
     placeholders.forEach((placeholder) =>
     {
@@ -209,7 +228,7 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
             showFullScreenLink={showFullScreenLink}
           />
         )
-        roots.push(root)
+        mapRootsRef.current.push(root)
         
         console.log('Mounted MapPanel with config:', { zoom, center, minZoom, maxZoom, scrollWheelZoom, debug, showFullScreenLink, original: config })
       }
@@ -218,16 +237,19 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
         console.error('Failed to parse map config:', err)
       }
     })
+  }, [html, loading, location.key])
 
-    // Cleanup function to unmount React roots
+  useEffect(() =>
+  {
     return () =>
     {
-      roots.forEach((root) =>
+      mapRootsRef.current.forEach((root) =>
       {
         root.unmount()
       })
+      mapRootsRef.current = []
     }
-  }, [html])
+  }, [])
 
   if (loading)
   {
