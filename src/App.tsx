@@ -3,6 +3,7 @@ import './App.css'
 import SideColumn from './SideColumn'
 import MarkdownPage from "./components/MarkdownPage"
 import MapFullScreen from "./components/MapFullScreen";
+import AboutPage from './components/AboutPage'
 import { Link } from 'react-router-dom'
 
 const normalizeDocPath = (docPath: string): string =>
@@ -114,6 +115,10 @@ function App()
             <Route 
               path="/" 
               element={<MarkdownPage markdownPath="/Yanorra/README.md" />} 
+            />
+            <Route 
+              path="/about" 
+              element={<AboutPage />} 
             />
             <Route path="/map" element={<MapFullScreen />} />
             <Route path="/doc/*" element={<DocContent />} />
