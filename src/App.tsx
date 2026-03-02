@@ -58,7 +58,7 @@ const TopHeader = () =>
         </Link>
         <span className="top-header-spacer" aria-hidden="true" />
         <Link className="top-header-link" to="/">
-          Wiki
+          Wiki2
         </Link>
         <span className="top-header-separator" aria-hidden="true">|</span>
         <Link className="top-header-link" to="/map">
