@@ -66,7 +66,7 @@ const TopHeader = () =>
         </Link>
         <span className="top-header-separator" aria-hidden="true">|</span>
         <Link className="top-header-link" to="/about">
-          About22222
+          About
         </Link>
       </div>
       <div className="top-header-right">
