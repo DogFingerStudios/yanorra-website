@@ -16,10 +16,10 @@ const AboutPage = () =>
         setLoading(true)
         setError(null)
 
-        const response = await fetch('/README.md')
+        const response = await fetch('/ABOUT.md')
         if (!response.ok)
         {
-          throw new Error(`Failed to load README.md: ${response.statusText}`)
+          throw new Error(`Failed to load ABOUT.md: ${response.statusText}`)
         }
 
         const markdown = await response.text()

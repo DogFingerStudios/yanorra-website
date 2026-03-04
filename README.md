@@ -1,30 +1,67 @@
-# About
+# Yanorra Website
 
-## Overview
+A web-based interactive map and wiki for exploring the fictional world of Yanorra.
 
-Yanorra is a fictional Earth-like planet and the primary setting of the game [**Saint Aveline**](https://dogfinger.com/saintaveline/).
 
-Yanorra is an isolated world, much like Earth, but with a unique history and environment shaped by a catastrophic event known as **The Drift**. 
+## Dev Env Setup
 
-## The Drift
+### Windows
 
-**Time on Yanorra is measured in cycles** with each cycle representing one complete rotation of the planet, equivalent to approximately one Earth day.
+Both Node.js and `npm` need to be installed. On Windows, I prefer to use _Fast Node Manager_, aka `fnm`. 
 
-Roughly (400 Earth years ago (or about 146,000 cycles), a massive object referred to as **Lo-Disporum** disrupted its orbit in an event called **The Drift**. This forced the planet into an unstable elliptical path around its red-hued star, the **Ember Mother**.
+#### Install FNM
 
-The ellipical orbit causes extreme seasonal changes, with long periods of intense heat followed by harsh winters. Because of this new orbit, seasons on Yanorra are unpredictable and can last for months or even years. The people of Yanorra believe that eventually the planet will either be pulled into the Ember Mother or flung out into the space
+```ps
+winget install Schniz.fnm
+```
 
-## Modern Day Yanorra
+#### Activate FNM
 
-In the present day (i.e. the setting of the game), Yanorra has several nations and city-states, each with its own culture and history. Somre are at war with other nations or with internal strife, while others are peaceful and concentrated on survival and adaptation to the harsh environment.
+* Now setup node environment:
+```ps
+fnm env --use-on-cd | Out-String | Invoke-Expression
+```
 
-Technology on Yanorra resembles a restrained late-20th-century world: electricity is unreliable, aircraft do not exist, and computing is largely text-based through a terminal network known as the *Intalink*.
+* Download and Install Node.js
+```ps
+fnm use --install-if-missing 20
+```
 
-The result is a world both familiar and fractured, shaped by environmental instability and existential uncertainty.
+#### Setup Node
 
-## This Wiki
+At this point the `node.exe` is installed, and so is the `npm` script. However, your system may not allow you to run `npm` if it is not configured to run scripts. To allow this do:
 
-**This wiki documents Yanorra’s geography, history, culture, and technology from an in-world perspective, evolving alongside the game and its community.**
+```ps
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+```
 
-It serves as a resource for players to explore the rich lore of Yanorra, providing insights into its various regions, factions, and the impact of The Drift on its inhabitants.
+#### Activate Node
 
+Now node and npm should work: 
+
+```bash
+node -v # should print something like `v20.18.0`
+npm -v  # should print something like `10.8.2`
+```
+
+## Running Website Locally
+
+### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+#### `npm run dev`
+
+Runs the web browser
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).

@@ -16,8 +16,8 @@ export default defineConfig(
       {
         const wikiSrc = path.resolve(__dirname, 'Yanorra', 'Wiki')
         const wikiDest = path.resolve(__dirname, 'public', 'Yanorra', 'Wiki')
-        const rootReadmeSrc = path.resolve(__dirname, 'README.md')
-        const rootReadmeDest = path.resolve(__dirname, 'public', 'README.md')
+        const aboutSrc = path.resolve(__dirname, 'src', 'content', 'ABOUT.md')
+        const aboutDest = path.resolve(__dirname, 'public', 'ABOUT.md')
         
         if (fs.existsSync(wikiSrc))
         {
@@ -60,10 +60,10 @@ export default defineConfig(
           console.log('✓ Copied Yanorra root markdown files to public')
         }
 
-        if (fs.existsSync(rootReadmeSrc))
+        if (fs.existsSync(aboutSrc))
         {
-          fs.copyFileSync(rootReadmeSrc, rootReadmeDest)
-          console.log('✓ Copied root README.md to public')
+          fs.copyFileSync(aboutSrc, aboutDest)
+          console.log('✓ Copied ABOUT.md to public')
         }
       }
     }
