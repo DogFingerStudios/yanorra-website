@@ -15,6 +15,10 @@
 }
 
 .top-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 42px;
   min-height: 42px;
   display: flex;
@@ -23,6 +27,7 @@
   padding: 0 1rem;
   border-bottom: 1px solid #3f3f46;
   background-color: inherit;
+  z-index: 1000;
 }
 
 .top-header-left {
@@ -67,7 +72,8 @@
 .app-container {
   display: flex;
   width: 100%;
-  height: calc(100% - 42px);
+  height: calc(100vh - 42px);
+  margin-top: 42px;
   min-height: 0;
 }
 
