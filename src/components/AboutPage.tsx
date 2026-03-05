@@ -62,7 +62,7 @@ const AboutPage = () =>
   return (
     <div style={{ padding: '0.5rem', maxWidth: '1200px', margin: '0 auto' }}>
       <div 
-        style={{ padding: '12px 14px', borderRadius: '6px', background: '#E9F2FF', border: '1px solid #B3D4FF', margin: '12px 0' }}
+        style={{ padding: '12px 14px', borderRadius: '6px', background: '#E9F2FF', border: '1px solid #B3D4FF', margin: '12px 0', color: '#213547' }}
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>
