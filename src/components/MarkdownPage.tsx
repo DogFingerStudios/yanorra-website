@@ -56,25 +56,45 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
           throw new Error(`Markdown file not found: ${markdownPath}`)
         }
 
-        // Convert markdown to HTML with custom handling for <MapElement>
+        // Convert markdown to HTML with custom handling for map element spans
         const rawHtml = await marked(markdown)
 
-        // Replace <MapElement> tags with placeholders
+        // Replace <span y-type="mapelement"> tags with placeholders
         const processedHtml = rawHtml.replace(
-          /<MapElement\s+([^>]+)\/>/gi,
+          /<span\s+y-type="mapelement"([^>]*)\/>/gi,
           (_match, attrs) =>
           {
             const config: MapElementConfig =
             {
             }
             
-            // Parse attributes
-            const attrRegex = /(\w+)="([^"]+)"/g
+            // Parse attributes with y- prefix and convert to camelCase
+            const attrRegex = /y-(\w+)="([^"]+)"/g
             let attrMatch
             while ((attrMatch = attrRegex.exec(attrs)) !== null)
             {
               const [, key, value] = attrMatch
-              config[key as keyof MapElementConfig] = value
+              
+              // Convert y-prefixed lowercase keys to camelCase
+              let configKey: string = key
+              if (key === 'minzoom')
+              {
+                configKey = 'minZoom'
+              }
+              else if (key === 'maxzoom')
+              {
+                configKey = 'maxZoom'
+              }
+              else if (key === 'scrollwheelzoom')
+              {
+                configKey = 'scrollWheelZoom'
+              }
+              else if (key === 'showfullscreenlink')
+              {
+                configKey = 'showFullScreenLink'
+              }
+              
+              config[configKey as keyof MapElementConfig] = value
             }
 
             // Create a placeholder div with data attributes
