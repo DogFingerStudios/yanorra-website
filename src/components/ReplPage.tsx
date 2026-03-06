@@ -107,8 +107,10 @@ const ReplPage = () =>
 
     const printWelcome = () =>
     {
-      terminal.writeln('Yanorra Browser REPL')
+      terminal.writeln('Intalink Terminal')
+      // terminal.writeln('')
       terminal.writeln('Type "help" to see available commands.')
+      terminal.writeln('')
       terminal.write(PROMPT)
     }
 
@@ -296,7 +298,7 @@ const ReplPage = () =>
   return (
     <section className="repl-page">
       <div className="repl-panel">
-        <div className="repl-panel-header">Yanorra REPL</div>
+        <div className="repl-panel-header">Intalink Terminal</div>
         <div className="repl-terminal-host" ref={terminalHostRef} />
       </div>
     </section>
