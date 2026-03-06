@@ -100,7 +100,7 @@ const TopHeader = () =>
 function App()
 {
   const location = useLocation()
-  const isFullscreenRoute = location.pathname === '/fullscreen' || location.pathname === '/map'
+  const isFullscreenRoute = location.pathname === '/fullscreen' || location.pathname === '/map' || location.pathname === '/terminal'
   let appContainerClassName = 'app-container'
   let mainContentClassName = 'main-content'
 

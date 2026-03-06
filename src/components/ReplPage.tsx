@@ -29,7 +29,7 @@ const ReplPage = () =>
         convertEol: true,
         cursorBlink: true,
         fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-        fontSize: 14,
+        fontSize: 18,
         theme:
         {
           background: '#0b0f14',
