@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Terminal } from '@xterm/xterm'
+import { FitAddon } from '@xterm/addon-fit'
 import '@xterm/xterm/css/xterm.css'
 import '../styles/ReplPage.css'
 
@@ -37,8 +38,11 @@ const ReplPage = () =>
         }
       }
     )
+    const fitAddon = new FitAddon()
+    terminal.loadAddon(fitAddon)
     terminalRef.current = terminal
     terminal.open(terminalHostRef.current)
+    fitAddon.fit()
 
     const commandHandlers: Record<string, CommandHandler> =
     {
@@ -219,6 +223,13 @@ const ReplPage = () =>
 
     printWelcome()
 
+    // Add resize observer to fit terminal when container size changes
+    const resizeObserver = new ResizeObserver(() =>
+    {
+      fitAddon.fit()
+    })
+    resizeObserver.observe(terminalHostRef.current!)
+
     const dataSubscription = terminal.onData((data: string) =>
     {
       if (data === '\r')
@@ -275,6 +286,7 @@ const ReplPage = () =>
 
     return () =>
     {
+      resizeObserver.disconnect()
       dataSubscription.dispose()
       terminal.dispose()
       terminalRef.current = null
