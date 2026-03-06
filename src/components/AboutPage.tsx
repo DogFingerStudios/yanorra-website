@@ -28,7 +28,14 @@ const AboutPage = () =>
       }
       catch (err)
       {
-        setError(err instanceof Error ? err.message : 'Unknown error')
+        if (err instanceof Error)
+        {
+          setError(err.message)
+        }
+        else
+        {
+          setError('Unknown error')
+        }
       }
       finally
       {
