@@ -1,6 +1,6 @@
 # About
 
-## Overview222
+## Overview
 
 Yanorra is a fictional Earth-like planet and the primary setting of the game [**Saint Aveline**](https://dogfinger.com/saintaveline/).
 
