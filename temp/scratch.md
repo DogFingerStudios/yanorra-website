@@ -35,6 +35,7 @@ The Duvessa-Moa War's legacy continues to shape modern conflicts:
 
 -------
 
+```terminal
 Welcome to the Intalink!
 
 > showme duvessa.population
@@ -49,7 +50,7 @@ Duvessa is a coastal nation on the north-eastern shores of West Yanorra (also kn
 
 > showme duvessa.cities
 
-- City1 
+x- City1
 - City2
 - City3
 
@@ -63,14 +64,13 @@ Duvessa is a coastal nation on the north-eastern shores of West Yanorra (also kn
 
 The Duvessa-Moa War's legacy continues to shape modern conflicts:
 
-
-
 > showme duvessa_moa_war:background_and_causes
 
-*Background and Causes*
+Background and Causes
 
 In the years following The Drift, both Duvessa and Moa struggled with food shortages and economic collapse. Moa, desperate to secure access to the Thornbelt trade route and Duvessa's coastal resources, launched a surprise invasion in 73,450 cycles ago (~201 Earth years ago, ~Year 1825 CE equivalent).
 
 General Huascar Tovar, leader of Moa's military forces, led an army of approximately 15,000 soldiers across the border, seizing the strategic fortress of Qhapaq Tunki and advancing toward Port Moa. The invasion caught Duvessa's fragmented military off-guard, as regional commanders struggled to coordinate a response in the chaos of post-Drift instability.
+```
 
 
