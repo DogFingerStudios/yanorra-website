@@ -60,6 +60,18 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 Runs the web browser
 
+## REST API (dev/preview)
+
+The website now includes a versioned API router mounted under `/api/v1/*`.
+
+Current endpoints:
+
+- `GET /api/v1/about` returns About markdown content and metadata.
+- `GET /api/v1/version` returns service and application version details.
+- `GET /api/v1/query` is a stub endpoint (returns `501 Not Implemented`) for future query features.
+
+To add new endpoints, register a new route in `scripts/apiRouter.ts` under the `routes` table.
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).

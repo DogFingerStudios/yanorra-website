@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import * as fs from 'fs'
 import * as path from 'path'
+import { dispatchApiRequest } from './scripts/apiRouter'
 
 // https://vite.dev/config/
 export default defineConfig(
@@ -65,6 +66,37 @@ export default defineConfig(
           fs.copyFileSync(aboutSrc, aboutDest)
           console.log('✓ Copied ABOUT.md to public')
         }
+      }
+    },
+    {
+      name: 'api-router',
+      configureServer(server)
+      {
+        server.middlewares.use((req, res, next) =>
+        {
+          const handled = dispatchApiRequest(req, res, __dirname)
+
+          if (handled)
+          {
+            return
+          }
+
+          next()
+        })
+      },
+      configurePreviewServer(server)
+      {
+        server.middlewares.use((req, res, next) =>
+        {
+          const handled = dispatchApiRequest(req, res, __dirname)
+
+          if (handled)
+          {
+            return
+          }
+
+          next()
+        })
       }
     }
   ],
