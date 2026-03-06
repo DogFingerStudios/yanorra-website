@@ -4,6 +4,7 @@ import SideColumn from './SideColumn'
 import MarkdownPage from "./components/MarkdownPage"
 import MapFullScreen from "./components/MapFullScreen";
 import AboutPage from './components/AboutPage'
+import ReplPage from './components/ReplPage'
 import { Link } from 'react-router-dom'
 
 const normalizeDocPath = (docPath: string): string =>
@@ -64,6 +65,10 @@ const TopHeader = () =>
         <Link className="top-header-link" to="/map">
           Map
         </Link>
+                <span className="top-header-separator" aria-hidden="true">|</span>
+        <Link className="top-header-link" to="/terminal">
+          Terminal
+        </Link>
         <span className="top-header-separator" aria-hidden="true">|</span>
         <Link className="top-header-link" to="/about">
           About
@@ -120,6 +125,7 @@ function App()
               path="/about" 
               element={<AboutPage />} 
             />
+            <Route path="/terminal" element={<ReplPage />} />
             <Route path="/map" element={<MapFullScreen />} />
             <Route path="/doc/*" element={<DocContent />} />
             <Route 
