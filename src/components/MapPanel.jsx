@@ -196,9 +196,9 @@ const MapPanel = ({
 
   const copyCenter = async () =>
   {
-    const centerValue = `Center: [${coords[0].toFixed(2)}, ${coords[1].toFixed(2)}]`;
+    const centerValue = `${coords[0].toFixed(2)}, ${coords[1].toFixed(2)}`;
     await copyToClipboard(centerValue);
-    setCopyMessage("Copied center coords");
+    setCopyMessage("Copied cords: " + centerValue);
     setTimeout(() =>
     {
       setCopyMessage("");
