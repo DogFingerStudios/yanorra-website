@@ -51,7 +51,7 @@ const MapElements = ({ zoom, coords }) =>
       <LayersControl.BaseLayer checked name="Basemap">
         <TileLayer url="/tiles/{z}/{x}/{y}.png" noWrap={true} />
       </LayersControl.BaseLayer>
-      <LayersControl.Overlay checked name="Borders" id="Borders">
+      <LayersControl.Overlay name="Borders" id="Borders">
         <LayerGroup>
           <Polyline
             positions={borders}
@@ -60,14 +60,12 @@ const MapElements = ({ zoom, coords }) =>
         </LayerGroup>
       </LayersControl.Overlay>
       <LayersControl.Overlay
-        checked
         name="Civilized Locations"
         id="CivilizedLocations"
       >
         <LayerGroup>{civilization}</LayerGroup>
       </LayersControl.Overlay>
       <LayersControl.Overlay
-        checked
         name="Wilderness Locations"
         id="WildernessLocations"
       >
