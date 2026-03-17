@@ -183,26 +183,87 @@ const MapPanel = ({
     document.body.removeChild(textArea);
   };
 
-  const copyZoom = async () =>
+  const showCopyMessage = (message) =>
   {
-    const zoomValue = `Zoom Level: ${currentZoom}`;
-    await copyToClipboard(zoomValue);
-    setCopyMessage("Copied zoom level");
+    setCopyMessage(message);
     setTimeout(() =>
     {
       setCopyMessage("");
     }, 1200);
   };
 
+  const copyMapLink = async () =>
+  {
+    const currentUrl = new URL(window.location.href);
+    currentUrl.pathname = "/map";
+    currentUrl.search = "";
+    currentUrl.hash = "";
+    currentUrl.searchParams.set("z", String(currentZoom));
+    currentUrl.searchParams.set("lat", coords[0].toFixed(5));
+    currentUrl.searchParams.set("lng", coords[1].toFixed(5));
+
+    await copyToClipboard(currentUrl.toString());
+    showCopyMessage("Copied map link");
+  };
+
+  const copyZoom = async () =>
+  {
+    const zoomValue = `Zoom Level: ${currentZoom}`;
+    await copyToClipboard(zoomValue);
+    showCopyMessage("Copied zoom level");
+  };
+
   const copyCenter = async () =>
   {
     const centerValue = `${coords[0].toFixed(2)}, ${coords[1].toFixed(2)}`;
     await copyToClipboard(centerValue);
-    setCopyMessage("Copied cords: " + centerValue);
-    setTimeout(() =>
+    showCopyMessage("Copied cords: " + centerValue);
+  };
+
+  const renderCopyNotification = () =>
+  {
+    if (!copyMessage)
     {
-      setCopyMessage("");
-    }, 1200);
+      return null;
+    }
+
+    return <div className="copy-notification">{copyMessage}</div>;
+  };
+
+  const renderCopyLinkControl = () =>
+  {
+    if (!fullScreen)
+    {
+      return null;
+    }
+
+    return (
+      <div className="leaflet-top leaflet-left" style={{ marginTop: "184px" }}>
+        <div className="leaflet-control leaflet-bar">
+          <button
+            type="button"
+            onClick={copyMapLink}
+            onMouseDown={(event) => event.stopPropagation()}
+            title="Copy map link"
+            aria-label="Copy map link"
+            style={{
+              minWidth: "30px",
+              height: "30px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "12px",
+              fontWeight: 600,
+              borderRadius: 0,
+              padding: "0 8px"
+            }}
+          >
+            Copy Link
+          </button>
+        </div>
+      </div>
+    );
   };
 
   const renderDebug = () =>
@@ -220,7 +281,6 @@ const MapPanel = ({
         <div className="coords-indicator" onClick={copyCenter} title="Click to copy center value">
           Center: [{coords[0].toFixed(2)}, {coords[1].toFixed(2)}]
         </div>
-        {copyMessage ? <div className="copy-notification">{copyMessage}</div> : null}
       </>
     );
   };
@@ -250,6 +310,7 @@ const MapPanel = ({
           <EventComponent updateZoom={updateZoom} updateCoords={updateCoords} onMapClick={handleMapClick} />
           <ResetViewControl initialCenter={initialCenter} initialZoom={initialZoom} />
           <MeasureDistanceControl isMeasureMode={isMeasureMode} onToggleMeasureMode={toggleMeasureMode} onClearMeasurements={clearMeasurements} />
+          {renderCopyLinkControl()}
           <FullScreenLinkControl showFullScreenLink={showFullScreenLink} />
           {/* <AttributionControl
             position={"bottomright"}
@@ -257,6 +318,7 @@ const MapPanel = ({
           /> */}
         </MapContainer>
         {renderMeasureIndicator()}
+        {renderCopyNotification()}
         {renderDebug()}
       </div>
     );
@@ -287,6 +349,7 @@ const MapPanel = ({
           <EventComponent updateZoom={updateZoom} updateCoords={updateCoords} onMapClick={handleMapClick} />
           <ResetViewControl initialCenter={initialCenter} initialZoom={initialZoom} />
           <MeasureDistanceControl isMeasureMode={isMeasureMode} onToggleMeasureMode={toggleMeasureMode} onClearMeasurements={clearMeasurements} />
+          {renderCopyLinkControl()}
           <FullScreenLinkControl showFullScreenLink={showFullScreenLink} />
           {/* <AttributionControl
             position={"bottomright"}
@@ -294,6 +357,7 @@ const MapPanel = ({
           /> */}
         </MapContainer>
         {renderMeasureIndicator()}
+        {renderCopyNotification()}
         {renderDebug()}
       </div>
     );
