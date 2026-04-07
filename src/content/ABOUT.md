@@ -16,7 +16,7 @@ The ellipical orbit causes extreme seasonal changes, with long periods of intens
 
 ## Modern Day Yanorra
 
-In the present day (i.e. the setting of the game), Yanorra has several nations and city-states, each with its own culture and history. Somre are at war with other nations or with internal strife, while others are peaceful and concentrated on survival and adaptation to the harsh environment.
+In the present day (i.e. the setting of the game), Yanorra has several nations and city-states, each with its own culture and history. Some are at war with other nations or with internal strife, while others are peaceful and concentrated on survival and adaptation to the harsh environment.
 
 Technology on Yanorra resembles a restrained late-20th-century world: electricity is unreliable, aircraft do not exist, and computing is largely text-based through a terminal network known as the *Intalink*.
 
