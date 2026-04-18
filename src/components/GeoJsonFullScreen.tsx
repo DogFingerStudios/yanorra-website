@@ -1,12 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { GeoJSON, MapContainer, WMSTileLayer, useMap } from 'react-leaflet'
+import { GeoJSON, ImageOverlay, MapContainer, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import './MapFullScreen.css'
 
 // Add your GeoJSON file URLs here (must be publicly served paths, usually from /public).
 const GEOJSON_FILES = [
-  '/States.geojson',
+//   '/geojson/States.geojson',
+  '/geojson/StatesExport.geojson'
+]
+
+// Set this to your Earth raster path in /public.
+const EARTH_LAYER_FILE = '/geojson/Earth.png'
+const EARTH_LAYER_BOUNDS: L.LatLngBoundsExpression = [
+  [-90, -180],
+  [90, 180],
 ]
 
 type GeoJsonEntry =
@@ -141,14 +149,7 @@ const GeoJsonFullScreen = () =>
   if (isEarthLayerVisible)
   {
     earthLayerElement = (
-      <WMSTileLayer
-        attribution='&copy; OpenStreetMap contributors'
-        url='https://ows.terrestris.de/osm/service'
-        layers='OSM-WMS'
-        format='image/png'
-        transparent={false}
-        version='1.1.1'
-      />
+      <ImageOverlay url={EARTH_LAYER_FILE} bounds={EARTH_LAYER_BOUNDS} />
     )
   }
 
