@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { GeoJSON, ImageOverlay, MapContainer, useMap } from 'react-leaflet'
+import { GeoJSON, ImageOverlay, MapContainer, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import './MapFullScreen.css'
 
@@ -53,6 +53,26 @@ type GeoJsonEntry =
   options: GeoJsonLayer
 }
 
+const debug = true
+
+const DebugTracker = ({ onZoom, onCenter }: { onZoom: (z: number) => void, onCenter: (c: [number, number]) => void }) =>
+{
+  useMapEvents({
+    zoomend: (e) =>
+    {
+      onZoom(e.target.getZoom())
+      const c = e.target.getCenter()
+      onCenter([c.lat, c.lng])
+    },
+    moveend: (e) =>
+    {
+      const c = e.target.getCenter()
+      onCenter([c.lat, c.lng])
+    },
+  })
+  return null
+}
+
 const GeoJsonBoundsFitter = ({ entries }: { entries: GeoJsonEntry[] }) =>
 {
   const map = useMap()
@@ -91,6 +111,9 @@ const GeoJsonFullScreen = () =>
   const [entries, setEntries] = useState<GeoJsonEntry[]>([])
   const [loadError, setLoadError] = useState('')
   const [isEarthLayerVisible, setIsEarthLayerVisible] = useState(false)
+  const [currentZoom, setCurrentZoom] = useState(2)
+  const [coords, setCoords] = useState<[number, number]>([0, 0])
+  const [copyMessage, setCopyMessage] = useState('')
 
   const toggleEarthLayer = () =>
   {
@@ -160,6 +183,59 @@ const GeoJsonFullScreen = () =>
     }
   }, [])
 
+  const copyToClipboard = async (value: string) =>
+  {
+    if (navigator.clipboard && navigator.clipboard.writeText)
+    {
+      await navigator.clipboard.writeText(value)
+      return
+    }
+
+    const textArea = document.createElement('textarea')
+    textArea.value = value
+    textArea.style.position = 'fixed'
+    textArea.style.left = '-9999px'
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand('copy')
+    document.body.removeChild(textArea)
+  }
+
+  const copyZoom = async () =>
+  {
+    await copyToClipboard(`Zoom Level: ${currentZoom}`)
+    setCopyMessage('Copied zoom level')
+    setTimeout(() => setCopyMessage(''), 1200)
+  }
+
+  const copyCenter = async () =>
+  {
+    const centerValue = `${coords[0].toFixed(2)}, ${coords[1].toFixed(2)}`
+    await copyToClipboard(centerValue)
+    setCopyMessage('Copied coords: ' + centerValue)
+    setTimeout(() => setCopyMessage(''), 1200)
+  }
+
+  const renderDebug = () =>
+  {
+    if (!debug)
+    {
+      return null
+    }
+
+    return (
+      <>
+        <div className="zoom-indicator" onClick={copyZoom} title="Click to copy zoom value">
+          Zoom Level: {currentZoom}
+        </div>
+        <div className="coords-indicator" onClick={copyCenter} title="Click to copy center value">
+          Center: [{coords[0].toFixed(2)}, {coords[1].toFixed(2)}]
+        </div>
+        {copyMessage ? <div className="copy-notification">{copyMessage}</div> : null}
+      </>
+    )
+  }
+
   let earthLayerLabel = 'Earth Off'
 
   if (isEarthLayerVisible)
@@ -227,7 +303,9 @@ const GeoJsonFullScreen = () =>
             )
           })}
           <GeoJsonBoundsFitter entries={entries} />
+          <DebugTracker onZoom={setCurrentZoom} onCenter={setCoords} />
         </MapContainer>
+        {renderDebug()}
         {loadError ? <div className="geojson-error-banner">{loadError}</div> : null}
       </div>
     </div>
