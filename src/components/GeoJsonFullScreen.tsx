@@ -11,6 +11,8 @@ class GeoJsonLayer
   fillColor?: string = '#00ffff'
   weight?: number = 2
   fillOpacity?: number = 1
+  minZoom?: number = 0
+  maxZoom?: number = Number.POSITIVE_INFINITY
 }
 
 // Add your GeoJSON file URLs here (must be publicly served paths, usually from /public).
@@ -32,9 +34,11 @@ const GEOJSON_FILES : GeoJsonLayer[] =
     srcFile: '/geojson/Routes.geojson',
     weight: 0.75,
     color: '#000000',
+    minZoom: 3,
   },
   {
-    srcFile: '/geojson/Towns.geojson'
+    srcFile: '/geojson/Towns.geojson',
+    maxZoom: 6,
   }
 ]
 
@@ -289,6 +293,14 @@ const GeoJsonFullScreen = () =>
           {earthLayerElement}
           {entries.map((entry) =>
           {
+            const minZoom = entry.options.minZoom ?? 0
+            const maxZoom = entry.options.maxZoom ?? Number.POSITIVE_INFINITY
+
+            if (currentZoom < minZoom || currentZoom > maxZoom)
+            {
+              return null
+            }
+
             return (
               <GeoJSON key={entry.id} data={entry.data} style={() =>
                 {
