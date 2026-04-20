@@ -19,8 +19,8 @@ class GeoJsonLayer
 const GEOJSON_FILES : GeoJsonLayer[] = 
 [
   {
-    srcFile: '/geojson/StatesExport.geojson',
-    color: '#000000',
+    srcFile: '/geojson/Land.geojson',
+    color: '#7bd5e9',
     fillColor: '#ffffff',
     weight: 1,
     fillOpacity: 1,
@@ -28,7 +28,13 @@ const GEOJSON_FILES : GeoJsonLayer[] =
   {
     srcFile: '/geojson/Rivers.geojson',
     color: '#7bd5e9',
-    weight: 0.5,
+    weight: 0.625,
+  },
+  {
+    srcFile: '/geojson/States.geojson',
+    color: '#000000',
+    weight: 1,
+    fillOpacity: 0,
   },
   {
     srcFile: '/geojson/Routes.geojson',
@@ -39,9 +45,9 @@ const GEOJSON_FILES : GeoJsonLayer[] =
   {
     srcFile: '/geojson/Towns.geojson',
     maxZoom: 6,
+    fillOpacity: 0,
   }
 ]
-
 
 // Set this to your Earth raster path in /public.
 const EARTH_LAYER_FILE = '/geojson/Earth.png'
