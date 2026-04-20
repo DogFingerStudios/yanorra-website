@@ -4,11 +4,40 @@ import { GeoJSON, ImageOverlay, MapContainer, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import './MapFullScreen.css'
 
+class GeoJsonLayer
+{
+  srcFile: string = ''
+  color?: string = '#0000ff'
+  fillColor?: string = '#00ffff'
+  weight?: number = 2
+  fillOpacity?: number = 1
+}
+
 // Add your GeoJSON file URLs here (must be publicly served paths, usually from /public).
-const GEOJSON_FILES = [
-//   '/geojson/States.geojson',
-  '/geojson/StatesExport.geojson'
+const GEOJSON_FILES : GeoJsonLayer[] = 
+[
+  {
+    srcFile: '/geojson/StatesExport.geojson',
+    color: '#000000',
+    fillColor: '#ffffff',
+    weight: 1,
+    fillOpacity: 1,
+  },
+  {
+    srcFile: '/geojson/Rivers.geojson',
+    color: '#7bd5e9',
+    weight: 0.5,
+  },
+  {
+    srcFile: '/geojson/Routes.geojson',
+    weight: 0.75,
+    color: '#000000',
+  },
+  {
+    srcFile: '/geojson/Towns.geojson'
+  }
 ]
+
 
 // Set this to your Earth raster path in /public.
 const EARTH_LAYER_FILE = '/geojson/Earth.png'
@@ -21,6 +50,7 @@ type GeoJsonEntry =
 {
   id: string
   data: GeoJSON.GeoJsonObject
+  options: GeoJsonLayer
 }
 
 const GeoJsonBoundsFitter = ({ entries }: { entries: GeoJsonEntry[] }) =>
@@ -83,15 +113,15 @@ const GeoJsonFullScreen = () =>
 
       for (const filePath of GEOJSON_FILES)
       {
-        const response = await fetch(filePath)
+        const response = await fetch(filePath.srcFile)
 
         if (!response.ok)
         {
-          throw new Error(`Unable to load ${filePath} (${response.status})`)
+          throw new Error(`Unable to load ${filePath.srcFile} (${response.status})`)
         }
 
         const payload = (await response.json()) as GeoJSON.GeoJsonObject
-        loadedEntries.push({ id: filePath, data: payload })
+        loadedEntries.push({ id: filePath.srcFile, data: payload, options: filePath})
       }
 
       if (isMounted)
@@ -184,15 +214,13 @@ const GeoJsonFullScreen = () =>
           {entries.map((entry) =>
           {
             return (
-              <GeoJSON
-                key={entry.id}
-                data={entry.data}
-                style={() =>
+              <GeoJSON key={entry.id} data={entry.data} style={() =>
                 {
-                  return {
-                    color: '#1F6FEB',
-                    weight: 2,
-                    fillOpacity: 0.15,
+                  return { 
+                    color: entry.options.color, 
+                    weight: entry.options.weight, 
+                    fillColor: entry.options.fillColor,
+                    fillOpacity: entry.options.fillOpacity ,
                   }
                 }}
               />
