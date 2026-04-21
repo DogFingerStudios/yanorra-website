@@ -51,6 +51,9 @@ const GEOJSON_FILES : GeoJsonLayer[] =
   }
 ]
 
+const MIN_ZOOM = 2
+const MAX_ZOOM = 16
+
 // Set this to your Earth raster path in /public.
 const EARTH_LAYER_FILE = '/geojson/Earth.png'
 const EARTH_LAYER_BOUNDS: L.LatLngBoundsExpression = [
@@ -297,7 +300,7 @@ const GeoJsonFullScreen = () =>
         </div>
       </div>
       <div className="map-main">
-        <MapContainer center={[0, 0]} zoom={2} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }} attributionControl={false} crs={L.CRS.EPSG4326}>
+        <MapContainer center={[0, 0]} zoom={2} minZoom={MIN_ZOOM} maxZoom={MAX_ZOOM} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }} attributionControl={false} crs={L.CRS.EPSG4326}>
           {earthLayerElement}
           {entries.map((entry) =>
           {
