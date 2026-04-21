@@ -1,5 +1,7 @@
-import { GeoJSON } from 'react-leaflet'
+import { useEffect, useMemo, useState } from 'react'
+import { CircleMarker, GeoJSON, Tooltip, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
+import './States.css'
 
 type StatesLayerEntry =
 {
@@ -16,48 +18,154 @@ type StatesLayerEntry =
 
 export function getStatesLayer(entry: StatesLayerEntry)
 {
-  const onEachFeatureHandler = (feature: GeoJSON.Feature, layer: L.Layer) =>
+  return <StatesLayer entry={entry} />
+}
+
+type StateLabelDatum =
+{
+  id: string
+  stateName: string
+  bounds: L.LatLngBounds
+}
+
+function StatesLayer({ entry }: { entry: StatesLayerEntry })
+{
+  const labelData = useMemo(() =>
   {
-    const properties = feature.properties
+    const data = entry.data
+    const nextLabelData: StateLabelDatum[] = []
 
-    if (!properties)
+    if (data.type !== 'FeatureCollection')
     {
-      return
+      return nextLabelData
     }
 
-    const stateName = properties.State
+    const featureCollection = data as GeoJSON.FeatureCollection
 
-    if (typeof stateName !== 'string' || stateName.trim() === '')
+    featureCollection.features.forEach((feature: GeoJSON.Feature, index: number) =>
     {
-      return
-    }
+      const properties = feature.properties
 
-    const tooltipLayer = layer as L.Layer &
-    {
-      bindTooltip?: (content: string, options?: L.TooltipOptions) => L.Layer
-    }
+      if (!properties)
+      {
+        return
+      }
 
-    if (typeof tooltipLayer.bindTooltip === 'function')
-    {
-      tooltipLayer.bindTooltip(stateName, {
-        permanent: true,
-        direction: 'center',
-        opacity: 0.9,
+      const stateName = properties.State
+
+      if (typeof stateName !== 'string' || stateName.trim() === '')
+      {
+        return
+      }
+
+      const featureLayer = L.geoJSON(feature)
+      const featureBounds = featureLayer.getBounds()
+
+      if (!featureBounds.isValid())
+      {
+        return
+      }
+
+      nextLabelData.push({
+        id: `${entry.id}-${index}`,
+        stateName,
+        bounds: featureBounds,
       })
-    }
-  }
+    })
+
+    return nextLabelData
+  }, [entry.data, entry.id])
 
   return (
-    <GeoJSON key={entry.id} data={entry.data} style={() =>
+    <>
+      <GeoJSON key={entry.id} data={entry.data} style={() =>
+        {
+          return {
+            color: entry.options.color,
+            weight: entry.options.weight,
+            fillColor: entry.options.fillColor,
+            fillOpacity: entry.options.fillOpacity,
+          }
+        }}
+      />
+      <StateViewportLabels labelData={labelData} />
+    </>
+  )
+}
+
+function StateViewportLabels({ labelData }: { labelData: StateLabelDatum[] })
+{
+  const [viewBounds, setViewBounds] = useState<L.LatLngBounds | null>(null)
+  const map = useMapEvents({
+    zoomend: () =>
+    {
+      setViewBounds(map.getBounds())
+    },
+    moveend: () =>
+    {
+      setViewBounds(map.getBounds())
+    },
+  })
+
+  useEffect(() =>
+  {
+    setViewBounds(map.getBounds())
+  }, [map])
+
+  if (!viewBounds)
+  {
+    return null
+  }
+
+  const visibleLabels = labelData
+    .map((label) =>
+    {
+      if (!viewBounds.intersects(label.bounds))
       {
-        return {
-          color: entry.options.color,
-          weight: entry.options.weight,
-          fillColor: entry.options.fillColor,
-          fillOpacity: entry.options.fillOpacity,
-        }
-      }}
-      onEachFeature={onEachFeatureHandler}
-    />
+        return null
+      }
+
+      const visibleSouth = Math.max(viewBounds.getSouth(), label.bounds.getSouth())
+      const visibleNorth = Math.min(viewBounds.getNorth(), label.bounds.getNorth())
+      const visibleWest = Math.max(viewBounds.getWest(), label.bounds.getWest())
+      const visibleEast = Math.min(viewBounds.getEast(), label.bounds.getEast())
+
+      if (visibleSouth > visibleNorth || visibleWest > visibleEast)
+      {
+        return null
+      }
+
+      const centerLat = (visibleSouth + visibleNorth) / 2
+      const centerLng = (visibleWest + visibleEast) / 2
+
+      return {
+        id: label.id,
+        stateName: label.stateName,
+        center: L.latLng(centerLat, centerLng),
+      }
+    })
+    .filter((value): value is { id: string, stateName: string, center: L.LatLng } =>
+    {
+      if (value)
+      {
+        return true
+      }
+
+      return false
+    })
+
+  return (
+    <>
+      {visibleLabels.map((label) =>
+      {
+        return (
+          <CircleMarker key={label.id} center={label.center} radius={0} stroke={false} fill={false} interactive={false}>
+            <Tooltip permanent direction="center" opacity={0.9} interactive={false} className="state-label-tooltip">
+              {label.stateName}
+            </Tooltip>
+          </CircleMarker>
+        )
+      })}
+    </>
   )
 }

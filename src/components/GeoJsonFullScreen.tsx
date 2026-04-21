@@ -46,7 +46,7 @@ const GEOJSON_FILES : GeoJsonLayer[] =
   },
   {
     srcFile: '/geojson/Towns.geojson',
-    maxZoom: 6,
+    maxZoom: 8,
     fillOpacity: 0,
   }
 ]
