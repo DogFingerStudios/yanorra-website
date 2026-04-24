@@ -33,7 +33,7 @@ const GEOJSON_FILES : GeoJsonLayer[] =
     weight: 0.625,
   },
   {
-    srcFile: '/geojson/States.geojson',
+    srcFile: '/geojson/StatesData.geojson',
     color: '#000000',
     weight: 1,
     fillOpacity: 0,
@@ -45,7 +45,7 @@ const GEOJSON_FILES : GeoJsonLayer[] =
     minZoom: 3,
   },
   {
-    srcFile: '/geojson/Towns.geojson',
+    srcFile: '/geojson/TownsData.geojson',
     maxZoom: 8,
     fillOpacity: 0,
   }
@@ -155,6 +155,7 @@ const GeoJsonFullScreen = () =>
 
         if (!response.ok)
         {
+          console.error(`Failed to load ${filePath.srcFile}: ${response.statusText}`)
           throw new Error(`Unable to load ${filePath.srcFile} (${response.status})`)
         }
 
@@ -312,12 +313,12 @@ const GeoJsonFullScreen = () =>
               return null
             }
 
-            if (entry.options.srcFile.toLowerCase().endsWith('/towns.geojson'))
+            if (entry.options.srcFile.toLowerCase().endsWith('/townsdata.geojson'))
             {
               return getTownLayer(entry)
             }
 
-            if (entry.options.srcFile.toLowerCase().endsWith('/states.geojson'))
+            if (entry.options.srcFile.toLowerCase().endsWith('/statesdata.geojson'))
             {
               return getStatesLayer(entry)
             }
