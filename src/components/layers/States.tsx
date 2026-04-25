@@ -74,32 +74,32 @@ function drawFixedLabel(label: StateLabelDatum, viewBounds: L.LatLngBounds): Vis
   }
 }
 
-function drawDynamicLabel(label: StateLabelDatum, viewBounds: L.LatLngBounds): VisibleStateLabel | null
-{
-  if (!viewBounds.intersects(label.bounds))
-  {
-    return null
-  }
+// function drawDynamicLabel(label: StateLabelDatum, viewBounds: L.LatLngBounds): VisibleStateLabel | null
+// {
+//   if (!viewBounds.intersects(label.bounds))
+//   {
+//     return null
+//   }
 
-  const visibleSouth = Math.max(viewBounds.getSouth(), label.bounds.getSouth())
-  const visibleNorth = Math.min(viewBounds.getNorth(), label.bounds.getNorth())
-  const visibleWest = Math.max(viewBounds.getWest(), label.bounds.getWest())
-  const visibleEast = Math.min(viewBounds.getEast(), label.bounds.getEast())
+//   const visibleSouth = Math.max(viewBounds.getSouth(), label.bounds.getSouth())
+//   const visibleNorth = Math.min(viewBounds.getNorth(), label.bounds.getNorth())
+//   const visibleWest = Math.max(viewBounds.getWest(), label.bounds.getWest())
+//   const visibleEast = Math.min(viewBounds.getEast(), label.bounds.getEast())
 
-  if (visibleSouth > visibleNorth || visibleWest > visibleEast)
-  {
-    return null
-  }
+//   if (visibleSouth > visibleNorth || visibleWest > visibleEast)
+//   {
+//     return null
+//   }
 
-  const centerLat = (visibleSouth + visibleNorth) / 2
-  const centerLng = (visibleWest + visibleEast) / 2
+//   const centerLat = (visibleSouth + visibleNorth) / 2
+//   const centerLng = (visibleWest + visibleEast) / 2
 
-  return {
-    id: label.id,
-    stateName: label.stateName,
-    center: L.latLng(centerLat, centerLng),
-  }
-}
+//   return {
+//     id: label.id,
+//     stateName: label.stateName,
+//     center: L.latLng(centerLat, centerLng),
+//   }
+// }
 
 function StatesLayer({ entry }: { entry: StatesLayerEntry })
 {
@@ -214,7 +214,8 @@ function StateViewportLabels({ labelData }: { labelData: StateLabelDatum[] })
         return fixedLabel
       }
 
-      return drawDynamicLabel(label, viewBounds)
+      // return drawDynamicLabel(label, viewBounds)
+      return null;
     })
     .filter((value): value is VisibleStateLabel =>
     {

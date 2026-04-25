@@ -31,8 +31,9 @@ export function getBiomesLayer(entry: BiomesLayerEntry)
     }
 
     return {
-      color: biomeColor ?? entry.options.color,
-      weight: entry.options.weight,
+      color: biomeColor,
+      stroke: false,
+      opacity: 0.5,
       fillColor: biomeColor ?? entry.options.fillColor,
       fillOpacity: entry.options.fillOpacity,
     }
