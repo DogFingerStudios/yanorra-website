@@ -45,7 +45,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     color: '#7bd5e9',
     fillColor: '#ffffff',
     weight: 1,
-    fillOpacity: .25,
+    fillOpacity: .75,
     drawFunc: getBiomesLayer,
   },
   {
