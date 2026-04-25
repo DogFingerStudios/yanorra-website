@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GeoJSON, ImageOverlay, MapContainer, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
@@ -15,6 +16,7 @@ class GeoJsonLayer
   fillOpacity?: number = 1
   minZoom?: number = 0
   maxZoom?: number = Number.POSITIVE_INFINITY
+  drawFunc?: (entry: GeoJsonEntry) => ReactNode
 }
 
 // Add your GeoJSON file URLs here (must be publicly served paths, usually from /public).
@@ -22,6 +24,13 @@ const GEOJSON_FILES : GeoJsonLayer[] =
 [
   {
     srcFile: '/geojson/Land.geojson',
+    color: '#7bd5e9',
+    fillColor: '#ffffff',
+    weight: 1,
+    fillOpacity: 1,
+  },
+  {
+    srcFile: '/geojson/Biomes.geojson',
     color: '#7bd5e9',
     fillColor: '#ffffff',
     weight: 1,
@@ -37,6 +46,7 @@ const GEOJSON_FILES : GeoJsonLayer[] =
     color: '#000000',
     weight: 1,
     fillOpacity: 0,
+    drawFunc: getStatesLayer,
   },
   {
     srcFile: '/geojson/Routes.geojson',
@@ -48,7 +58,14 @@ const GEOJSON_FILES : GeoJsonLayer[] =
     srcFile: '/geojson/TownsData.geojson',
     maxZoom: 8,
     fillOpacity: 0,
-  }
+    drawFunc: getTownLayer,
+  },
+  {
+    srcFile: '/geojson/Town1.geojson',
+    weight: 0.75,
+    color: '#000000',
+    minZoom: 3,
+  },
 ]
 
 const MIN_ZOOM = 2
@@ -313,14 +330,9 @@ const GeoJsonFullScreen = () =>
               return null
             }
 
-            if (entry.options.srcFile.toLowerCase().endsWith('/townsdata.geojson'))
+            if (entry.options.drawFunc)
             {
-              return getTownLayer(entry)
-            }
-
-            if (entry.options.srcFile.toLowerCase().endsWith('/statesdata.geojson'))
-            {
-              return getStatesLayer(entry)
+              return entry.options.drawFunc(entry)
             }
 
             return (
