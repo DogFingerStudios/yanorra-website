@@ -364,59 +364,36 @@ const GeoJsonFullScreen = (
     )
   }
 
-  let fullScreenControlsElement = null
+  let sidebarElement = null
 
   if (fullScreen)
   {
-    fullScreenControlsElement = (
-      <>
-        <div className="leaflet-top leaflet-left" style={{ marginTop: '12px' }}>
-          <div className="leaflet-control leaflet-bar">
-            <button
-              type="button"
-              onClick={toggleEarthLayer}
-              title={earthLayerTitle}
-              aria-label="Toggle Earth layer"
-              style={{
-                width: '32px',
-                height: '32px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '16px',
-                borderRadius: 0,
-                padding: 0,
-              }}
-            >
-              E
-            </button>
-          </div>
+    sidebarElement = (
+      <div className="map-sidebar">
+        <div className="map-sidebar-top">
+          <button
+            className="numbered-button"
+            type="button"
+            onClick={toggleEarthLayer}
+            title={earthLayerTitle}
+            aria-label="Toggle Earth layer"
+            aria-pressed={isEarthLayerVisible}
+          >
+            🌎
+          </button>
         </div>
-        <div className="leaflet-top leaflet-left" style={{ marginTop: '48px' }}>
-          <div className="leaflet-control leaflet-bar">
-            <button
-              type="button"
-              onClick={() => navigateTo('/')}
-              title="Close map"
-              aria-label="Close map"
-              style={{
-                width: '32px',
-                height: '32px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '16px',
-                borderRadius: 0,
-                padding: 0,
-              }}
-            >
-              ✕
-            </button>
-          </div>
+        <div className="map-sidebar-bottom">
+          <button
+            className="close-button"
+            type="button"
+            onClick={() => navigateTo('/')}
+            title="Close map"
+            aria-label="Close map"
+          >
+            ✕
+          </button>
         </div>
-      </>
+      </div>
     )
   }
 
@@ -424,6 +401,7 @@ const GeoJsonFullScreen = (
 
   return (
     <div className="map-fullscreen-container">
+      {sidebarElement}
       <div className="map-main">
         <MapContainer
           key={`geojson-map-${initialCenter[0]}-${initialCenter[1]}-${initialZoom}-${minZoom}-${maxZoom}`}
@@ -474,7 +452,6 @@ const GeoJsonFullScreen = (
           {boundsFitterElement}
           <DebugTracker onZoom={setCurrentZoom} onCenter={setCoords} />
           {fullScreenLinkElement}
-          {fullScreenControlsElement}
         </MapContainer>
         {renderDebug()}
         {loadError ? <div className="geojson-error-banner">{loadError}</div> : null}

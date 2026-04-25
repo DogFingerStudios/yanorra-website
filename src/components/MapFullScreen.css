@@ -19,6 +19,8 @@
   align-items: center;
   flex-shrink: 0;
   justify-content: space-between;
+  position: relative;
+  z-index: 700;
 }
 
 .map-sidebar-top {
@@ -80,9 +82,11 @@
 
 .map-main {
   flex: 1;
-  width: 100%;
+  width: auto;
+  min-width: 0;
   height: 100%;
   position: relative;
+  overflow: hidden;
 }
 
 .geojson-error-banner {

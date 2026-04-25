@@ -1,5 +1,6 @@
 import { GeoJSON } from 'react-leaflet'
 import L from 'leaflet'
+import './TownLayer.css'
 
 type TownLayerEntry =
 {
@@ -37,6 +38,7 @@ export function getTownLayer(entry: TownLayerEntry)
         direction: 'top',
         offset: L.point(0, -8),
         opacity: 0.9,
+        className: 'town-label-tooltip',
       })
     }
   }
