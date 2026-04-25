@@ -18,7 +18,7 @@ export default defineConfig(
         const wikiSrc = path.resolve(__dirname, 'yanorra-wiki', 'Wiki')
         if (fs.existsSync(wikiSrc))
         {
-          const wikiDest = path.resolve(__dirname, 'public', 'Yanorra', 'Wiki')
+          const wikiDest = path.resolve(__dirname, 'public', 'yanorra-wiki', 'Wiki')
           fs.mkdirSync(wikiDest, { recursive: true })
           
           const files = fs.readdirSync(wikiSrc)
