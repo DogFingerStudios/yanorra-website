@@ -7,20 +7,30 @@ import { getTownLayer } from './layers/TownLayer'
 import { getStatesLayer } from './layers/States'
 import './MapFullScreen.css'
 
-class GeoJsonLayer
+type GeoJsonLayerOptions =
 {
-  srcFile: string = ''
-  color?: string = '#0000ff'
-  fillColor?: string = '#00ffff'
-  weight?: number = 2
-  fillOpacity?: number = 1
-  minZoom?: number = 0
-  maxZoom?: number = Number.POSITIVE_INFINITY
+  srcFile: string
+  color?: string
+  fillColor?: string
+  weight?: number
+  fillOpacity?: number
+  minZoom?: number
+  maxZoom?: number
   drawFunc?: (entry: GeoJsonEntry) => ReactNode
 }
 
+const DEFAULT_LAYER_OPTIONS =
+{
+  color: '#0000ff',
+  fillColor: '#00ffff',
+  weight: 2,
+  fillOpacity: 1,
+  minZoom: 0,
+  maxZoom: Number.POSITIVE_INFINITY,
+}
+
 // Add your GeoJSON file URLs here (must be publicly served paths, usually from /public).
-const GEOJSON_FILES : GeoJsonLayer[] = 
+const GEOJSON_FILES : GeoJsonLayerOptions[] = 
 [
   {
     srcFile: '/geojson/Land.geojson',
@@ -82,7 +92,7 @@ type GeoJsonEntry =
 {
   id: string
   data: GeoJSON.GeoJsonObject
-  options: GeoJsonLayer
+  options: GeoJsonLayerOptions
 }
 
 const debug = true
@@ -338,11 +348,16 @@ const GeoJsonFullScreen = () =>
             return (
               <GeoJSON key={entry.id} data={entry.data} style={() =>
                 {
+                  const options = {
+                    ...DEFAULT_LAYER_OPTIONS,
+                    ...entry.options,
+                  }
+
                   return { 
-                    color: entry.options.color, 
-                    weight: entry.options.weight, 
-                    fillColor: entry.options.fillColor,
-                    fillOpacity: entry.options.fillOpacity ,
+                    color: options.color, 
+                    weight: options.weight, 
+                    fillColor: options.fillColor,
+                    fillOpacity: options.fillOpacity,
                   }
                 }}
               />
