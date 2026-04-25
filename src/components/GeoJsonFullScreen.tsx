@@ -5,6 +5,7 @@ import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
 import { getTownLayer } from './layers/TownLayer'
 import { getStatesLayer } from './layers/States'
+import 'leaflet/dist/leaflet.css'
 import './MapFullScreen.css'
 
 type GeoJsonLayerOptions =
@@ -316,13 +317,6 @@ const GeoJsonFullScreen = (
     )
   }
 
-  let earthLayerLabel = 'Earth Off'
-
-  if (isEarthLayerVisible)
-  {
-    earthLayerLabel = 'Earth On'
-  }
-
   let earthLayerTitle = 'Turn Earth layer on'
 
   if (isEarthLayerVisible)
@@ -348,9 +342,9 @@ const GeoJsonFullScreen = (
         <div className="leaflet-control leaflet-bar">
           <button
             type="button"
-            onClick={() => navigateTo('/beta')}
-            title="Open full screen beta map"
-            aria-label="Open full screen beta map"
+            onClick={() => navigateTo('/map')}
+            title="Open full screen map"
+            aria-label="Open full screen map"
             style={{
               width: '30px',
               height: '30px',
@@ -370,39 +364,66 @@ const GeoJsonFullScreen = (
     )
   }
 
-  const boundsFitterElement = fullScreen ? <GeoJsonBoundsFitter entries={entries} /> : null
+  let fullScreenControlsElement = null
 
-  const sidebarElement = fullScreen
-    ? (
-      <div className="map-sidebar">
-        <div className="map-sidebar-top">
-          <button
-            className="numbered-button"
-            onClick={toggleEarthLayer}
-            aria-label="Toggle Earth layer"
-            aria-pressed={isEarthLayerVisible}
-            title={earthLayerTitle}
-          >
-            {earthLayerLabel}
-          </button>
+  if (fullScreen)
+  {
+    fullScreenControlsElement = (
+      <>
+        <div className="leaflet-top leaflet-left" style={{ marginTop: '12px' }}>
+          <div className="leaflet-control leaflet-bar">
+            <button
+              type="button"
+              onClick={toggleEarthLayer}
+              title={earthLayerTitle}
+              aria-label="Toggle Earth layer"
+              style={{
+                width: '32px',
+                height: '32px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '16px',
+                borderRadius: 0,
+                padding: 0,
+              }}
+            >
+              E
+            </button>
+          </div>
         </div>
-        <div className="map-sidebar-bottom">
-          <button
-            className="close-button"
-            onClick={() => navigateTo('/')}
-            aria-label="Close beta map"
-            title="Close beta map"
-          >
-            ✕
-          </button>
+        <div className="leaflet-top leaflet-left" style={{ marginTop: '48px' }}>
+          <div className="leaflet-control leaflet-bar">
+            <button
+              type="button"
+              onClick={() => navigateTo('/')}
+              title="Close map"
+              aria-label="Close map"
+              style={{
+                width: '32px',
+                height: '32px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '16px',
+                borderRadius: 0,
+                padding: 0,
+              }}
+            >
+              ✕
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     )
-    : null
+  }
+
+  const boundsFitterElement = fullScreen ? <GeoJsonBoundsFitter entries={entries} /> : null
 
   return (
     <div className="map-fullscreen-container">
-      {sidebarElement}
       <div className="map-main">
         <MapContainer
           key={`geojson-map-${initialCenter[0]}-${initialCenter[1]}-${initialZoom}-${minZoom}-${maxZoom}`}
@@ -453,6 +474,7 @@ const GeoJsonFullScreen = (
           {boundsFitterElement}
           <DebugTracker onZoom={setCurrentZoom} onCenter={setCoords} />
           {fullScreenLinkElement}
+          {fullScreenControlsElement}
         </MapContainer>
         {renderDebug()}
         {loadError ? <div className="geojson-error-banner">{loadError}</div> : null}

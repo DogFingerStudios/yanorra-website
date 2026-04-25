@@ -2,7 +2,6 @@ import { Routes, Route, Navigate, useParams, useLocation } from 'react-router-do
 import './App.css'
 import SideColumn from './SideColumn'
 import MarkdownPage from "./components/MarkdownPage"
-import MapFullScreen from "./components/MapFullScreen";
 import GeoJsonFullScreen from "./components/GeoJsonFullScreen";
 import AboutPage from './components/AboutPage'
 import ReplPage from './components/ReplPage'
@@ -67,10 +66,6 @@ const TopHeader = () =>
           Map
         </Link>
         <span className="top-header-separator" aria-hidden="true">|</span>
-        <Link className="top-header-link" to="/beta">
-          Beta
-        </Link>
-        <span className="top-header-separator" aria-hidden="true">|</span>
         <Link className="top-header-link" to="/terminal">
           Terminal
         </Link>
@@ -105,7 +100,7 @@ const TopHeader = () =>
 function App()
 {
   const location = useLocation()
-  const isFullscreenRoute = location.pathname === '/fullscreen' || location.pathname === '/map' || location.pathname === '/beta' || location.pathname === '/terminal'
+  const isFullscreenRoute = location.pathname === '/fullscreen' || location.pathname === '/map' || location.pathname === '/terminal'
   let appContainerClassName = 'app-container'
   let mainContentClassName = 'main-content'
 
@@ -131,8 +126,7 @@ function App()
               element={<AboutPage />} 
             />
             <Route path="/terminal" element={<ReplPage />} />
-            <Route path="/map" element={<MapFullScreen />} />
-            <Route path="/beta" element={<GeoJsonFullScreen />} />
+            <Route path="/map" element={<GeoJsonFullScreen />} />
             <Route path="/doc/*" element={<DocContent />} />
             <Route 
               path="/wiki/:filename" 
