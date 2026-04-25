@@ -2,16 +2,16 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { execSync } from 'child_process'
 
-const getYanorraRepoDir = (): string | null =>
+const getRepoDir = (repoName: string): string | null =>
 {
   const currentDir = process.cwd()
   const currentGitDir = path.join(currentDir, '.git')
-  if (path.basename(currentDir).toLowerCase() === 'yanorra' && fs.existsSync(currentGitDir))
+  if (path.basename(currentDir).toLowerCase() === repoName.toLowerCase() && fs.existsSync(currentGitDir))
   {
     return currentDir
   }
 
-  const repoDir = path.join(currentDir, 'Yanorra')
+  const repoDir = path.join(currentDir, repoName)
   const repoGitDir = path.join(repoDir, '.git')
   if (fs.existsSync(repoGitDir))
   {
@@ -21,12 +21,12 @@ const getYanorraRepoDir = (): string | null =>
   return null
 }
 
-const updateYanorraRepo = (): void =>
+const updateYanorraRepo = (repoName: string): void =>
 {
-  const repoDir = getYanorraRepoDir()
+  const repoDir = getRepoDir(repoName)
   if (!repoDir)
   {
-    console.warn('Warning: Yanorra repo not found, skipping git pull --rebase')
+    console.warn(`Warning: ${repoName} repo not found, skipping git pull --rebase`)
     return
   }
 
@@ -41,12 +41,12 @@ const updateYanorraRepo = (): void =>
 
   try
   {
-    console.log('Running git pull --rebase in Yanorra repo...')
+    console.log(`Running git pull --rebase in ${repoName} repo...`)
     execSync('git pull --rebase', { stdio: 'inherit' })
   }
   catch (err)
   {
-    console.warn('Warning: git pull --rebase failed in Yanorra repo')
+    console.warn(`Warning: git pull --rebase failed in ${repoName} repo`)
   }
   finally
   {
@@ -60,7 +60,8 @@ const updateYanorraRepo = (): void =>
 
 const run = (): void =>
 {
-  updateYanorraRepo()
+  updateYanorraRepo('yanorra-maps')
+  updateYanorraRepo('yanorra-wiki')
 }
 
 run()
