@@ -185,7 +185,7 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
           }
         }
 
-        let maxZoom = 6
+        let maxZoom: number | undefined
         if (typeof config.maxZoom === 'string')
         {
           const parsedMaxZoom = parseInt(config.maxZoom, 10)
