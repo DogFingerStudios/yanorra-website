@@ -23,7 +23,7 @@ type GeoJsonLayerOptions =
 const DEFAULT_LAYER_OPTIONS =
 {
   color: '#0000ff',
-  fillColor: '#00ffff',
+  fillColor: '#7bd5e9',
   weight: 2,
   fillOpacity: 1,
   minZoom: 0,
@@ -45,13 +45,17 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     color: '#7bd5e9',
     fillColor: '#ffffff',
     weight: 1,
-    fillOpacity: .5,
+    fillOpacity: .25,
     drawFunc: getBiomesLayer,
+  },
+  {
+    srcFile: '/geojson/Lakes.geojson',
+    color: '#7bd5e9',
   },
   {
     srcFile: '/geojson/Rivers.geojson',
     color: '#7bd5e9',
-    weight: 0.625,
+    weight: 1.5,
   },
   {
     srcFile: '/geojson/StatesData.geojson',
