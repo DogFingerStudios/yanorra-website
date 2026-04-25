@@ -66,8 +66,8 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   },
   {
     srcFile: '/geojson/Routes.geojson',
-    weight: 0.75,
-    color: '#000000',
+    weight: 1,
+    color: '#5a5a5a',
     minZoom: 3,
   },
   {
