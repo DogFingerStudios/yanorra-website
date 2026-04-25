@@ -15,7 +15,7 @@ export default defineConfig(
       name: 'copy-yaml-wiki',
       buildStart()
       {
-        const wikiSrc = path.resolve(__dirname, 'Yanorra', 'Wiki')
+        const wikiSrc = path.resolve(__dirname, 'yanorra-wiki', 'Wiki')
         const wikiDest = path.resolve(__dirname, 'public', 'Yanorra', 'Wiki')
         const aboutSrc = path.resolve(__dirname, 'src', 'content', 'ABOUT.md')
         const aboutDest = path.resolve(__dirname, 'public', 'ABOUT.md')
@@ -39,7 +39,7 @@ export default defineConfig(
           console.log('✓ Copied Wiki markdown/asciidoc files to public')
         }
 
-        const docsSrc = path.resolve(__dirname, 'Yanorra')
+        const docsSrc = path.resolve(__dirname, 'yanorra-wiki', 'Yanorra')
         const docsDest = path.resolve(__dirname, 'public', 'Yanorra')
 
         if (fs.existsSync(docsSrc))

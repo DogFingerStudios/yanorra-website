@@ -15,7 +15,7 @@ const normalizeDocPath = (docPath: string): string =>
 const WikiPage = () =>
 {
   const { filename } = useParams<{ filename: string }>()
-  const markdownPath = `/Yanorra/Wiki/${filename}.md`
+  const markdownPath = `/yanorra-wiki/Wiki/${filename}.md`
   return <MarkdownPage markdownPath={markdownPath} />
 }
 
@@ -26,7 +26,7 @@ const DocContent = () =>
 
   if (!docPath)
   {
-    return <MarkdownPage markdownPath="/Yanorra/README.md" />
+    return <MarkdownPage markdownPath="/yanorra-wiki/README.md" />
   }
 
   const decodedDocPath = decodeURIComponent(docPath)
@@ -35,7 +35,7 @@ const DocContent = () =>
   if (!resolvedDocPath)
   {
     console.warn("No document path provided, defaulting to README.md")
-    return <MarkdownPage markdownPath="/Yanorra/README.md" />
+    return <MarkdownPage markdownPath="/yanorra-wiki/README.md" />
   }
 
   return (
@@ -77,7 +77,7 @@ const TopHeader = () =>
       <div className="top-header-right">
         <a
           className="top-header-link"
-          href="https://github.com/DogFingerStudios/Yanorra-website"
+          href="https://github.com/DogFingerStudios/yanorra-website"
           target="_blank"
           rel="noreferrer"
         >
@@ -119,7 +119,7 @@ function App()
           <Routes>
             <Route 
               path="/" 
-              element={<MarkdownPage markdownPath="/Yanorra/README.md" />} 
+              element={<MarkdownPage markdownPath="/yanorra-wiki/README.md" />} 
             />
             <Route 
               path="/about" 

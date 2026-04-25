@@ -33,7 +33,7 @@ const generateDocLinks = async (): Promise<void> =>
   const __dirname = path.dirname(fileURLToPath(import.meta.url))
   
   // TODO: __dirname may not be defined because of ES modules - need to use import.meta.url instead
-  const wikiDir = path.resolve(__dirname, '../Yanorra/Wiki')
+  const wikiDir = path.resolve(__dirname, '../yanorra-wiki/Wiki')
 
   if (!fs.existsSync(wikiDir))
   {
