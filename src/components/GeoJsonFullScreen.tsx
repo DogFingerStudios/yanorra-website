@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GeoJSON, ImageOverlay, MapContainer, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
+import { getBiomesLayer } from './layers/Biomes'
 import { getTownLayer } from './layers/TownLayer'
 import { getStatesLayer } from './layers/States'
 import './MapFullScreen.css'
@@ -44,7 +45,8 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     color: '#7bd5e9',
     fillColor: '#ffffff',
     weight: 1,
-    fillOpacity: 1,
+    fillOpacity: .5,
+    drawFunc: getBiomesLayer,
   },
   {
     srcFile: '/geojson/Rivers.geojson',
