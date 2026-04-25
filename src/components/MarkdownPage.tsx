@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import { marked } from 'marked'
 import { createRoot, type Root } from 'react-dom/client'
-import MapPanel from './MapPanel'
+import GeoJsonFullScreen from './GeoJsonFullScreen'
 
 interface MarkdownPageProps
 {
@@ -234,12 +234,12 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
         // Replace placeholder with container
         placeholder.replaceWith(mapContainer)
         
-        // Mount React MapPanel into the container
+        // Mount React GeoJson map into the container
         const root = createRoot(mapContainer)
         root.render(
-          <MapPanel 
+          <GeoJsonFullScreen
             fullScreen={false} 
-            initialZoom={zoom} 
+            initialZoom={zoom}
             initialCenter={center}
             minZoom={minZoom}
             maxZoom={maxZoom}
@@ -250,7 +250,7 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
         )
         mapRootsRef.current.push(root)
         
-        console.log('Mounted MapPanel with config:', { zoom, center, minZoom, maxZoom, scrollWheelZoom, debug, showFullScreenLink, original: config })
+        console.log('Mounted GeoJsonFullScreen with config:', { zoom, center, minZoom, maxZoom, scrollWheelZoom, debug, showFullScreenLink, original: config })
       }
       catch (err)
       {

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { GeoJSON, ImageOverlay, MapContainer, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
@@ -86,6 +85,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
 
 const MIN_ZOOM = 2
 const MAX_ZOOM = 16
+const DEFAULT_CENTER: [number, number] = [0, 0]
 
 // Set this to your Earth raster path in /public.
 const EARTH_LAYER_FILE = '/geojson/Earth.png'
@@ -101,7 +101,17 @@ type GeoJsonEntry =
   options: GeoJsonLayerOptions
 }
 
-const debug = true
+type GeoJsonFullScreenProps =
+{
+  fullScreen?: boolean
+  initialZoom?: number
+  initialCenter?: [number, number]
+  minZoom?: number
+  maxZoom?: number
+  scrollWheelZoom?: boolean
+  debug?: boolean
+  showFullScreenLink?: boolean
+}
 
 const DebugTracker = ({ onZoom, onCenter }: { onZoom: (z: number) => void, onCenter: (c: [number, number]) => void }) =>
 {
@@ -153,15 +163,36 @@ const GeoJsonBoundsFitter = ({ entries }: { entries: GeoJsonEntry[] }) =>
   return null
 }
 
-const GeoJsonFullScreen = () =>
+const GeoJsonFullScreen = (
+  {
+    fullScreen = true,
+    initialZoom = 2,
+    initialCenter = DEFAULT_CENTER,
+    minZoom = MIN_ZOOM,
+    maxZoom = MAX_ZOOM,
+    scrollWheelZoom = true,
+    debug = true,
+    showFullScreenLink = false,
+  }: GeoJsonFullScreenProps
+) =>
 {
-  const navigate = useNavigate()
   const [entries, setEntries] = useState<GeoJsonEntry[]>([])
   const [loadError, setLoadError] = useState('')
   const [isEarthLayerVisible, setIsEarthLayerVisible] = useState(false)
-  const [currentZoom, setCurrentZoom] = useState(2)
-  const [coords, setCoords] = useState<[number, number]>([0, 0])
+  const [currentZoom, setCurrentZoom] = useState(initialZoom)
+  const [coords, setCoords] = useState<[number, number]>(initialCenter)
   const [copyMessage, setCopyMessage] = useState('')
+
+  useEffect(() =>
+  {
+    setCurrentZoom(initialZoom)
+    setCoords([initialCenter[0], initialCenter[1]])
+  }, [initialZoom, initialCenter[0], initialCenter[1]])
+
+  const navigateTo = (path: string) =>
+  {
+    window.location.assign(path)
+  }
 
   const toggleEarthLayer = () =>
   {
@@ -308,8 +339,41 @@ const GeoJsonFullScreen = () =>
     )
   }
 
-  return (
-    <div className="map-fullscreen-container">
+  let fullScreenLinkElement = null
+
+  if (showFullScreenLink && !fullScreen)
+  {
+    fullScreenLinkElement = (
+      <div className="leaflet-top leaflet-left" style={{ marginTop: '184px' }}>
+        <div className="leaflet-control leaflet-bar">
+          <button
+            type="button"
+            onClick={() => navigateTo('/beta')}
+            title="Open full screen beta map"
+            aria-label="Open full screen beta map"
+            style={{
+              width: '30px',
+              height: '30px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '18px',
+              borderRadius: 0,
+              padding: 0,
+            }}
+          >
+            🌐
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const boundsFitterElement = fullScreen ? <GeoJsonBoundsFitter entries={entries} /> : null
+
+  const sidebarElement = fullScreen
+    ? (
       <div className="map-sidebar">
         <div className="map-sidebar-top">
           <button
@@ -325,7 +389,7 @@ const GeoJsonFullScreen = () =>
         <div className="map-sidebar-bottom">
           <button
             className="close-button"
-            onClick={() => navigate('/')}
+            onClick={() => navigateTo('/')}
             aria-label="Close beta map"
             title="Close beta map"
           >
@@ -333,8 +397,24 @@ const GeoJsonFullScreen = () =>
           </button>
         </div>
       </div>
+    )
+    : null
+
+  return (
+    <div className="map-fullscreen-container">
+      {sidebarElement}
       <div className="map-main">
-        <MapContainer center={[0, 0]} zoom={2} minZoom={MIN_ZOOM} maxZoom={MAX_ZOOM} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }} attributionControl={false} crs={L.CRS.EPSG4326}>
+        <MapContainer
+          key={`geojson-map-${initialCenter[0]}-${initialCenter[1]}-${initialZoom}-${minZoom}-${maxZoom}`}
+          center={initialCenter}
+          zoom={initialZoom}
+          minZoom={minZoom}
+          maxZoom={maxZoom}
+          scrollWheelZoom={scrollWheelZoom}
+          style={{ height: '100%', width: '100%', backgroundColor: '#7bd5e9' }}
+          attributionControl={false}
+          crs={L.CRS.EPSG4326}
+        >
           {earthLayerElement}
           {entries.map((entry) =>
           {
@@ -370,8 +450,9 @@ const GeoJsonFullScreen = () =>
             )
 
           })}
-          <GeoJsonBoundsFitter entries={entries} />
+          {boundsFitterElement}
           <DebugTracker onZoom={setCurrentZoom} onCenter={setCoords} />
+          {fullScreenLinkElement}
         </MapContainer>
         {renderDebug()}
         {loadError ? <div className="geojson-error-banner">{loadError}</div> : null}
