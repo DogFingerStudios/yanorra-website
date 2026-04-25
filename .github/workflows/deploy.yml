@@ -5,8 +5,11 @@ on:
     branches: ["master"]
   workflow_dispatch:
     inputs:
-      yanorra_sha:
-        description: "Commit SHA from Yanorra repo (optional)"
+      yanorra_wiki_sha:
+        description: "Commit SHA from Yanorra Wiki repo (optional)"
+        required: false
+      yanorra_maps_sha:
+        description: "Commit SHA from Yanorra Maps repo (optional)"
         required: false
 
 jobs:
@@ -21,14 +24,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: DogFingerStudios/yanorra-wiki
-          ref: master
+          ref: ${{ inputs.yanorra_wiki_sha || 'master' }}
           path: yanorra-wiki
 
       - name: Checkout yanorra-maps
         uses: actions/checkout@v4
         with:
           repository: DogFingerStudios/yanorra-maps
-          ref: master
+          ref: ${{ inputs.yanorra_maps_sha || 'master' }}
           path: yanorra-maps
 
       - name: Setup Node
