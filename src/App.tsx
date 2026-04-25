@@ -2,7 +2,7 @@ import { Routes, Route, Navigate, useParams, useLocation } from 'react-router-do
 import './App.css'
 import SideColumn from './SideColumn'
 import MarkdownPage from "./components/MarkdownPage"
-import MapFullScreen from "./components/MapFullScreen";
+import GeoJsonFullScreen from "./components/GeoJsonFullScreen";
 import AboutPage from './components/AboutPage'
 import ReplPage from './components/ReplPage'
 import { Link } from 'react-router-dom'
@@ -15,7 +15,7 @@ const normalizeDocPath = (docPath: string): string =>
 const WikiPage = () =>
 {
   const { filename } = useParams<{ filename: string }>()
-  const markdownPath = `/Yanorra/Wiki/${filename}.md`
+  const markdownPath = `/yanorra-wiki/Wiki/${filename}.md`
   return <MarkdownPage markdownPath={markdownPath} />
 }
 
@@ -26,7 +26,7 @@ const DocContent = () =>
 
   if (!docPath)
   {
-    return <MarkdownPage markdownPath="/Yanorra/README.md" />
+    return <MarkdownPage markdownPath="/yanorra-wiki/README.md" />
   }
 
   const decodedDocPath = decodeURIComponent(docPath)
@@ -35,7 +35,7 @@ const DocContent = () =>
   if (!resolvedDocPath)
   {
     console.warn("No document path provided, defaulting to README.md")
-    return <MarkdownPage markdownPath="/Yanorra/README.md" />
+    return <MarkdownPage markdownPath="/yanorra-wiki/README.md" />
   }
 
   return (
@@ -65,7 +65,7 @@ const TopHeader = () =>
         <Link className="top-header-link" to="/map">
           Map
         </Link>
-                <span className="top-header-separator" aria-hidden="true">|</span>
+        <span className="top-header-separator" aria-hidden="true">|</span>
         <Link className="top-header-link" to="/terminal">
           Terminal
         </Link>
@@ -77,7 +77,7 @@ const TopHeader = () =>
       <div className="top-header-right">
         <a
           className="top-header-link"
-          href="https://github.com/DogFingerStudios/Yanorra-website"
+          href="https://github.com/DogFingerStudios/yanorra-website"
           target="_blank"
           rel="noreferrer"
         >
@@ -119,14 +119,14 @@ function App()
           <Routes>
             <Route 
               path="/" 
-              element={<MarkdownPage markdownPath="/Yanorra/README.md" />} 
+              element={<MarkdownPage markdownPath="/yanorra-wiki/README.md" />} 
             />
             <Route 
               path="/about" 
               element={<AboutPage />} 
             />
             <Route path="/terminal" element={<ReplPage />} />
-            <Route path="/map" element={<MapFullScreen />} />
+            <Route path="/map" element={<GeoJsonFullScreen />} />
             <Route path="/doc/*" element={<DocContent />} />
             <Route 
               path="/wiki/:filename" 

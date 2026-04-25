@@ -20,9 +20,16 @@ jobs:
       - name: Checkout Yanorra
         uses: actions/checkout@v4
         with:
-          repository: DogFingerStudios/Yanorra
+          repository: DogFingerStudios/yanorra-wiki
           ref: ${{ inputs.yanorra_sha || 'master' }}
-          path: Yanorra
+          path: yanorra-wiki
+
+      - name: Checkout Yanorra
+        uses: actions/checkout@v4
+        with:
+          repository: DogFingerStudios/yanorra-maps
+          ref: ${{ inputs.yanorra_sha || 'master' }}
+          path: yanorra-maps
 
       - name: Setup Node
         uses: actions/setup-node@v4

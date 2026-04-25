@@ -1,0 +1,19 @@
+.leaflet-tooltip.state-label-tooltip
+{
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  box-shadow: none;
+  color: #111111;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  padding: 3px 7px;
+  text-shadow: none;
+}
+
+.leaflet-tooltip.state-label-tooltip::before
+{
+  display: none;
+}

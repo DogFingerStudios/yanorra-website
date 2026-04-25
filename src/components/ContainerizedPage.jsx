@@ -55,7 +55,7 @@ const ContainerizedPage = () => {
           {/* Add image and text content here */}
           <img 
             className="small-image"
-            src="https://raw.githubusercontent.com/DogFingerStudios/Yanorra/refs/heads/master/Maps/SaintAveline-GlobeView.jpeg" alt="Saint Aveline Globe View"
+            src="https://raw.githubusercontent.com/DogFingerStudios/yanorra-wiki/refs/heads/master/Maps/SaintAveline-GlobeView.jpeg" alt="Saint Aveline Globe View"
           />
         </div>
         <div className="map-side-panel">
