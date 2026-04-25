@@ -40,30 +40,30 @@ export default defineConfig(
           console.warn('Warning: Wiki docs directory not found, skipping copy')
         }
 
-        // const docsSrc = path.resolve(__dirname, 'yanorra-wiki', 'Yanorra')
-        // if (fs.existsSync(docsSrc))
-        // {
-        //   const docsDest = path.resolve(__dirname, 'public', 'Yanorra')
-        //   fs.mkdirSync(docsDest, { recursive: true })
+        const docsSrc = path.resolve(__dirname, 'yanorra-wiki')
+        if (fs.existsSync(docsSrc))
+        {
+          const docsDest = path.resolve(__dirname, 'public', 'yanorra-wiki')
+          fs.mkdirSync(docsDest, { recursive: true })
 
-        //   const files = fs.readdirSync(docsSrc)
-        //   files.forEach((file) =>
-        //   {
-        //     if (file.endsWith('.md'))
-        //     {
-        //       fs.copyFileSync(
-        //         path.join(docsSrc, file),
-        //         path.join(docsDest, file)
-        //       )
-        //     }
-        //   })
+          const files = fs.readdirSync(docsSrc)
+          files.forEach((file) =>
+          {
+            if (file.endsWith('.md'))
+            {
+              fs.copyFileSync(
+                path.join(docsSrc, file),
+                path.join(docsDest, file)
+              )
+            }
+          })
 
-        //   console.log('✓ Copied Yanorra root markdown files to public')
-        // }
-        // else
-        // {
-        //   console.warn('Warning: Yanorra root docs directory not found, skipping copy')
-        // }
+          console.log('✓ Copied Yanorra root markdown files to public')
+        }
+        else
+        {
+          console.warn('Warning: Yanorra root docs directory not found, skipping copy')
+        }
 
         const mapsSrc = path.resolve(__dirname, 'yanorra-maps', 'QGIS')
         if (fs.existsSync(mapsSrc))
