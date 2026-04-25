@@ -17,14 +17,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Checkout Yanorra
+      - name: Checkout yanorra-wiki
         uses: actions/checkout@v4
         with:
           repository: DogFingerStudios/yanorra-wiki
           ref: ${{ inputs.yanorra_sha || 'master' }}
           path: yanorra-wiki
 
-      - name: Checkout Yanorra
+      - name: Checkout yanorra-maps
         uses: actions/checkout@v4
         with:
           repository: DogFingerStudios/yanorra-maps
