@@ -41,11 +41,6 @@ function shouldShowTown(properties: GeoJSON.GeoJsonProperties, zoom: number): bo
   const maxZoom = properties?.MaxZoom;
   const minZoom = properties?.MinZoom;
 
-  // print the town's name, maxzoom, minzoom, population, and current zoom level for debugging
-  const burgName = properties?.Burg ?? 'Unknown'
-  const population2 = getTownPopulation(properties) ?? 'Unknown'
-  console.log(`Evaluating town "${burgName}" with population ${population2}, maxZoom: ${maxZoom}, minZoom: ${minZoom} at current zoom level ${zoom}`)
-
   if (typeof maxZoom === 'number' && typeof minZoom == 'number')
   {
     return zoom >= minZoom && zoom <= maxZoom;
