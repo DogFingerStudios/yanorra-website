@@ -1,4 +1,5 @@
 import { GeoJSON } from 'react-leaflet'
+import './Biomes.css'
 
 type BiomesLayerEntry =
 {
@@ -30,12 +31,23 @@ export function getBiomesLayer(entry: BiomesLayerEntry)
       }
     }
 
+    let resolvedFillColor = entry.options.fillColor
+
+    if (biomeColor)
+    {
+      resolvedFillColor = biomeColor
+    }
+
     return {
-      color: biomeColor,
-      stroke: false,
-      opacity: 0.5,
-      fillColor: biomeColor ?? entry.options.fillColor,
+      color: resolvedFillColor,
+      stroke: true,
+      weight: 1,
+      opacity: 0.35,
+      lineJoin: 'round' as const,
+      lineCap: 'round' as const,
+      fillColor: resolvedFillColor,
       fillOpacity: entry.options.fillOpacity,
+      className: 'biome-fill',
     }
   }
 

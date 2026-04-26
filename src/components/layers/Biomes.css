@@ -1,0 +1,5 @@
+.leaflet-overlay-pane path.biome-fill
+{
+  filter: blur(0.6px);
+  transition: fill 220ms linear, opacity 220ms linear;
+}
