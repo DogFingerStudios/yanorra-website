@@ -14,6 +14,43 @@ export function getTownLayer(entry: TownLayerEntry)
   return <TownLayer entry={entry} />
 }
 
+function getTownPopulation(properties: GeoJSON.GeoJsonProperties): number | null
+{
+  const population = properties?.Population
+
+  if (typeof population === 'number' && Number.isFinite(population))
+  {
+    return population
+  }
+
+  if (typeof population === 'string')
+  {
+    const parsedPopulation = Number(population)
+
+    if (Number.isFinite(parsedPopulation))
+    {
+      return parsedPopulation
+    }
+  }
+
+  return null
+}
+
+function shouldShowTown(population: number | null, zoom: number): boolean
+{
+  if (population === null)
+  {
+    return true
+  }
+
+  if (zoom <= 4)
+  {
+    return population >= 5000
+  }
+
+  return true
+}
+
 function TownLayer({ entry }: { entry: TownLayerEntry })
 {
   const map = useMap()
@@ -49,8 +86,9 @@ function TownLayer({ entry }: { entry: TownLayerEntry })
       return
     }
 
-    const population = properties.Population
-    if (zoom <= 4 && population < 5000)
+    const population = getTownPopulation(properties)
+
+    if (!shouldShowTown(population, zoom))
     {
       return
     }
@@ -75,23 +113,17 @@ function TownLayer({ entry }: { entry: TownLayerEntry })
   const pointToLayerHandler = (_feature: GeoJSON.Feature, latlng: L.LatLng) =>
   {
     const properties = _feature.properties
-    if (!properties)
-    {
-      return
-    }
+    const population = getTownPopulation(properties)
+    const isVisible = shouldShowTown(population, zoom)
 
-    const population = properties.Population
-    if (zoom <= 4 && population < 5000)
-    {
-      return
-    }
-    
     return L.circleMarker(latlng, {
-      radius: 4,
+      radius: isVisible ? 4 : 0,
       color: '#000000',
       weight: 1,
       fillColor: '#000000',
-      fillOpacity: 1,
+      fillOpacity: isVisible ? 1 : 0,
+      opacity: isVisible ? 1 : 0,
+      interactive: isVisible,
     })
   }
 
