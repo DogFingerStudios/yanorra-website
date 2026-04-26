@@ -116,19 +116,95 @@ type GeoJsonFullScreenProps =
   showFullScreenLink?: boolean
 }
 
-const DebugTracker = ({ onZoom, onCenter }: { onZoom: (z: number) => void, onCenter: (c: [number, number]) => void }) =>
+type MapViewState =
+{
+  zoom: number
+  center: [number, number]
+}
+
+function parseMapViewFromUrl(defaultCenter: [number, number], defaultZoom: number, minZoom: number, maxZoom: number): MapViewState
+{
+  const searchParams = new URLSearchParams(window.location.search)
+  const rawLat = searchParams.get('lat')
+  const rawLng = searchParams.get('lng')
+  const rawZoom = searchParams.get('z')
+
+  let centerLat = defaultCenter[0]
+  let centerLng = defaultCenter[1]
+  let zoom = defaultZoom
+
+  if (rawLat !== null)
+  {
+    const parsedLat = Number(rawLat)
+
+    if (Number.isFinite(parsedLat))
+    {
+      centerLat = Math.max(-90, Math.min(90, parsedLat))
+    }
+  }
+
+  if (rawLng !== null)
+  {
+    const parsedLng = Number(rawLng)
+
+    if (Number.isFinite(parsedLng))
+    {
+      centerLng = Math.max(-180, Math.min(180, parsedLng))
+    }
+  }
+
+  if (rawZoom !== null)
+  {
+    const parsedZoom = Number(rawZoom)
+
+    if (Number.isFinite(parsedZoom))
+    {
+      const roundedZoom = Math.round(parsedZoom)
+      zoom = Math.max(minZoom, Math.min(maxZoom, roundedZoom))
+    }
+  }
+
+  return {
+    zoom,
+    center: [centerLat, centerLng],
+  }
+}
+
+function hasMapViewParamsInUrl(): boolean
+{
+  const searchParams = new URLSearchParams(window.location.search)
+  const hasLatParam = searchParams.has('lat')
+  const hasLngParam = searchParams.has('lng')
+  const hasZoomParam = searchParams.has('z')
+
+  if (hasLatParam || hasLngParam || hasZoomParam)
+  {
+    return true
+  }
+
+  return false
+}
+
+const DebugTracker = ({ onViewChange }: { onViewChange: (view: MapViewState) => void }) =>
 {
   useMapEvents({
     zoomend: (e) =>
     {
-      onZoom(e.target.getZoom())
+      const zoom = e.target.getZoom()
       const c = e.target.getCenter()
-      onCenter([c.lat, c.lng])
+      onViewChange({
+        zoom,
+        center: [c.lat, c.lng],
+      })
     },
     moveend: (e) =>
     {
+      const zoom = e.target.getZoom()
       const c = e.target.getCenter()
-      onCenter([c.lat, c.lng])
+      onViewChange({
+        zoom,
+        center: [c.lat, c.lng],
+      })
     },
   })
   return null
@@ -179,18 +255,44 @@ const GeoJsonFullScreen = (
   }: GeoJsonFullScreenProps
 ) =>
 {
+  const [shouldFitBounds] = useState(() => !hasMapViewParamsInUrl())
+  const [initialView] = useState<MapViewState>(() =>
+  {
+    return parseMapViewFromUrl(initialCenter, initialZoom, minZoom, maxZoom)
+  })
   const [entries, setEntries] = useState<GeoJsonEntry[]>([])
   const [loadError, setLoadError] = useState('')
   const [isEarthLayerVisible, setIsEarthLayerVisible] = useState(false)
-  const [currentZoom, setCurrentZoom] = useState(initialZoom)
-  const [coords, setCoords] = useState<[number, number]>(initialCenter)
+  const [currentZoom, setCurrentZoom] = useState(initialView.zoom)
+  const [coords, setCoords] = useState<[number, number]>(initialView.center)
   const [copyMessage, setCopyMessage] = useState('')
 
-  useEffect(() =>
+  const syncViewToUrl = (view: MapViewState) =>
   {
-    setCurrentZoom(initialZoom)
-    setCoords([initialCenter[0], initialCenter[1]])
-  }, [initialZoom, initialCenter[0], initialCenter[1]])
+    const url = new URL(window.location.href)
+    const nextLat = view.center[0].toFixed(4)
+    const nextLng = view.center[1].toFixed(4)
+    const nextZoom = String(view.zoom)
+
+    url.searchParams.set('lat', nextLat)
+    url.searchParams.set('lng', nextLng)
+    url.searchParams.set('z', nextZoom)
+
+    const nextUrl = `${url.pathname}?${url.searchParams.toString()}${url.hash}`
+    const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`
+
+    if (nextUrl !== currentUrl)
+    {
+      window.history.replaceState(null, '', nextUrl)
+    }
+  }
+
+  const handleMapViewChange = (view: MapViewState) =>
+  {
+    setCurrentZoom(view.zoom)
+    setCoords(view.center)
+    syncViewToUrl(view)
+  }
 
   const navigateTo = (path: string) =>
   {
@@ -399,16 +501,16 @@ const GeoJsonFullScreen = (
     )
   }
 
-  const boundsFitterElement = fullScreen ? <GeoJsonBoundsFitter entries={entries} /> : null
+  const boundsFitterElement = fullScreen && shouldFitBounds ? <GeoJsonBoundsFitter entries={entries} /> : null
 
   return (
     <div className="map-fullscreen-container">
       {sidebarElement}
       <div className="map-main">
         <MapContainer
-          key={`geojson-map-${initialCenter[0]}-${initialCenter[1]}-${initialZoom}-${minZoom}-${maxZoom}`}
-          center={initialCenter}
-          zoom={initialZoom}
+          key={`geojson-map-${initialView.center[0]}-${initialView.center[1]}-${initialView.zoom}-${minZoom}-${maxZoom}`}
+          center={initialView.center}
+          zoom={initialView.zoom}
           minZoom={minZoom}
           maxZoom={maxZoom}
           scrollWheelZoom={scrollWheelZoom}
@@ -452,7 +554,7 @@ const GeoJsonFullScreen = (
 
           })}
           {boundsFitterElement}
-          <DebugTracker onZoom={setCurrentZoom} onCenter={setCoords} />
+          <DebugTracker onViewChange={handleMapViewChange} />
           {fullScreenLinkElement}
         </MapContainer>
         {renderDebug()}
