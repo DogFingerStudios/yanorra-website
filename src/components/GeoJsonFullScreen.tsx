@@ -5,6 +5,7 @@ import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
 import { getTownLayer } from './layers/TownLayer'
 import { getStatesLayer } from './layers/States'
+import { getRoutesLayer } from './layers/Routes'
 import 'leaflet/dist/leaflet.css'
 import './MapFullScreen.css'
 
@@ -60,15 +61,16 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   {
     srcFile: '/geojson/StatesData.geojson',
     color: '#000000',
-    weight: 1,
+    weight: 1.25,
     fillOpacity: 0,
     drawFunc: getStatesLayer,
   },
   {
     srcFile: '/geojson/Routes.geojson',
-    weight: 1,
+    weight: 1.15,
     color: '#5a5a5a',
     minZoom: 3,
+    drawFunc: getRoutesLayer,
   },
   {
     srcFile: '/geojson/TownsData.geojson',

@@ -144,9 +144,6 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
       const labelLong = parseFiniteNumber(properties.Label_Longitude)
       const labelLat = parseFiniteNumber(properties.Label_Latitude)
       
-      // print out properties.Label_Latitude and properties.Label_Longitude for debugging
-      console.log(`Feature ${index} - Label_Latitude: ${properties.Label_Latitude}, Label_Longitude: ${properties.Label_Longitude}`)
-
       let fixedCenter: L.LatLng | null = null
       if (labelLong !== null && labelLat !== null)
       {
