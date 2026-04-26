@@ -43,12 +43,21 @@ function shouldShowTown(population: number | null, zoom: number): boolean
     return true
   }
 
-  if (zoom <= 4)
+  switch (zoom)
   {
-    return population >= 5000
+    default:
+      return false
+    case 0:
+    case 1:
+    case 2:
+      return population >= 500000
+    case 3:
+    case 4:
+    case 5:
+      return population >= 100000
+    case 6:
+      return population >= 5000
   }
-
-  return true
 }
 
 function TownLayer({ entry }: { entry: TownLayerEntry })

@@ -69,12 +69,12 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     srcFile: '/geojson/Routes.geojson',
     weight: 1.15,
     color: '#5a5a5a',
-    minZoom: 3,
+    minZoom: 5,
     drawFunc: getRoutesLayer,
   },
   {
     srcFile: '/geojson/TownsData.geojson',
-    maxZoom: 8,
+    // maxZoom: 8,
     fillOpacity: 0,
     drawFunc: getTownLayer,
   },
@@ -331,7 +331,7 @@ const GeoJsonFullScreen = (
   if (isEarthLayerVisible)
   {
     earthLayerElement = (
-      <ImageOverlay url={EARTH_LAYER_FILE} bounds={EARTH_LAYER_BOUNDS} />
+      <ImageOverlay url={EARTH_LAYER_FILE} bounds={EARTH_LAYER_BOUNDS} opacity={0.25} />
     )
   }
 
