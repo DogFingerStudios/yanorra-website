@@ -45,8 +45,6 @@ function shouldShowTown(population: number | null, zoom: number): boolean
 
   switch (zoom)
   {
-    default:
-      return false
     case 0:
     case 1:
     case 2:
@@ -57,6 +55,16 @@ function shouldShowTown(population: number | null, zoom: number): boolean
       return population >= 100000
     case 6:
       return population >= 5000
+    case 7:
+    case 8:
+    case9:
+      return population >= 1000
+    case 10:
+    case 11:
+    case 12:
+      return population >= 500
+    default:
+      return true
   }
 }
 
