@@ -36,8 +36,30 @@ function getTownPopulation(properties: GeoJSON.GeoJsonProperties): number | null
   return null
 }
 
-function shouldShowTown(population: number | null, zoom: number): boolean
+function shouldShowTown(properties: GeoJSON.GeoJsonProperties, zoom: number): boolean
 {
+  const maxZoom = properties?.MaxZoom;
+  const minZoom = properties?.MinZoom;
+
+  // print the town's name, maxzoom, minzoom, population, and current zoom level for debugging
+  const burgName = properties?.Burg ?? 'Unknown'
+  const population2 = getTownPopulation(properties) ?? 'Unknown'
+  console.log(`Evaluating town "${burgName}" with population ${population2}, maxZoom: ${maxZoom}, minZoom: ${minZoom} at current zoom level ${zoom}`)
+
+  if (typeof maxZoom === 'number' && typeof minZoom == 'number')
+  {
+    return zoom >= minZoom && zoom <= maxZoom;
+  }
+  else if (typeof maxZoom === 'number' && zoom > maxZoom)
+  {
+    return false
+  }
+  else if (typeof minZoom === 'number' && zoom < minZoom)
+  {
+    return false
+  }
+
+  const population = getTownPopulation(properties)
   if (population === null)
   {
     return true
@@ -57,7 +79,7 @@ function shouldShowTown(population: number | null, zoom: number): boolean
       return population >= 5000
     case 7:
     case 8:
-    case9:
+    case 9:
       return population >= 1000
     case 10:
     case 11:
@@ -102,10 +124,8 @@ function TownLayer({ entry }: { entry: TownLayerEntry })
     {
       return
     }
-
-    const population = getTownPopulation(properties)
-
-    if (!shouldShowTown(population, zoom))
+    
+    if (!shouldShowTown(properties, zoom))
     {
       return
     }
@@ -130,8 +150,7 @@ function TownLayer({ entry }: { entry: TownLayerEntry })
   const pointToLayerHandler = (_feature: GeoJSON.Feature, latlng: L.LatLng) =>
   {
     const properties = _feature.properties
-    const population = getTownPopulation(properties)
-    const isVisible = shouldShowTown(population, zoom)
+    const isVisible = shouldShowTown(properties, zoom)
 
     return L.circleMarker(latlng, {
       radius: isVisible ? 4 : 0,
