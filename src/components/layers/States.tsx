@@ -16,6 +16,14 @@ type StatesLayerEntry =
   }
 }
 
+type Coordinate = [number, number]
+
+type BorderSegment =
+{
+  count: number
+  coordinates: [Coordinate, Coordinate]
+}
+
 export function getStatesLayer(entry: StatesLayerEntry)
 {
   return <StatesLayer entry={entry} />
@@ -46,6 +54,7 @@ function parseFiniteNumber(value: unknown): number | null
   if (typeof value === 'string')
   {
     const parsedValue = Number(value)
+
     if (Number.isFinite(parsedValue))
     {
       return parsedValue
@@ -53,6 +62,118 @@ function parseFiniteNumber(value: unknown): number | null
   }
 
   return null
+}
+
+function coordinateKey(coordinate: Coordinate): string
+{
+  const x = Number(coordinate[0]).toFixed(6)
+  const y = Number(coordinate[1]).toFixed(6)
+
+  return `${x},${y}`
+}
+
+function segmentKey(a: Coordinate, b: Coordinate): string
+{
+  const aKey = coordinateKey(a)
+  const bKey = coordinateKey(b)
+
+  if (aKey < bKey)
+  {
+    return `${aKey}|${bKey}`
+  }
+
+  return `${bKey}|${aKey}`
+}
+
+function addRingSegments(ring: Coordinate[], segments: Map<string, BorderSegment>)
+{
+  for (let index = 0; index < ring.length - 1; index++)
+  {
+    const a = ring[index]
+    const b = ring[index + 1]
+    const key = segmentKey(a, b)
+
+    const existingSegment = segments.get(key)
+
+    if (existingSegment)
+    {
+      existingSegment.count += 1
+      continue
+    }
+
+    segments.set(key, {
+      count: 1,
+      coordinates: [a, b],
+    })
+  }
+}
+
+function buildInternalStateBorders(data: GeoJSON.GeoJsonObject): GeoJSON.FeatureCollection
+{
+  const featureCollection: GeoJSON.FeatureCollection = {
+    type: 'FeatureCollection',
+    features: [],
+  }
+
+  if (data.type !== 'FeatureCollection')
+  {
+    return featureCollection
+  }
+
+  const sourceFeatureCollection = data as GeoJSON.FeatureCollection
+  const segments = new Map<string, BorderSegment>()
+
+  sourceFeatureCollection.features.forEach((feature: GeoJSON.Feature) =>
+  {
+    if (!feature.geometry)
+    {
+      return
+    }
+
+    if (feature.geometry.type === 'Polygon')
+    {
+      const polygon = feature.geometry.coordinates as Coordinate[][]
+
+      polygon.forEach((ring) =>
+      {
+        addRingSegments(ring, segments)
+      })
+    }
+
+    if (feature.geometry.type === 'MultiPolygon')
+    {
+      const multiPolygon = feature.geometry.coordinates as Coordinate[][][]
+
+      multiPolygon.forEach((polygon) =>
+      {
+        polygon.forEach((ring) =>
+        {
+          addRingSegments(ring, segments)
+        })
+      })
+    }
+  })
+
+  const internalBorderLines: Coordinate[][] = []
+
+  segments.forEach((segment) =>
+  {
+    if (segment.count >= 2)
+    {
+      internalBorderLines.push(segment.coordinates)
+    }
+  })
+
+  featureCollection.features.push({
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      type: 'MultiLineString',
+      coordinates: internalBorderLines,
+    },
+  })
+
+  return featureCollection
 }
 
 function drawFixedLabel(label: StateLabelDatum, viewBounds: L.LatLngBounds): VisibleStateLabel | null
@@ -103,6 +224,11 @@ function drawFixedLabel(label: StateLabelDatum, viewBounds: L.LatLngBounds): Vis
 
 function StatesLayer({ entry }: { entry: StatesLayerEntry })
 {
+  const internalBorders = useMemo(() =>
+  {
+    return buildInternalStateBorders(entry.data)
+  }, [entry.data])
+
   const labelData = useMemo(() =>
   {
     const data = entry.data
@@ -121,14 +247,15 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
 
       if (!properties)
       {
-        console.log("Feature is missing properties, skipping label generation")
+        console.log('Feature is missing properties, skipping label generation')
         return
       }
 
       const stateName = properties.Data_State
+
       if (typeof stateName !== 'string' || stateName.trim() === '')
       {
-        console.log("Feature is missing state name, skipping label generation")
+        console.log('Feature is missing state name, skipping label generation')
         return
       }
 
@@ -137,14 +264,15 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
 
       if (!featureBounds.isValid())
       {
-        console.log("Feature has invalid bounds, skipping label generation")
+        console.log('Feature has invalid bounds, skipping label generation')
         return
       }
 
       const labelLong = parseFiniteNumber(properties.Label_Longitude)
       const labelLat = parseFiniteNumber(properties.Label_Latitude)
-      
+
       let fixedCenter: L.LatLng | null = null
+
       if (labelLong !== null && labelLat !== null)
       {
         fixedCenter = L.latLng(labelLat, labelLong)
@@ -163,16 +291,34 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
 
   return (
     <>
-      <GeoJSON key={entry.id} data={entry.data} style={() =>
+      <GeoJSON
+        key={`${entry.id}-fills`}
+        data={entry.data}
+        style={() =>
         {
           return {
-            color: entry.options.color,
-            weight: entry.options.weight,
+            stroke: false,
             fillColor: entry.options.fillColor,
             fillOpacity: entry.options.fillOpacity,
           }
         }}
       />
+
+      <GeoJSON
+        key={`${entry.id}-internal-borders`}
+        data={internalBorders}
+        style={() =>
+        {
+          return {
+            color: entry.options.color,
+            weight: entry.options.weight,
+            opacity: 1,
+            fillOpacity: 0,
+            interactive: false,
+          }
+        }}
+      />
+
       <StateViewportLabels labelData={labelData} />
     </>
   )
@@ -181,6 +327,7 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
 function StateViewportLabels({ labelData }: { labelData: StateLabelDatum[] })
 {
   const [viewBounds, setViewBounds] = useState<L.LatLngBounds | null>(null)
+
   const map = useMapEvents({
     zoomend: () =>
     {
@@ -206,13 +353,14 @@ function StateViewportLabels({ labelData }: { labelData: StateLabelDatum[] })
     .map((label) =>
     {
       const fixedLabel = drawFixedLabel(label, viewBounds)
+
       if (fixedLabel)
       {
         return fixedLabel
       }
 
       // return drawDynamicLabel(label, viewBounds)
-      return null;
+      return null
     })
     .filter((value): value is VisibleStateLabel =>
     {
@@ -229,8 +377,21 @@ function StateViewportLabels({ labelData }: { labelData: StateLabelDatum[] })
       {visibleLabels.map((label) =>
       {
         return (
-          <CircleMarker key={label.id} center={label.center} radius={0} stroke={false} fill={false} interactive={false}>
-            <Tooltip permanent direction="center" opacity={0.9} interactive={false} className="state-label-tooltip">
+          <CircleMarker
+            key={label.id}
+            center={label.center}
+            radius={0}
+            stroke={false}
+            fill={false}
+            interactive={false}
+          >
+            <Tooltip
+              permanent
+              direction="center"
+              opacity={0.9}
+              interactive={false}
+              className="state-label-tooltip"
+            >
               {label.stateName}
             </Tooltip>
           </CircleMarker>
