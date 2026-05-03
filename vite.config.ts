@@ -74,9 +74,8 @@ export default defineConfig(
           fs.copyFileSync(path.join(mapsSrc, "export", "Earth.png"), path.join(docsDest, "Earth.png"))
           fs.copyFileSync(path.join(mapsSrc, "export", "StatesData.geojson"), path.join(docsDest, "StatesData.geojson"))
           fs.copyFileSync(path.join(mapsSrc, "export", "TownsData.geojson"), path.join(docsDest, "TownsData.geojson"))
+          fs.copyFileSync(path.join(mapsSrc, "export", "BiomesData.geojson"), path.join(docsDest, "BiomesData.geojson"))
 
-          fs.copyFileSync(path.join(mapsSrc, "layers", "generated", "biomes.geojson"), path.join(docsDest, "biomes.geojson"))
-          
           fs.copyFileSync(path.join(mapsSrc, "layers", "Land", "Lakes.geojson"), path.join(docsDest, "Lakes.geojson"))
           fs.copyFileSync(path.join(mapsSrc, "layers", "Land", "Land.geojson"), path.join(docsDest, "Land.geojson"))
           fs.copyFileSync(path.join(mapsSrc, "layers", "Land", "Rivers.geojson"), path.join(docsDest, "Rivers.geojson"))

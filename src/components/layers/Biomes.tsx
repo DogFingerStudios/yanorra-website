@@ -23,11 +23,14 @@ export function getBiomesLayer(entry: BiomesLayerEntry)
 
     if (properties)
     {
-      const value = properties.Biomes_Color
-
+      const value = properties.biomes_data_Color
       if (typeof value === 'string' && value.trim() !== '')
       {
         biomeColor = value
+      }
+      else
+      {
+        console.warn('Warning: biomes_data_Color property is missing or invalid for feature', feature)
       }
     }
 

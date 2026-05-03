@@ -34,15 +34,15 @@ const DEFAULT_LAYER_OPTIONS =
 // Add your GeoJSON file URLs here (must be publicly served paths, usually from /public).
 const GEOJSON_FILES : GeoJsonLayerOptions[] = 
 [
+  // {
+  //   srcFile: '/geojson/Land.geojson',
+  //   color: '#7bd5e9',
+  //   fillColor: '#ffffff',
+  //   weight: 1,
+  //   fillOpacity: 1,
+  // },
   {
-    srcFile: '/geojson/Land.geojson',
-    color: '#7bd5e9',
-    fillColor: '#ffffff',
-    weight: 1,
-    fillOpacity: 1,
-  },
-  {
-    srcFile: '/geojson/biomes.geojson',
+    srcFile: '/geojson/BiomesData.geojson',
     color: '#7bd5e9',
     fillColor: '#ffffff',
     weight: 1,
