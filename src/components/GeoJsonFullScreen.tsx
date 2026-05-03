@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { GeoJSON, ImageOverlay, MapContainer, useMap, useMapEvents } from 'react-leaflet'
+import { GeoJSON, ImageOverlay, LayerGroup, LayersControl, MapContainer, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
 import { getTownLayer } from './layers/TownLayer'
@@ -12,6 +12,7 @@ import './MapFullScreen.css'
 type GeoJsonLayerOptions =
 {
   srcFile: string
+  pane?: string
   color?: string
   fillColor?: string
   weight?: number
@@ -31,18 +32,23 @@ const DEFAULT_LAYER_OPTIONS =
   maxZoom: Number.POSITIVE_INFINITY,
 }
 
+const BASE_GEOJSON_PANE = 'baseGeoJsonPane'
+const BASE_GEOJSON_Z_INDEX = '200'
+
 // Add your GeoJSON file URLs here (must be publicly served paths, usually from /public).
 const GEOJSON_FILES : GeoJsonLayerOptions[] = 
 [
-  // {
-  //   srcFile: '/geojson/Land.geojson',
-  //   color: '#7bd5e9',
-  //   fillColor: '#ffffff',
-  //   weight: 1,
-  //   fillOpacity: 1,
-  // },
+  {
+    srcFile: '/geojson/Land.geojson',
+    pane: BASE_GEOJSON_PANE,
+    color: '#7bd5e9',
+    fillColor: '#ffffff',
+    weight: 1,
+    fillOpacity: 1,
+  },
   {
     srcFile: '/geojson/BiomesData.geojson',
+    pane: BASE_GEOJSON_PANE,
     color: '#7bd5e9',
     fillColor: '#ffffff',
     weight: 1,
@@ -86,6 +92,9 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   },
 ]
 
+const LAND_LAYER_FILE = '/geojson/Land.geojson'
+const BIOMES_LAYER_FILE = '/geojson/BiomesData.geojson'
+
 const MIN_ZOOM = 2
 const MAX_ZOOM = 16
 const DEFAULT_CENTER: [number, number] = [0, 0]
@@ -120,6 +129,35 @@ type MapViewState =
 {
   zoom: number
   center: [number, number]
+}
+
+type BaseLayerKey = 'land' | 'biomes'
+
+const LAYER_QUERY_PARAM = 'layer'
+
+function parseBaseLayerFromUrl(): BaseLayerKey | null
+{
+  const searchParams = new URLSearchParams(window.location.search)
+  const rawLayer = searchParams.get(LAYER_QUERY_PARAM)
+
+  if (!rawLayer)
+  {
+    return null
+  }
+
+  const normalizedLayer = rawLayer.toLowerCase()
+
+  if (normalizedLayer === 'land')
+  {
+    return 'land'
+  }
+
+  if (normalizedLayer === 'biomes')
+  {
+    return 'biomes'
+  }
+
+  return null
 }
 
 function parseMapViewFromUrl(defaultCenter: [number, number], defaultZoom: number, minZoom: number, maxZoom: number): MapViewState
@@ -210,6 +248,46 @@ const DebugTracker = ({ onViewChange }: { onViewChange: (view: MapViewState) => 
   return null
 }
 
+const BaseLayerTracker = ({ onBaseLayerChange }: { onBaseLayerChange: (nextLayer: BaseLayerKey) => void }) =>
+{
+  useMapEvents({
+    baselayerchange: (event) =>
+    {
+      if (event.name === 'Land')
+      {
+        onBaseLayerChange('land')
+        return
+      }
+
+      if (event.name === 'Biomes')
+      {
+        onBaseLayerChange('biomes')
+      }
+    },
+  })
+
+  return null
+}
+
+const EnsureMapPanes = () =>
+{
+  const map = useMap()
+
+  useEffect(() =>
+  {
+    let pane = map.getPane(BASE_GEOJSON_PANE)
+
+    if (!pane)
+    {
+      pane = map.createPane(BASE_GEOJSON_PANE)
+    }
+
+    pane.style.zIndex = BASE_GEOJSON_Z_INDEX
+  }, [map])
+
+  return null
+}
+
 const GeoJsonBoundsFitter = ({ entries }: { entries: GeoJsonEntry[] }) =>
 {
   const map = useMap()
@@ -266,8 +344,19 @@ const GeoJsonFullScreen = (
   const [currentZoom, setCurrentZoom] = useState(initialView.zoom)
   const [coords, setCoords] = useState<[number, number]>(initialView.center)
   const [copyMessage, setCopyMessage] = useState('')
+  const [selectedBaseLayer, setSelectedBaseLayer] = useState<BaseLayerKey>(() =>
+  {
+    const parsedBaseLayer = parseBaseLayerFromUrl()
 
-  const syncViewToUrl = (view: MapViewState) =>
+    if (parsedBaseLayer)
+    {
+      return parsedBaseLayer
+    }
+
+    return 'biomes'
+  })
+
+  const syncViewToUrl = (view: MapViewState, baseLayer: BaseLayerKey) =>
   {
     const url = new URL(window.location.href)
     const nextLat = view.center[0].toFixed(4)
@@ -277,6 +366,7 @@ const GeoJsonFullScreen = (
     url.searchParams.set('lat', nextLat)
     url.searchParams.set('lng', nextLng)
     url.searchParams.set('z', nextZoom)
+    url.searchParams.set(LAYER_QUERY_PARAM, baseLayer)
 
     const nextUrl = `${url.pathname}?${url.searchParams.toString()}${url.hash}`
     const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`
@@ -291,7 +381,16 @@ const GeoJsonFullScreen = (
   {
     setCurrentZoom(view.zoom)
     setCoords(view.center)
-    syncViewToUrl(view)
+    syncViewToUrl(view, selectedBaseLayer)
+  }
+
+  const handleBaseLayerChange = (nextLayer: BaseLayerKey) =>
+  {
+    setSelectedBaseLayer(nextLayer)
+    syncViewToUrl({
+      zoom: currentZoom,
+      center: coords,
+    }, nextLayer)
   }
 
   const navigateTo = (path: string) =>
@@ -501,6 +600,114 @@ const GeoJsonFullScreen = (
     )
   }
 
+  const renderEntryLayer = (entry: GeoJsonEntry) =>
+  {
+    const entryMinZoom = entry.options.minZoom ?? 0
+    const entryMaxZoom = entry.options.maxZoom ?? Number.POSITIVE_INFINITY
+
+    if (currentZoom < entryMinZoom || currentZoom > entryMaxZoom)
+    {
+      return null
+    }
+
+    if (entry.options.drawFunc)
+    {
+      return entry.options.drawFunc(entry)
+    }
+
+    return (
+      <GeoJSON
+        key={entry.id}
+        data={entry.data}
+        pane={entry.options.pane}
+        style={() =>
+        {
+          const options = {
+            ...DEFAULT_LAYER_OPTIONS,
+            ...entry.options,
+          }
+
+          return {
+            color: options.color,
+            weight: options.weight,
+            fillColor: options.fillColor,
+            fillOpacity: options.fillOpacity,
+          }
+        }}
+      />
+    )
+  }
+
+  let landEntry: GeoJsonEntry | null = null
+  let biomesEntry: GeoJsonEntry | null = null
+  const otherEntries: GeoJsonEntry[] = []
+
+  for (const entry of entries)
+  {
+    if (entry.id === LAND_LAYER_FILE)
+    {
+      landEntry = entry
+    }
+    else if (entry.id === BIOMES_LAYER_FILE)
+    {
+      biomesEntry = entry
+    }
+    else
+    {
+      otherEntries.push(entry)
+    }
+  }
+
+  let layerControlElement = null
+
+  if (landEntry || biomesEntry)
+  {
+    let activeBaseLayer: BaseLayerKey = selectedBaseLayer
+
+    if (activeBaseLayer === 'land' && !landEntry && biomesEntry)
+    {
+      activeBaseLayer = 'biomes'
+    }
+
+    if (activeBaseLayer === 'biomes' && !biomesEntry && landEntry)
+    {
+      activeBaseLayer = 'land'
+    }
+
+    let landBaseLayerElement = null
+
+    if (landEntry)
+    {
+      landBaseLayerElement = (
+        <LayersControl.BaseLayer name="Land" checked={activeBaseLayer === 'land'}>
+          <LayerGroup>
+            {renderEntryLayer(landEntry)}
+          </LayerGroup>
+        </LayersControl.BaseLayer>
+      )
+    }
+
+    let biomesBaseLayerElement = null
+
+    if (biomesEntry)
+    {
+      biomesBaseLayerElement = (
+        <LayersControl.BaseLayer name="Biomes" checked={activeBaseLayer === 'biomes'}>
+          <LayerGroup>
+            {renderEntryLayer(biomesEntry)}
+          </LayerGroup>
+        </LayersControl.BaseLayer>
+      )
+    }
+
+    layerControlElement = (
+      <LayersControl position="topright" collapsed={false}>
+        {landBaseLayerElement}
+        {biomesBaseLayerElement}
+      </LayersControl>
+    )
+  }
+
   const boundsFitterElement = fullScreen && shouldFitBounds ? <GeoJsonBoundsFitter entries={entries} /> : null
 
   return (
@@ -518,40 +725,17 @@ const GeoJsonFullScreen = (
           attributionControl={false}
           crs={L.CRS.EPSG4326}
         >
+          <EnsureMapPanes />
+          <BaseLayerTracker onBaseLayerChange={handleBaseLayerChange} />
           {earthLayerElement}
-          {entries.map((entry) =>
+          {layerControlElement}
+          {otherEntries.map((entry) =>
           {
-            const minZoom = entry.options.minZoom ?? 0
-            const maxZoom = entry.options.maxZoom ?? Number.POSITIVE_INFINITY
-
-            if (currentZoom < minZoom || currentZoom > maxZoom)
-            {
-              return null
-            }
-
-            if (entry.options.drawFunc)
-            {
-              return entry.options.drawFunc(entry)
-            }
-
             return (
-              <GeoJSON key={entry.id} data={entry.data} style={() =>
-                {
-                  const options = {
-                    ...DEFAULT_LAYER_OPTIONS,
-                    ...entry.options,
-                  }
-
-                  return { 
-                    color: options.color, 
-                    weight: options.weight, 
-                    fillColor: options.fillColor,
-                    fillOpacity: options.fillOpacity,
-                  }
-                }}
-              />
+              <LayerGroup key={entry.id}>
+                {renderEntryLayer(entry)}
+              </LayerGroup>
             )
-
           })}
           {boundsFitterElement}
           <DebugTracker onViewChange={handleMapViewChange} />

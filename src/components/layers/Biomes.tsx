@@ -7,6 +7,7 @@ type BiomesLayerEntry =
   data: GeoJSON.GeoJsonObject
   options:
   {
+    pane?: string
     color?: string
     weight?: number
     fillColor?: string
@@ -58,6 +59,7 @@ export function getBiomesLayer(entry: BiomesLayerEntry)
     <GeoJSON
       key={entry.id}
       data={entry.data}
+      pane={entry.options.pane}
       style={styleFeature}
     />
   )
