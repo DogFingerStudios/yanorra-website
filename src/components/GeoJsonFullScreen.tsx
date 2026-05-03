@@ -42,7 +42,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     fillOpacity: 1,
   },
   {
-    srcFile: '/geojson/Biomes.geojson',
+    srcFile: '/geojson/biomes.geojson',
     color: '#7bd5e9',
     fillColor: '#ffffff',
     weight: 1,
