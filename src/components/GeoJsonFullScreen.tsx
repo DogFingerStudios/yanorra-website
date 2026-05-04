@@ -39,7 +39,7 @@ const BASE_GEOJSON_Z_INDEX = '200'
 const GEOJSON_FILES : GeoJsonLayerOptions[] = 
 [
   {
-    srcFile: '/geojson/Land.geojson',
+    srcFile: '/geojson/land.geojson',
     pane: BASE_GEOJSON_PANE,
     color: '#7bd5e9',
     fillColor: '#ffffff',
@@ -92,7 +92,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   },
 ]
 
-const LAND_LAYER_FILE = '/geojson/Land.geojson'
+const LAND_LAYER_FILE = '/geojson/land.geojson'
 const BIOMES_LAYER_FILE = '/geojson/BiomesData.geojson'
 
 const MIN_ZOOM = 2
