@@ -6,7 +6,7 @@ import { getBiomesLayer } from './layers/Biomes'
 // import { getTownLayer } from './layers/TownLayer'
 import { getSettlementPointsLayer } from './layers/SettlmentPoints'
 import { getStatesLayer } from './layers/States'
-// import { getRoutesLayer } from './layers/Routes'
+import { getRoutesLayer } from './layers/Routes'
 import 'leaflet/dist/leaflet.css'
 import './MapFullScreen.css'
 
@@ -80,38 +80,30 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   },
 
 // ****************************************************
-  // {
-  //   id: 'roads_highway',
-  //   srcFile: '/geojson/roads_highway.geojson',
-  //   weight: 1.55,
-  //   color: '#5a5a5a',
-  //   minZoom: 2,
-  //   drawFunc: getRoutesLayer,
-  // },
-  // {
-  //   id: 'roads_major',
-  //   srcFile: '/geojson/roads_major.geojson',
-  //   weight: 1.15,
-  //   color: '#5a5a5a',
-  //   minZoom: 5,
-  //   drawFunc: getRoutesLayer,
-  // },
-  // {
-  //   id: 'roads_minor',
-  //   srcFile: '/geojson/roads_minor.geojson',
-  //   weight: 1.15,
-  //   color: '#5a5a5a',
-  //   minZoom: 5,
-  //   drawFunc: getRoutesLayer,
-  // },
-  // { 
-  //   id: 'alleys',
-  //   srcFile: '/geojson/alleys.geojson',
-  //   weight: 1.15,
-  //   color: '#5a5a5a',
-  //   minZoom: 5,
-  //   drawFunc: getRoutesLayer,
-  // },
+  {
+    id: 'roads_highway',
+    srcFile: '/geojson/roads_highway.geojson',
+    weight: 1.35,
+    color: '#5a5a5a',
+    minZoom: 4,
+    drawFunc: getRoutesLayer,
+  },
+  {
+    id: 'roads_major',
+    srcFile: '/geojson/roads_major.geojson',
+    weight: 1.15,
+    color: '#5a5a5a',
+    minZoom: 4,
+    drawFunc: getRoutesLayer,
+  },
+  {
+    id: 'roads_minor',
+    srcFile: '/geojson/roads_minor.geojson',
+    weight: 1.0,
+    color: '#5a5a5a',
+    minZoom: 7,
+    drawFunc: getRoutesLayer,
+  },
   // {
   //   id: 'streets_major',
   //   srcFile: '/geojson/streets_major.geojson',
@@ -136,14 +128,14 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   //   minZoom: 5,
   //   drawFunc: getRoutesLayer,
   // },
-  // {
-  //   id: 'railways',
-  //   srcFile: '/geojson/railways.geojson',
-  //   weight: 1.15,
-  //   color: '#5a5a5a',
-  //   minZoom: 5,
-  //   drawFunc: getRoutesLayer,
-  // },
+  {
+    id: 'railways',
+    srcFile: '/geojson/railways.geojson',
+    weight: 1.15,
+    color: '#5a5a5a',
+    minZoom: 5,
+    drawFunc: getRoutesLayer,
+  },
 // ****************************************************
 
   {
