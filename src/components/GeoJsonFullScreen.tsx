@@ -3,9 +3,10 @@ import type { ReactNode } from 'react'
 import { GeoJSON, ImageOverlay, LayerGroup, LayersControl, MapContainer, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
-import { getTownLayer } from './layers/TownLayer'
+// import { getTownLayer } from './layers/TownLayer'
+import { getSettlementPointsLayer } from './layers/SettlmentPoints'
 import { getStatesLayer } from './layers/States'
-import { getRoutesLayer } from './layers/Routes'
+// import { getRoutesLayer } from './layers/Routes'
 import 'leaflet/dist/leaflet.css'
 import './MapFullScreen.css'
 
@@ -77,78 +78,84 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     fillOpacity: 0,
     drawFunc: getStatesLayer,
   },
-  {
-    id: 'roads_highway',
-    srcFile: '/geojson/roads_highway.geojson',
-    weight: 1.55,
-    color: '#5a5a5a',
-    minZoom: 2,
-    drawFunc: getRoutesLayer,
-  },
-  {
-    id: 'roads_major',
-    srcFile: '/geojson/roads_major.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    minZoom: 5,
-    drawFunc: getRoutesLayer,
-  },
-  {
-    id: 'roads_minor',
-    srcFile: '/geojson/roads_minor.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    minZoom: 5,
-    drawFunc: getRoutesLayer,
-  },
-  { 
-    id: 'alleys',
-    srcFile: '/geojson/alleys.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    minZoom: 5,
-    drawFunc: getRoutesLayer,
-  },
-  {
-    id: 'streets_major',
-    srcFile: '/geojson/streets_major.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    minZoom: 5,
-    drawFunc: getRoutesLayer,
-  },
-  {
-    id: 'streets_minor',
-    srcFile: '/geojson/streets_minor.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    minZoom: 5,
-    drawFunc: getRoutesLayer,
-  },
-  { 
-    id: 'seaways',
-    srcFile: '/geojson/seaways.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    minZoom: 5,
-    drawFunc: getRoutesLayer,
-  },
-  {
-    id: 'railways',
-    srcFile: '/geojson/railways.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    minZoom: 5,
-    drawFunc: getRoutesLayer,
-  },
+
+// ****************************************************
+  // {
+  //   id: 'roads_highway',
+  //   srcFile: '/geojson/roads_highway.geojson',
+  //   weight: 1.55,
+  //   color: '#5a5a5a',
+  //   minZoom: 2,
+  //   drawFunc: getRoutesLayer,
+  // },
+  // {
+  //   id: 'roads_major',
+  //   srcFile: '/geojson/roads_major.geojson',
+  //   weight: 1.15,
+  //   color: '#5a5a5a',
+  //   minZoom: 5,
+  //   drawFunc: getRoutesLayer,
+  // },
+  // {
+  //   id: 'roads_minor',
+  //   srcFile: '/geojson/roads_minor.geojson',
+  //   weight: 1.15,
+  //   color: '#5a5a5a',
+  //   minZoom: 5,
+  //   drawFunc: getRoutesLayer,
+  // },
+  // { 
+  //   id: 'alleys',
+  //   srcFile: '/geojson/alleys.geojson',
+  //   weight: 1.15,
+  //   color: '#5a5a5a',
+  //   minZoom: 5,
+  //   drawFunc: getRoutesLayer,
+  // },
+  // {
+  //   id: 'streets_major',
+  //   srcFile: '/geojson/streets_major.geojson',
+  //   weight: 1.15,
+  //   color: '#5a5a5a',
+  //   minZoom: 5,
+  //   drawFunc: getRoutesLayer,
+  // },
+  // {
+  //   id: 'streets_minor',
+  //   srcFile: '/geojson/streets_minor.geojson',
+  //   weight: 1.15,
+  //   color: '#5a5a5a',
+  //   minZoom: 5,
+  //   drawFunc: getRoutesLayer,
+  // },
+  // { 
+  //   id: 'seaways',
+  //   srcFile: '/geojson/seaways.geojson',
+  //   weight: 1.15,
+  //   color: '#5a5a5a',
+  //   minZoom: 5,
+  //   drawFunc: getRoutesLayer,
+  // },
+  // {
+  //   id: 'railways',
+  //   srcFile: '/geojson/railways.geojson',
+  //   weight: 1.15,
+  //   color: '#5a5a5a',
+  //   minZoom: 5,
+  //   drawFunc: getRoutesLayer,
+  // },
+// ****************************************************
+
   {
     id: 'settlements_points',
     srcFile: '/geojson/settlements_points.geojson',
     weight: 1.15,
     color: '#5a5a5a',
     minZoom: 5,
-    drawFunc: getTownLayer,
+    drawFunc: getSettlementPointsLayer,
   },
+
+
   // {
   //   srcFile: '/geojson/Routes.geojson',
   //   weight: 1.15,
