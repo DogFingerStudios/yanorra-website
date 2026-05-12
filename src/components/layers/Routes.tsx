@@ -31,12 +31,6 @@ export function getRoutesLayer(entry: RoutesLayerEntry)
 
       switch (group)
       {
-        case 'searoutes':
-          routeColor = '#0000FF'
-          routeWeight = 2
-          routeDashArray = '5, 5'
-          routeOpacity = 0.35
-          break
         case 'route-highway':
             routeColor = '#787878'
             routeWeight = 3

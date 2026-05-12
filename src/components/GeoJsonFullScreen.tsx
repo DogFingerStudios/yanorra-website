@@ -7,6 +7,7 @@ import { getBiomesLayer } from './layers/Biomes'
 import { getSettlementPointsLayer } from './layers/SettlmentPoints'
 import { getStatesLayer } from './layers/States'
 import { getRailwayLayer } from './layers/RailwayLayer'
+import { getSeawayLayer } from './layers/SeawayLayer'
 import { getRoutesLayer } from './layers/Routes'
 import 'leaflet/dist/leaflet.css'
 import './MapFullScreen.css'
@@ -121,14 +122,12 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   //   minZoom: 5,
   //   drawFunc: getRoutesLayer,
   // },
-  // { 
-  //   id: 'seaways',
-  //   srcFile: '/geojson/seaways.geojson',
-  //   weight: 1.15,
-  //   color: '#5a5a5a',
-  //   minZoom: 5,
-  //   drawFunc: getRoutesLayer,
-  // },
+  {
+    id: 'seaways',
+    srcFile: '/geojson/seaways.geojson',
+    minZoom: 5,
+    drawFunc: getSeawayLayer,
+  },
   {
     id: 'railways',
     srcFile: '/geojson/railways.geojson',
