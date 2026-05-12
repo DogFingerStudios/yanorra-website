@@ -8,6 +8,7 @@ import { getSettlementPointsLayer } from './layers/SettlmentPoints'
 import { getStatesLayer } from './layers/States'
 import { getRailwayLayer } from './layers/RailwayLayer'
 import { getSeawayLayer } from './layers/SeawayLayer'
+import { getStreetsLayer } from './layers/StreetsLayer'
 import { getRoutesLayer } from './layers/Routes'
 import 'leaflet/dist/leaflet.css'
 import './MapFullScreen.css'
@@ -112,7 +113,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     weight: 1.25,
     color: '#5a5a5a',
     minZoom: 5,
-    drawFunc: getRoutesLayer,
+    drawFunc: getStreetsLayer,
   },
   {
     id: 'streets_minor',
@@ -120,7 +121,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     weight: 1.15,
     color: '#5a5a5a',
     minZoom: 5,
-    drawFunc: getRoutesLayer,
+    drawFunc: getStreetsLayer,
   },
   {
     id: 'alleys',
@@ -128,7 +129,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     weight: 1.05,
     color: '#5a5a5a',
     minZoom: 5,
-    drawFunc: getRoutesLayer,
+    drawFunc: getStreetsLayer,
   },
   {
     id: 'seaways',
