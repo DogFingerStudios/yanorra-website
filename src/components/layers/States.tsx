@@ -252,10 +252,10 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
       }
 
       const stateName = properties.Data_State
-
-      if (typeof stateName !== 'string' || stateName.trim() === '')
+      if ((typeof stateName !== 'string' || stateName.trim() === '')
+            && properties.type !== "island")
       {
-        console.log('Feature is missing state name, skipping label generation')
+        console.warn('Feature is missing state name. Feature:', feature, "Properties:", properties)
         return
       }
 

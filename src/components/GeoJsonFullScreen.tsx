@@ -13,6 +13,10 @@ import { getRoutesLayer } from './layers/Routes'
 import 'leaflet/dist/leaflet.css'
 import './MapFullScreen.css'
 
+const MIN_ZOOM = 2
+const MAX_ZOOM = 20
+const DEFAULT_CENTER: [number, number] = [0, 0]
+
 type GeoJsonLayerOptions =
 {
   id?: string
@@ -88,7 +92,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     srcFile: '/geojson/roads_highway.geojson',
     weight: 1.35,
     color: '#5a5a5a',
-    minZoom: 4,
+    minZoom: 2,
     drawFunc: getRoutesLayer,
   },
   {
@@ -96,7 +100,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     srcFile: '/geojson/roads_major.geojson',
     weight: 1.15,
     color: '#5a5a5a',
-    minZoom: 4,
+    minZoom: 3,
     drawFunc: getRoutesLayer,
   },
   {
@@ -104,7 +108,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     srcFile: '/geojson/roads_minor.geojson',
     weight: 1.0,
     color: '#5a5a5a',
-    minZoom: 7,
+    minZoom: 5,
     drawFunc: getRoutesLayer,
   },
   {
@@ -156,10 +160,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
 
 const LAND_LAYER_FILE = '/geojson/land.geojson'
 const BIOMES_LAYER_FILE = '/geojson/BiomesData.geojson'
-
-const MIN_ZOOM = 2
-const MAX_ZOOM = 16
-const DEFAULT_CENTER: [number, number] = [0, 0]
 
 // Set this to your Earth raster path in /public.
 const EARTH_LAYER_FILE = '/geojson/Earth.png'

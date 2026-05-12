@@ -29,9 +29,9 @@ export function getBiomesLayer(entry: BiomesLayerEntry)
       {
         biomeColor = value
       }
-      else
+      else if (properties.type !== "lake")
       {
-        console.warn('Warning: biomes_data_Color property is missing or invalid for feature', feature)
+        console.warn('Property `biomes_data_Color` is missing or invalid for feature', feature)
       }
     }
 

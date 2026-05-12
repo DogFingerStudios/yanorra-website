@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { GeoJSON, useMapEvents } from 'react-leaflet'
-import L from 'leaflet'
 import './Routes.css'
 
 type StreetsLayerEntry =
@@ -16,13 +15,28 @@ type StreetsLayerEntry =
 
 export function getStreetsLayer(entry: StreetsLayerEntry)
 {
-  const getScaledStreetWeight = (zoom: number) =>
+  const getUniformStreetWeight = (zoom: number) =>
   {
-    const baseWeight = entry.options.weight ?? 1.15
-    const zoomFactor = 1 + Math.max(0, zoom - 5) * 0.55
-    const clampedFactor = Math.min(zoomFactor, 7)
+    let retval = 8;
+    if (zoom <= 8)
+    {
+      retval = 1
+    }
+    else if (zoom <= 11)
+    {
+      retval = 1.5
+    }
+    else if (zoom <= 13)
+    {
+      retval = 5.2
+    }
+    else if (zoom <= 15)
+    {
+      retval = 6.6
+    }
 
-    return baseWeight * clampedFactor
+    // console.debug(`Zoom ${zoom} - using base street weight ${retval}`)
+    return retval;
   }
 
   const StreetsGeoJson = () =>
@@ -41,57 +55,96 @@ export function getStreetsLayer(entry: StreetsLayerEntry)
       setCurrentZoom(map.getZoom())
     }, [map])
 
-    const styleFeature = () =>
+    const getStreetStyle = (feature: GeoJSON.Feature, stylePass: 'casing' | 'fill') =>
     {
+      const baseWeight = getUniformStreetWeight(currentZoom)
+      const properties = feature.properties
+
+      // Use this block to style specific roads later by feature properties.
+      // Example fields often available: name, class, type, category.
+      let roadColor = '#ffffff'
+      let roadWeight = baseWeight
+
+      if (properties && typeof properties === 'object')
+      {
+        // Example: make a specific road wider.
+        // if (properties.name === 'West 2nd Avenue')
+        // {
+        //   roadWeight = baseWeight * 1.35
+        // }
+
+        // Example: recolor one road class.
+        // if (properties.class === 'major')
+        // {
+        //   roadColor = '#f2d589'
+        // }
+      }
+
+      if (stylePass === 'casing')
+      {
+        return {
+          // color: '#dfdddb',
+          color: '#000000',
+          weight: roadWeight + 1.6,
+          opacity: 1,
+          lineCap: 'round' as const,
+          lineJoin: 'round' as const,
+        }
+      }
+
+      let fallbackColor = '#ffff00'
+
+      if (entry.options.color)
+      {
+        fallbackColor = entry.options.color
+      }
+
+      let finalColor = roadColor
+
+      if (finalColor === '#f7f7f5')
+      {
+        finalColor = fallbackColor
+      }
+
       return {
-        color: entry.options.color ?? '#5a5a5a',
-        weight: getScaledStreetWeight(currentZoom),
+        color: finalColor,
+        weight: roadWeight,
         opacity: 1,
-        lineCap: 'square' as const,
-        lineJoin: 'miter' as const,
+        lineCap: 'round' as const,
+        lineJoin: 'round' as const,
       }
     }
 
     return (
-      <GeoJSON
-        key={entry.id}
-        data={entry.data}
-        style={styleFeature}
-        onEachFeature={onEachFeatureHandler}
-      />
+      <>
+        <GeoJSON
+          key={`${entry.id}-casing`}
+          data={entry.data}
+          style={(feature) =>
+          {
+            if (!feature)
+            {
+              return {}
+            }
+
+            return getStreetStyle(feature, 'casing')
+          }}
+        />
+        <GeoJSON
+          key={`${entry.id}-fill`}
+          data={entry.data}
+          style={(feature) =>
+          {
+            if (!feature)
+            {
+              return {}
+            }
+
+            return getStreetStyle(feature, 'fill')
+          }}
+        />
+      </>
     )
-  }
-
-  const onEachFeatureHandler = (feature: GeoJSON.Feature, layer: L.Layer) =>
-  {
-    const properties = feature.properties
-
-    if (!properties)
-    {
-      return
-    }
-
-    const streetName = properties.name
-
-    if (typeof streetName !== 'string' || streetName.trim() === '')
-    {
-      return
-    }
-
-    const tooltipLayer = layer as L.Layer &
-    {
-      bindTooltip?: (content: string, options?: L.TooltipOptions) => L.Layer
-    }
-
-    if (typeof tooltipLayer.bindTooltip === 'function')
-    {
-      tooltipLayer.bindTooltip(streetName, {
-        permanent: false,
-        direction: 'top',
-        opacity: 0.9,
-        className: 'route-label-tooltip',
-      })
-    }
   }
 
   return <StreetsGeoJson key={entry.id} />
