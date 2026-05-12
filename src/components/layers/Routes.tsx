@@ -15,9 +15,9 @@ type RoutesLayerEntry =
 
 export function getRoutesLayer(entry: RoutesLayerEntry)
 {
-  const styleFeature = (feature?: GeoJSON.Feature) =>
+  const styleFeature = (_feature?: GeoJSON.Feature) =>
   {
-    const properties = feature?.properties
+    // const properties = feature?.properties
     let routeColor: string | undefined
     let routeWeight: number | undefined
     let routeDashArray: string | undefined
@@ -25,32 +25,35 @@ export function getRoutesLayer(entry: RoutesLayerEntry)
     let lineCap: L.LineCapShape | undefined
     let lineJoin: L.LineJoinShape | undefined
 
-    if (properties && typeof properties.group === 'string')
-    {
-      const group = properties.group
+    // if (properties && typeof properties.group === 'string')
+    // {
+    //   const group = properties.group
 
-      switch (group)
-      {
-        case 'route-highway':
-            routeColor = '#787878'
-            routeWeight = 3
-            routeOpacity = 0.9
-            lineCap = 'square'
-            lineJoin = 'round'
-          break
-        case 'roads':
-          routeColor = '#787878'
-          routeWeight = 2
-          break
-        case 'trails':
-          routeColor = '#787878'
-          routeWeight = 1
-          break
-        default:
-          routeColor = entry.options.color
-          routeWeight = entry.options.weight
-      }
-    }
+    //   switch (group)
+    //   {
+    //     case 'route-highway':
+    //         routeColor = '#787878'
+    //         routeWeight = 3
+    //         routeOpacity = 0.9
+    //         lineCap = 'square'
+    //         lineJoin = 'round'
+    //       break
+    //     case 'roads':
+    //       routeColor = '#787878'
+    //       routeWeight = 2
+    //       break
+    //     case 'trails':
+    //       routeColor = '#787878'
+    //       routeWeight = 1
+    //       break
+    //     default:
+    //       routeColor = entry.options.color
+    //       routeWeight = entry.options.weight
+    //   }
+    // }
+
+    routeColor = entry.options.color
+    routeWeight = entry.options.weight
 
     return {
       color: routeColor ?? entry.options.color,
