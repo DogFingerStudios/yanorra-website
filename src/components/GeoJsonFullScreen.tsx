@@ -106,22 +106,30 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     minZoom: 7,
     drawFunc: getRoutesLayer,
   },
-  // {
-  //   id: 'streets_major',
-  //   srcFile: '/geojson/streets_major.geojson',
-  //   weight: 1.15,
-  //   color: '#5a5a5a',
-  //   minZoom: 5,
-  //   drawFunc: getRoutesLayer,
-  // },
-  // {
-  //   id: 'streets_minor',
-  //   srcFile: '/geojson/streets_minor.geojson',
-  //   weight: 1.15,
-  //   color: '#5a5a5a',
-  //   minZoom: 5,
-  //   drawFunc: getRoutesLayer,
-  // },
+  {
+    id: 'streets_major',
+    srcFile: '/geojson/streets_major.geojson',
+    weight: 1.25,
+    color: '#5a5a5a',
+    minZoom: 5,
+    drawFunc: getRoutesLayer,
+  },
+  {
+    id: 'streets_minor',
+    srcFile: '/geojson/streets_minor.geojson',
+    weight: 1.15,
+    color: '#5a5a5a',
+    minZoom: 5,
+    drawFunc: getRoutesLayer,
+  },
+  {
+    id: 'alleys',
+    srcFile: '/geojson/alleys.geojson',
+    weight: 1.05,
+    color: '#5a5a5a',
+    minZoom: 5,
+    drawFunc: getRoutesLayer,
+  },
   {
     id: 'seaways',
     srcFile: '/geojson/seaways.geojson',
@@ -136,8 +144,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     minZoom: 5,
     drawFunc: getRailwayLayer,
   },
-// ****************************************************
-
   {
     id: 'settlements_points',
     srcFile: '/geojson/settlements_points.geojson',
@@ -145,28 +151,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     color: '#5a5a5a',
     drawFunc: getSettlementPointsLayer,
   },
-
-
-  // {
-  //   srcFile: '/geojson/Routes.geojson',
-  //   weight: 1.15,
-  //   color: '#5a5a5a',
-  //   minZoom: 5,
-  //   drawFunc: getRoutesLayer,
-  // },
-  // {
-  //   id: 'towns',
-  //   srcFile: '/geojson/TownsData.geojson',
-  //   // maxZoom: 8,
-  //   fillOpacity: 0,
-  //   drawFunc: getTownLayer,
-  // },
-  // {
-  //   srcFile: '/geojson/Town1.geojson',
-  //   weight: 0.75,
-  //   color: '#000000',
-  //   minZoom: 3,
-  // },
 ]
 
 const LAND_LAYER_FILE = '/geojson/land.geojson'
