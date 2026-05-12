@@ -1,4 +1,5 @@
-import { GeoJSON } from 'react-leaflet'
+import { useEffect, useState } from 'react'
+import { GeoJSON, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import './Routes.css'
 
@@ -15,15 +16,50 @@ type StreetsLayerEntry =
 
 export function getStreetsLayer(entry: StreetsLayerEntry)
 {
-  const styleFeature = () =>
+  const getScaledStreetWeight = (zoom: number) =>
   {
-    return {
-      color: entry.options.color ?? '#5a5a5a',
-      weight: entry.options.weight ?? 1.15,
-      opacity: 1,
-      lineCap: 'round' as const,
-      lineJoin: 'round' as const,
+    const baseWeight = entry.options.weight ?? 1.15
+    const zoomFactor = 1 + Math.max(0, zoom - 5) * 0.55
+    const clampedFactor = Math.min(zoomFactor, 7)
+
+    return baseWeight * clampedFactor
+  }
+
+  const StreetsGeoJson = () =>
+  {
+    const [currentZoom, setCurrentZoom] = useState(5)
+
+    const map = useMapEvents({
+      zoomend: () =>
+      {
+        setCurrentZoom(map.getZoom())
+      },
+    })
+
+    useEffect(() =>
+    {
+      setCurrentZoom(map.getZoom())
+    }, [map])
+
+    const styleFeature = () =>
+    {
+      return {
+        color: entry.options.color ?? '#5a5a5a',
+        weight: getScaledStreetWeight(currentZoom),
+        opacity: 1,
+        lineCap: 'square' as const,
+        lineJoin: 'miter' as const,
+      }
     }
+
+    return (
+      <GeoJSON
+        key={entry.id}
+        data={entry.data}
+        style={styleFeature}
+        onEachFeature={onEachFeatureHandler}
+      />
+    )
   }
 
   const onEachFeatureHandler = (feature: GeoJSON.Feature, layer: L.Layer) =>
@@ -58,12 +94,5 @@ export function getStreetsLayer(entry: StreetsLayerEntry)
     }
   }
 
-  return (
-    <GeoJSON
-      key={entry.id}
-      data={entry.data}
-      style={styleFeature}
-      onEachFeature={onEachFeatureHandler}
-    />
-  )
+  return <StreetsGeoJson key={entry.id} />
 }
