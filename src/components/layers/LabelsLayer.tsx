@@ -16,6 +16,8 @@ type LabelProperties = GeoJSON.GeoJsonProperties &
 {
   label_text?: unknown
   label_type?: unknown
+  min_zoom?: unknown
+  max_zoom?: unknown
   font_size?: unknown
   font_family?: unknown
   font_style?: unknown
@@ -389,6 +391,30 @@ function isLineLayer(layer: L.Layer): layer is L.Polyline
   return false
 }
 
+function isLabelVisibleAtZoom(properties: LabelProperties, currentZoom: number): boolean
+{
+  const minZoom = parseFiniteNumber(properties.min_zoom)
+  const maxZoom = parseFiniteNumber(properties.max_zoom)
+
+  if (minZoom !== null)
+  {
+    if (currentZoom < minZoom)
+    {
+      return false
+    }
+  }
+
+  if (maxZoom !== null)
+  {
+    if (currentZoom > maxZoom)
+    {
+      return false
+    }
+  }
+
+  return true
+}
+
 function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
 {
   const map = useMap()
@@ -411,12 +437,19 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
     const renderQueuedLabels = () =>
     {
       clearTextElements()
+      const currentZoom = map.getZoom()
 
       labelLayers.forEach((labelEntry) =>
       {
         const feature = labelEntry.feature
         const lineLayer = labelEntry.layer
         const properties = (feature.properties ?? {}) as LabelProperties
+
+        if (!isLabelVisibleAtZoom(properties, currentZoom))
+        {
+          return
+        }
+
         const labelTypeRaw = properties.label_type
 
         if (typeof labelTypeRaw !== 'string' || labelTypeRaw.trim() === '')
@@ -434,7 +467,7 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
           fallbackColor = entry.options.color
         }
 
-        if (labelType === 'water')
+        if (labelType === 'ocean')
         {
           renderWaterLabel(feature, lineLayer, properties, textElements, pathIdSeed, fallbackColor)
           return
