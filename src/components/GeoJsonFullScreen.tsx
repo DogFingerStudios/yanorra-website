@@ -10,6 +10,7 @@ import { getRailwayLayer } from './layers/RailwayLayer'
 import { getSeawayLayer } from './layers/SeawayLayer'
 import { getStreetsLayer } from './layers/StreetsLayer'
 import { getRoutesLayer } from './layers/Routes'
+import { getLabelsLayer } from './layers/LabelsLayer'
 import 'leaflet/dist/leaflet.css'
 import './MapFullScreen.css'
 
@@ -156,6 +157,18 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     color: '#5a5a5a',
     drawFunc: getSettlementPointsLayer,
   },
+
+/************************************************/
+  
+  {
+    id: 'water_labels',
+    srcFile: '/geojson/water_labels.geojson',
+    weight: 1.15,
+    color: '#5a5a5a',
+    drawFunc: getLabelsLayer,
+  },
+
+/************************************************/  
 ]
 
 const LAND_LAYER_FILE = '/geojson/land.geojson'
