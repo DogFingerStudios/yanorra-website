@@ -467,7 +467,7 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
           fallbackColor = entry.options.color
         }
 
-        if (labelType === 'ocean')
+        if (labelType === 'ocean' || labelType === 'sea' || labelType === 'lake')
         {
           renderWaterLabel(feature, lineLayer, properties, textElements, pathIdSeed, fallbackColor)
           return
