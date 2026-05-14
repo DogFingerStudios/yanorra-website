@@ -81,6 +81,10 @@ export default defineConfig(
           fs.copyFileSync(path.join(mapsSrc, "layers", "Land", "Rivers.geojson"), path.join(docsDest, "Rivers.geojson"))
 
           fs.copyFileSync(path.join(mapsSrc, "layers", "labels", "water_labels.geojson"), path.join(docsDest, "water_labels.geojson"))
+          fs.copyFileSync(path.join(mapsSrc, "layers", "labels", "landform_labels.geojson"), path.join(docsDest, "landform_labels.geojson"))
+          fs.copyFileSync(path.join(mapsSrc, "layers", "labels", "lore_labels.geojson"), path.join(docsDest, "lore_labels.geojson"))
+          fs.copyFileSync(path.join(mapsSrc, "layers", "labels", "political_line_labels.geojson"), path.join(docsDest, "political_line_labels.geojson"))
+          fs.copyFileSync(path.join(mapsSrc, "layers", "labels", "route_labels.geojson"), path.join(docsDest, "route_labels.geojson"))
 
           fs.copyFileSync(path.join(mapsSrc, "layers", "settlements", "settlements_points.geojson"), path.join(docsDest, "settlements_points.geojson"))
 

@@ -5,7 +5,7 @@ import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
 // import { getTownLayer } from './layers/TownLayer'
 import { getSettlementPointsLayer } from './layers/SettlmentPoints'
-import { getStatesLayer } from './layers/States'
+// import { getStatesLayer } from './layers/States'
 import { getRailwayLayer } from './layers/RailwayLayer'
 import { getSeawayLayer } from './layers/SeawayLayer'
 import { getStreetsLayer } from './layers/StreetsLayer'
@@ -84,7 +84,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     color: '#000000',
     weight: 1.25,
     fillOpacity: 0,
-    drawFunc: getStatesLayer,
+    // drawFunc: getStatesLayer,
   },
 
 // ****************************************************
@@ -163,6 +163,34 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   {
     id: 'water_labels',
     srcFile: '/geojson/water_labels.geojson',
+    weight: 1.15,
+    color: '#5a5a5a',
+    drawFunc: getLabelsLayer,
+  },
+  {
+    id: 'landform_labels',
+    srcFile: '/geojson/landform_labels.geojson',
+    weight: 1.15,
+    color: '#5a5a5a',
+    drawFunc: getLabelsLayer,
+  },
+  {
+    id: 'lore_labels',
+    srcFile: '/geojson/lore_labels.geojson',
+    weight: 1.15,
+    color: '#5a5a5a',
+    drawFunc: getLabelsLayer,
+  },
+  {
+    id: 'political_line_labels',
+    srcFile: '/geojson/political_line_labels.geojson',
+    weight: 1.15,
+    color: '#5a5a5a',
+    drawFunc: getLabelsLayer,
+  },
+  {
+    id: 'route_labels',
+    srcFile: '/geojson/route_labels.geojson',
     weight: 1.15,
     color: '#5a5a5a',
     drawFunc: getLabelsLayer,

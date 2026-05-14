@@ -57,6 +57,8 @@ const DEFAULT_START_OFFSET = '50%'
 const DEFAULT_TEXT_ANCHOR: NormalizedLabelOptions['textAnchor'] = 'middle'
 const DEFAULT_REPEAT = false
 const DEFAULT_WATER_LABEL_FILL = '#2f6ea5'
+const DEFAULT_ISLAND_LABEL_FILL = '#000000'
+const DEFAULT_COUNTRY_LABEL_FILL = '#3a3a3a'
 
 function parseFiniteNumber(value: unknown): number | null
 {
@@ -376,6 +378,30 @@ function renderWaterLabel(feature: GeoJSON.Feature, polyline: L.Polyline, proper
   renderTextAlongPolyline(feature, polyline, options, textElements, pathIdSeed)
 }
 
+function renderIslandLabel(feature: GeoJSON.Feature, polyline: L.Polyline, properties: LabelProperties, textElements: SVGTextElement[], pathIdSeed: string)
+{
+  const options = normalizeLabelOptions(properties, DEFAULT_ISLAND_LABEL_FILL)
+
+  if (!options)
+  {
+    return
+  }
+
+  renderTextAlongPolyline(feature, polyline, options, textElements, pathIdSeed)
+}
+
+function renderCountryLabel(feature: GeoJSON.Feature, polyline: L.Polyline, properties: LabelProperties, textElements: SVGTextElement[], pathIdSeed: string)
+{
+  const options = normalizeLabelOptions(properties, DEFAULT_COUNTRY_LABEL_FILL)
+
+  if (!options)
+  {
+    return
+  }
+
+  renderTextAlongPolyline(feature, polyline, options, textElements, pathIdSeed)
+}
+
 function isLineLayer(layer: L.Layer): layer is L.Polyline
 {
   if (layer instanceof L.Polygon)
@@ -467,9 +493,21 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
           fallbackColor = entry.options.color
         }
 
+        console.log(`Rendering label of type "${labelType}" for feature with properties:`, properties)
         if (labelType === 'ocean' || labelType === 'sea' || labelType === 'lake')
         {
           renderWaterLabel(feature, lineLayer, properties, textElements, pathIdSeed, fallbackColor)
+          return
+        }
+        else if (labelType === 'island')
+        {
+          console.log("Rendering island label with properties:", properties)
+          renderIslandLabel(feature, lineLayer, properties, textElements, pathIdSeed)
+          return
+        }
+        else if (labelType === 'country')
+        {
+          renderCountryLabel(feature, lineLayer, properties, textElements, pathIdSeed)
           return
         }
 
