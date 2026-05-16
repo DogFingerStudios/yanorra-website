@@ -261,7 +261,6 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
             retval *= 3.6
         }
 
-        console.log(`Zoom ${zoom} - using border weight ${retval}`)
         return retval
     }
 
