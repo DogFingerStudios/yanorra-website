@@ -500,7 +500,7 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
         }
         else if (labelType === 'island')
         {
-          console.log("Rendering island label with properties:", properties)
+        //   console.log("Rendering island label with properties:", properties)
           renderIslandLabel(feature, lineLayer, properties, textElements, pathIdSeed)
           return
         }
