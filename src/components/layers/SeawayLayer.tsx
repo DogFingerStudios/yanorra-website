@@ -10,13 +10,23 @@ type SeawayLayerEntry =
 
 export function getSeawayLayer(entry: SeawayLayerEntry)
 {
-  const styleFeature = () =>
+  const styleFeature = (feature?: GeoJSON.Feature) =>
   {
+    let opacity: number = 0.35
+    let color: string = '#0000FF'
+
+    const properties = feature?.properties
+    if (properties?.status === 'lost')
+    {
+        opacity = 0.175
+        color = '#ff0000'
+    }
+
     return {
-      color: '#0000FF',
+      color: color,
       weight: 2,
       dashArray: '5, 5',
-      opacity: 0.35,
+      opacity: opacity,
       lineCap: 'round' as const,
       lineJoin: 'round' as const,
     }

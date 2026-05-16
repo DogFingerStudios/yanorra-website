@@ -17,6 +17,7 @@ import './MapFullScreen.css'
 const MIN_ZOOM = 2
 const MAX_ZOOM = 20
 const DEFAULT_CENTER: [number, number] = [0, 0]
+const DEFAULT_MAP_LAYER = 'land'
 
 type GeoJsonLayerOptions =
 {
@@ -156,6 +157,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     weight: 1.15,
     color: '#5a5a5a',
     drawFunc: getSettlementPointsLayer,
+    minZoom: 3,
   },
 
 /************************************************/
@@ -456,7 +458,7 @@ const GeoJsonFullScreen = (
       return parsedBaseLayer
     }
 
-    return 'biomes'
+    return DEFAULT_MAP_LAYER
   })
 
   const syncViewToUrl = (view: MapViewState, baseLayer: BaseLayerKey) =>

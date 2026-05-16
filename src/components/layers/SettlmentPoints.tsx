@@ -45,17 +45,17 @@ function shouldShowTown(properties: GeoJSON.GeoJsonProperties, zoom: number): bo
   // const population2 = getTownPopulation(properties) ?? 'Unknown'
   // console.log(`Burg: ${burgName}, Population: ${population2}, MaxZoom: ${maxZoom}, MinZoom: ${minZoom}, Current Zoom: ${zoom}`)
 
-  if (typeof maxZoom === 'number' && typeof minZoom == 'number')
+  // When the data has an explicit zoom window, respect it for the upper range (zoomed in
+  // detail view). Below min_zoom, fall through to population-based logic so major cities
+  // still appear when zoomed out.
+  if (typeof maxZoom === 'number' && zoom > maxZoom)
   {
-    return zoom >= minZoom && zoom <= maxZoom;
+    return false
   }
-  else if (typeof maxZoom === 'number')
+
+  if (typeof minZoom === 'number' && zoom >= minZoom)
   {
-    return zoom > maxZoom;
-  }
-  else if (typeof minZoom === 'number')
-  {
-    return zoom < minZoom;
+    return true
   }
 
   const population = getTownPopulation(properties)
@@ -70,17 +70,17 @@ function shouldShowTown(properties: GeoJSON.GeoJsonProperties, zoom: number): bo
     case 0:
     case 1:
     case 2:
-      return population >= 500000
+      return population >= 250_000
     case 3:
     case 4:
     case 5:
-      return population >= 100000
+      return population >= 100_000
     case 6:
-      return population >= 5000
+      return population >= 5_000
     case 7:
     case 8:
     case 9:
-      return population >= 1000
+      return population >= 1_000
     case 10:
     case 11:
     case 12:
@@ -143,7 +143,8 @@ function SettlementPointsLayer({ entry }: { entry: SettlementPointsLayerEntry })
       tooltipLayer.bindTooltip(burgName, {
         permanent: true,
         direction: 'top',
-        offset: L.point(0, -8),
+        // offset: L.point(0, -8),
+        offset: L.point(0, 0),
         opacity: 0.9,
         className: 'settlement-point-label-tooltip',
       })
