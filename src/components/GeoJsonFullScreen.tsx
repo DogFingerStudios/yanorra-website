@@ -5,7 +5,7 @@ import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
 // import { getTownLayer } from './layers/TownLayer'
 import { getSettlementPointsLayer } from './layers/SettlmentPoints'
-// import { getStatesLayer } from './layers/States'
+import { getStatesLayer } from './layers/States'
 import { getRailwayLayer } from './layers/RailwayLayer'
 import { getSeawayLayer } from './layers/SeawayLayer'
 import { getStreetsLayer } from './layers/StreetsLayer'
@@ -82,11 +82,10 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   {
     id: 'states',
     srcFile: '/geojson/StatesData.geojson',
-    color: '#000000',
-    // weight: 1.25,
-    weight: 0.001,
+    color: '#a6a6c8',
+    weight: 4.25,
     fillOpacity: 0,
-    // drawFunc: getStatesLayer,
+    drawFunc: getStatesLayer,
   },
 
 // ****************************************************

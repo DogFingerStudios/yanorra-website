@@ -493,7 +493,6 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
           fallbackColor = entry.options.color
         }
 
-        console.log(`Rendering label of type "${labelType}" for feature with properties:`, properties)
         if (labelType === 'ocean' || labelType === 'sea' || labelType === 'lake')
         {
           renderWaterLabel(feature, lineLayer, properties, textElements, pathIdSeed, fallbackColor)

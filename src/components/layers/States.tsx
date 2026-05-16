@@ -224,10 +224,56 @@ function drawFixedLabel(label: StateLabelDatum, viewBounds: L.LatLngBounds): Vis
 
 function StatesLayer({ entry }: { entry: StatesLayerEntry })
 {
-  const internalBorders = useMemo(() =>
-  {
-    return buildInternalStateBorders(entry.data)
-  }, [entry.data])
+    const [currentZoom, setCurrentZoom] = useState(5)
+
+    const map = useMapEvents({
+        zoomend: () => {
+            setCurrentZoom(map.getZoom())
+        },
+    })
+
+    useEffect(() => {
+        setCurrentZoom(map.getZoom())
+    }, [map])
+
+    const getBorderWeight = (zoom: number): number => 
+    {
+        let retval = entry.options.weight ?? 1
+        if (zoom <= 5) retval *= 0.9;
+        // 2 thru 20
+        if (zoom >= 5)
+        {
+            retval *= 90.9
+        }
+        else if (zoom >= 7)
+        {
+            retval *= 0.8
+        }
+        else if (zoom >= 10)
+        {
+            retval *= 0.75
+        }
+        else if (zoom >= 13)
+        {
+            retval *= 0.7
+        }
+        else if (zoom >= 15)
+        {
+            retval *= 0.65
+        }
+        else if (zoom >= 17)
+        {
+            retval *= 0.6
+        }
+
+        console.log(`Zoom ${zoom} - using border weight ${retval}`)
+        return retval
+    }
+
+    const internalBorders = useMemo(() => 
+    {
+        return buildInternalStateBorders(entry.data)
+    }, [entry.data])
 
   const labelData = useMemo(() =>
   {
@@ -241,49 +287,48 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
 
     const featureCollection = data as GeoJSON.FeatureCollection
 
-    featureCollection.features.forEach((feature: GeoJSON.Feature, index: number) =>
-    {
-      const properties = feature.properties
-
-      if (!properties)
+      featureCollection.features.forEach((feature: GeoJSON.Feature, index: number) => 
       {
-        console.log('Feature is missing properties, skipping label generation')
-        return
-      }
+        const properties = feature.properties
 
-      const stateName = properties.Data_State
-      if ((typeof stateName !== 'string' || stateName.trim() === '')
-            && properties.type !== "island")
-      {
-        console.warn('Feature is missing state name. Feature:', feature, "Properties:", properties)
-        return
-      }
+        if (!properties) 
+        {
+            console.log('Feature is missing properties, skipping label generation')
+            return
+        }
 
-      const featureLayer = L.geoJSON(feature)
-      const featureBounds = featureLayer.getBounds()
+        const stateName = properties.Data_State
+        if ((typeof stateName !== 'string' || stateName.trim() === '') && properties.type !== "island") 
+        {
+            console.warn('Feature is missing state name. Feature:', feature, "Properties:", properties)
+            return
+        }
 
-      if (!featureBounds.isValid())
-      {
-        console.log('Feature has invalid bounds, skipping label generation')
-        return
-      }
+        const featureLayer = L.geoJSON(feature)
+        const featureBounds = featureLayer.getBounds()
 
-      const labelLong = parseFiniteNumber(properties.Label_Longitude)
-      const labelLat = parseFiniteNumber(properties.Label_Latitude)
+        if (!featureBounds.isValid()) 
+        {
+            console.log('Feature has invalid bounds, skipping label generation')
+            return
+        }
 
-      let fixedCenter: L.LatLng | null = null
+        const labelLong = parseFiniteNumber(properties.Label_Longitude)
+        const labelLat = parseFiniteNumber(properties.Label_Latitude)
 
-      if (labelLong !== null && labelLat !== null)
-      {
-        fixedCenter = L.latLng(labelLat, labelLong)
-      }
+        let fixedCenter: L.LatLng | null = null
 
-      nextLabelData.push({
-        id: `${entry.id}-${index}`,
-        stateName,
-        bounds: featureBounds,
-        fixedCenter,
-      })
+        if (labelLong !== null && labelLat !== null) 
+        {
+            fixedCenter = L.latLng(labelLat, labelLong)
+        }
+
+        nextLabelData.push({
+            id: `${entry.id}-${index}`,
+            stateName,
+            bounds: featureBounds,
+            fixedCenter,
+        })
     })
 
     return nextLabelData
@@ -311,7 +356,7 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
         {
           return {
             color: entry.options.color,
-            weight: entry.options.weight,
+            weight: getBorderWeight(currentZoom),
             opacity: 1,
             fillOpacity: 0,
             interactive: false,
