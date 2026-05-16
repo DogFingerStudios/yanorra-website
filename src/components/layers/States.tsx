@@ -239,31 +239,26 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
     const getBorderWeight = (zoom: number): number => 
     {
         let retval = entry.options.weight ?? 1
-        if (zoom <= 5) retval *= 0.9;
-        // 2 thru 20
-        if (zoom >= 5)
+
+        if (zoom <= 3)
         {
-            retval *= 90.9
+            retval *= 1.15
         }
-        else if (zoom >= 7)
+        else if (zoom <= 5)
         {
-            retval *= 0.8
+            retval *= 1.3
         }
-        else if (zoom >= 10)
-        {
-            retval *= 0.75
+        else if (zoom <= 7)
+        {            
+            retval *= 1.85
         }
-        else if (zoom >= 13)
+        else if (zoom <= 11)
         {
-            retval *= 0.7
+            retval *= 2.85
         }
-        else if (zoom >= 15)
+        else
         {
-            retval *= 0.65
-        }
-        else if (zoom >= 17)
-        {
-            retval *= 0.6
+            retval *= 3.6
         }
 
         console.log(`Zoom ${zoom} - using border weight ${retval}`)

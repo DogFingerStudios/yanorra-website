@@ -83,7 +83,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     id: 'states',
     srcFile: '/geojson/StatesData.geojson',
     color: '#a6a6c8',
-    weight: 4.25,
+    weight: 1.25,
     fillOpacity: 0,
     drawFunc: getStatesLayer,
   },
