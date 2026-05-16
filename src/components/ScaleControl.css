@@ -1,0 +1,24 @@
+:root
+{
+  --scale-control-bg-alpha: 0;
+}
+
+/* .leaflet-control-scale-line
+{
+  background-color: rgba(255, 255, 255, var(--scale-control-bg-alpha));
+} */
+
+.leaflet-control-scale {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.leaflet-control-scale-line {
+  background: transparent;
+  border: 1px solid rgba(40, 32, 24, 0.75);
+  border-top: none;
+  color: rgba(40, 32, 24, 0.8);
+  text-shadow: none;
+  font-family: inherit;
+}

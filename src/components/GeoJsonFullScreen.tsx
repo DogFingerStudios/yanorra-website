@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { GeoJSON, ImageOverlay, LayerGroup, LayersControl, MapContainer, useMap, useMapEvents } from 'react-leaflet'
+import { GeoJSON, ImageOverlay, LayerGroup, LayersControl, MapContainer, ScaleControl, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
 // import { getTownLayer } from './layers/TownLayer'
@@ -12,6 +12,7 @@ import { getStreetsLayer } from './layers/StreetsLayer'
 import { getRoutesLayer } from './layers/Routes'
 import { getLabelsLayer } from './layers/LabelsLayer'
 import 'leaflet/dist/leaflet.css'
+import './ScaleControl.css'
 import './MapFullScreen.css'
 
 const MIN_ZOOM = 2
@@ -830,6 +831,13 @@ const GeoJsonFullScreen = (
           attributionControl={false}
           crs={L.CRS.EPSG4326}
         >
+          <ScaleControl
+            position="bottomright"
+            metric={true}
+            imperial={true}
+            maxWidth={180}
+            updateWhenIdle={true}
+          />
           <EnsureMapPanes />
           <BaseLayerTracker onBaseLayerChange={handleBaseLayerChange} />
           {earthLayerElement}
