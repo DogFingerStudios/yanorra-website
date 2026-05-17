@@ -40,7 +40,12 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
         setLoading(true)
         setError(null)
 
-        // Fetch raw markdown from Yanorra folder
+        // if markdownPath ends with `.md.md` then remove the duplicate extension
+        if (markdownPath.toLowerCase().endsWith('.md.md'))
+        {
+          markdownPath = markdownPath.slice(0, -3)
+        }
+
         const response = await fetch(markdownPath)
         if (!response.ok)
         {
