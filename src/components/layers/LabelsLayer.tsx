@@ -28,6 +28,7 @@ type LabelProperties = GeoJSON.GeoJsonProperties &
   start_offset?: unknown
   text_anchor?: unknown
   repeat?: unknown
+  target_id?: unknown
 }
 
 type NormalizedLabelOptions =
@@ -44,6 +45,7 @@ type NormalizedLabelOptions =
   textAnchor: 'start' | 'middle' | 'end'
   repeat: boolean
   fill: string
+  targetId?: string
 }
 
 const DEFAULT_FONT_SIZE = 18
@@ -252,6 +254,13 @@ function normalizeLabelOptions(properties: LabelProperties, fallbackColor: strin
     repeat = parsedRepeat
   }
 
+  let targetId: string | undefined
+  
+  if (typeof properties.target_id === 'string' && properties.target_id.trim() !== '')
+  {
+    targetId = properties.target_id.trim()
+  }
+
   return {
     labelText: properties.label_text.trim(),
     fontSize,
@@ -265,6 +274,7 @@ function normalizeLabelOptions(properties: LabelProperties, fallbackColor: strin
     textAnchor: parseTextAnchor(properties.text_anchor),
     repeat,
     fill: fallbackColor,
+    targetId,
   }
 }
 
@@ -354,7 +364,19 @@ function renderTextAlongPolyline(feature: GeoJSON.Feature, polyline: L.Polyline,
   textElement.setAttribute('text-anchor', rawOptions.textAnchor)
   textElement.setAttribute('letter-spacing', `${rawOptions.letterSpacing}`)
   textElement.style.textTransform = rawOptions.textTransform
-  textElement.style.pointerEvents = 'none'
+  
+  if (rawOptions.targetId && typeof rawOptions.targetId === 'string' && rawOptions.targetId.trim() !== '')
+  {
+    textElement.style.cursor = 'pointer'
+    textElement.style.pointerEvents = 'auto'
+    textElement.addEventListener('click', () => { 
+      window.location.href = `${rawOptions.targetId}`
+    })
+  }
+  else
+  {
+    textElement.style.pointerEvents = 'none'
+  }
 
   textPathElement.setAttribute('href', `#${pathId}`)
   textPathElement.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `#${pathId}`)
@@ -500,7 +522,6 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
         }
         else if (labelType === 'island')
         {
-        //   console.log("Rendering island label with properties:", properties)
           renderIslandLabel(feature, lineLayer, properties, textElements, pathIdSeed)
           return
         }
