@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { GeoJSON, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import './Routes.css'
@@ -73,16 +73,24 @@ export function getStreetsLayer(entry: StreetsLayerEntry)
 
     const showStreetLabels = currentZoom >= STREET_LABEL_MIN_ZOOM
 
+    const cachedRoadWeights = useMemo(() =>
+    {
+      const fillWeight = getPixelsForMeters(STREET_WIDTH_METERS, currentZoom, currentLatitude)
+      const casingWeightByMeters = getPixelsForMeters(STREET_WIDTH_METERS + STREET_CASING_EXTRA_METERS, currentZoom, currentLatitude)
+      let casingWeight = casingWeightByMeters
+
+      if (casingWeight < fillWeight + STREET_MIN_CASING_DELTA_PX)
+      {
+        casingWeight = fillWeight + STREET_MIN_CASING_DELTA_PX
+      }
+
+      return { fillWeight, casingWeight }
+    }, [currentZoom, currentLatitude])
+
     const getStreetStyle = (feature: GeoJSON.Feature, stylePass: 'casing' | 'fill') =>
     {
-      const roadWeight = getPixelsForMeters(STREET_WIDTH_METERS, currentZoom, currentLatitude)
-      const roadCasingWeightByMeters = getPixelsForMeters(STREET_WIDTH_METERS + STREET_CASING_EXTRA_METERS, currentZoom, currentLatitude)
-      let roadCasingWeight = roadCasingWeightByMeters
-
-      if (roadCasingWeight < roadWeight + STREET_MIN_CASING_DELTA_PX)
-      {
-        roadCasingWeight = roadWeight + STREET_MIN_CASING_DELTA_PX
-      }
+      const roadWeight = cachedRoadWeights.fillWeight
+      const roadCasingWeight = cachedRoadWeights.casingWeight
 
       const properties = feature.properties
 
