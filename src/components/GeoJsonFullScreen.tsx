@@ -11,6 +11,8 @@ import { getSeawayLayer } from './layers/SeawayLayer'
 import { getStreetsLayer } from './layers/StreetsLayer'
 import { getRoutesLayer } from './layers/Routes'
 import { getLabelsLayer } from './layers/LabelsLayer'
+import { getBuildingsLayer } from './layers/BuildingsLayer'
+import { getParksLayer } from './layers/ParksLayer'
 import 'leaflet/dist/leaflet.css'
 import './ScaleControl.css'
 import './MapFullScreen.css'
@@ -114,30 +116,32 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     minZoom: 5,
     drawFunc: getRoutesLayer,
   },
+
   {
     id: 'streets_major',
     srcFile: '/geojson/streets_major.geojson',
     weight: 1.25,
-    color: '#5a5a5a',
-    minZoom: 5,
+    color: '#b9c8d6',
+    minZoom: 10,
     drawFunc: getStreetsLayer,
   },
   {
     id: 'streets_minor',
     srcFile: '/geojson/streets_minor.geojson',
     weight: 1.15,
-    color: '#5a5a5a',
-    minZoom: 5,
+    color: '#aab9c9',
+    minZoom: 12,
     drawFunc: getStreetsLayer,
   },
   {
     id: 'alleys',
     srcFile: '/geojson/alleys.geojson',
     weight: 1.05,
-    color: '#5a5a5a',
-    minZoom: 5,
+    color: '#dbe0e8',
+    minZoom: 14,
     drawFunc: getStreetsLayer,
   },
+
   {
     id: 'seaways',
     srcFile: '/geojson/seaways.geojson',
@@ -152,6 +156,25 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     minZoom: 5,
     drawFunc: getRailwayLayer,
   },
+
+  {
+    id: 'buildings_major',
+    srcFile: '/geojson/buildings_major.geojson',
+    weight: 1.15,
+    color: '#e8e9ed',
+    minZoom: 15,
+    drawFunc: getBuildingsLayer,
+  },
+
+    {
+        id: 'parks',
+        srcFile: '/geojson/parks.geojson',
+        weight: 1.15,
+        color: '#00DD00',
+        minZoom: 15,
+        drawFunc: getParksLayer,
+    },
+
   {
     id: 'settlements_points',
     srcFile: '/geojson/settlements_points.geojson',

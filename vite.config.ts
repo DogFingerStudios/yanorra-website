@@ -94,9 +94,12 @@ export default defineConfig(
           fs.copyFileSync(path.join(mapsSrc, "layers", "transportation", "railways.geojson"), path.join(docsDest, "railways.geojson"))
           fs.copyFileSync(path.join(mapsSrc, "layers", "transportation", "seaways.geojson"), path.join(docsDest, "seaways.geojson"))
 
-          fs.copyFileSync(path.join(mapsSrc, "layers", "urban", "alleys.geojson"), path.join(docsDest, "alleys.geojson"))
-          fs.copyFileSync(path.join(mapsSrc, "layers", "urban", "streets_major.geojson"), path.join(docsDest, "streets_major.geojson"))
-          fs.copyFileSync(path.join(mapsSrc, "layers", "urban", "streets_minor.geojson"), path.join(docsDest, "streets_minor.geojson"))
+          fs.copyFileSync(path.join(mapsSrc, "layers", "urban", "generated", "alleys_generated.geojson"), path.join(docsDest, "alleys.geojson"))
+          fs.copyFileSync(path.join(mapsSrc, "layers", "urban", "generated", "streets_major_generated.geojson"), path.join(docsDest, "streets_major.geojson"))
+          fs.copyFileSync(path.join(mapsSrc, "layers", "urban", "generated", "streets_minor_generated.geojson"), path.join(docsDest, "streets_minor.geojson"))
+
+          fs.copyFileSync(path.join(mapsSrc, "layers", "urban", "buildings_major.geojson"), path.join(docsDest, "buildings_major.geojson"))
+          fs.copyFileSync(path.join(mapsSrc, "layers", "urban", "parks.geojson"), path.join(docsDest, "parks.geojson"))
 
           console.log('✓ Copied Yanorra Maps GeoJSON files to public')
         }
