@@ -7,6 +7,10 @@ type SettlementPointsLayerEntry =
 {
   id: string
   data: GeoJSON.GeoJsonObject
+  options?:
+  {
+    popupFunc?: (feature: GeoJSON.Feature, entry: any) => string
+  }
 }
 
 export function getSettlementPointsLayer(entry: SettlementPointsLayerEntry)
@@ -147,6 +151,50 @@ function SettlementPointsLayer({ entry }: { entry: SettlementPointsLayerEntry })
         offset: L.point(0, 0),
         opacity: 0.9,
         className: 'settlement-point-label-tooltip',
+      })
+    }
+
+    const popupContent = entry.options?.popupFunc?.(feature, entry)
+    const popupLayer = layer as L.Layer &
+    {
+      bindPopup?: (content: string, options?: L.PopupOptions) => L.Layer
+      openPopup?: () => L.Layer
+      closePopup?: () => L.Layer
+      on?: (event: string, handler: L.LeafletEventHandlerFn) => L.Layer
+    }
+
+    if (typeof popupContent !== 'string' || popupContent.trim() === '')
+    {
+      return
+    }
+
+    if (typeof popupLayer.bindPopup !== 'function')
+    {
+      return
+    }
+
+    popupLayer.bindPopup(popupContent, {
+      closeButton: false,
+      autoClose: false,
+      closeOnClick: false,
+    })
+
+    if (typeof popupLayer.on === 'function')
+    {
+      popupLayer.on('mouseover', () =>
+      {
+        if (typeof popupLayer.openPopup === 'function')
+        {
+          popupLayer.openPopup()
+        }
+      })
+
+      popupLayer.on('mouseout', () =>
+      {
+        if (typeof popupLayer.closePopup === 'function')
+        {
+          popupLayer.closePopup()
+        }
       })
     }
   }

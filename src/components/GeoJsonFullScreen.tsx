@@ -13,6 +13,7 @@ import { getRoutesLayer } from './layers/Routes'
 import { getLabelsLayer } from './layers/LabelsLayer'
 import { getBuildingsLayer } from './layers/BuildingsLayer'
 import { getParksLayer } from './layers/ParksLayer'
+import { getSettlementPointsPopup } from './layers/SettlementPointsPopup.tsx'
 import 'leaflet/dist/leaflet.css'
 import './ScaleControl.css'
 import './MapFullScreen.css'
@@ -34,6 +35,7 @@ type GeoJsonLayerOptions =
   minZoom?: number
   maxZoom?: number
   drawFunc?: (entry: GeoJsonEntry) => ReactNode
+  popupFunc?: (feature: GeoJSON.Feature, entry: GeoJsonEntry) => string
 }
 
 const DEFAULT_LAYER_OPTIONS =
@@ -181,6 +183,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     weight: 1.15,
     color: '#5a5a5a',
     drawFunc: getSettlementPointsLayer,
+    popupFunc: getSettlementPointsPopup,
     minZoom: 3,
   },
 
