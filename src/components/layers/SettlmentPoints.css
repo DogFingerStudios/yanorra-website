@@ -18,3 +18,22 @@
 {
   display: none;
 }
+
+.settlement-popup-content
+{
+  font-family: 'Arial', sans-serif;
+  color: #2b2418;
+}
+
+.settlement-popup-title
+{
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.settlement-popup-description
+{
+  font-size: 12px;
+  margin-bottom: 5px;
+}
