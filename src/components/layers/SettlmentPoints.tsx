@@ -173,6 +173,35 @@ function SettlementPointsLayer({ entry }: { entry: SettlementPointsLayerEntry })
       return
     }
 
+    let isMarkerHovered = false
+    let isPopupHovered = false
+    let closeTimeoutId: number | null = null
+
+    const clearCloseTimeout = () =>
+    {
+      if (closeTimeoutId !== null)
+      {
+        window.clearTimeout(closeTimeoutId)
+        closeTimeoutId = null
+      }
+    }
+
+    const scheduleClose = () =>
+    {
+      clearCloseTimeout()
+
+      closeTimeoutId = window.setTimeout(() =>
+      {
+        if (!isMarkerHovered && !isPopupHovered)
+        {
+          if (typeof popupLayer.closePopup === 'function')
+          {
+            popupLayer.closePopup()
+          }
+        }
+      }, 140)
+    }
+
     popupLayer.bindPopup(popupContent, {
       closeButton: false,
       autoClose: false,
@@ -183,6 +212,9 @@ function SettlementPointsLayer({ entry }: { entry: SettlementPointsLayerEntry })
     {
       popupLayer.on('mouseover', () =>
       {
+        isMarkerHovered = true
+        clearCloseTimeout()
+
         if (typeof popupLayer.openPopup === 'function')
         {
           popupLayer.openPopup()
@@ -191,10 +223,36 @@ function SettlementPointsLayer({ entry }: { entry: SettlementPointsLayerEntry })
 
       popupLayer.on('mouseout', () =>
       {
-        if (typeof popupLayer.closePopup === 'function')
+        isMarkerHovered = false
+        scheduleClose()
+      })
+
+      popupLayer.on('popupopen', (event: L.PopupEvent) =>
+      {
+        const popupElement = event.popup.getElement()
+
+        if (!popupElement)
         {
-          popupLayer.closePopup()
+          return
         }
+
+        popupElement.addEventListener('mouseenter', () =>
+        {
+          isPopupHovered = true
+          clearCloseTimeout()
+        })
+
+        popupElement.addEventListener('mouseleave', () =>
+        {
+          isPopupHovered = false
+          scheduleClose()
+        })
+      })
+
+      popupLayer.on('popupclose', () =>
+      {
+        isPopupHovered = false
+        clearCloseTimeout()
       })
     }
   }
