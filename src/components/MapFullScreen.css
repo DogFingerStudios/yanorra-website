@@ -107,3 +107,14 @@
 {
     background-color: #7bd5e9;
 }
+
+/* Non-link vectors should keep the map hand cursor instead of pointer. */
+.map-main .leaflet-interactive
+{
+  cursor: grab !important;
+}
+
+.map-main .leaflet-dragging .leaflet-interactive
+{
+  cursor: grabbing !important;
+}
