@@ -766,9 +766,12 @@ const GeoJsonFullScreen = (
       return null
     }
 
+    const totalDistanceKm = getTotalMeasuredDistanceKm()
+    const totalDistanceMiles = totalDistanceKm * 0.621371
+
     return (
       <div className="measure-indicator">
-        Measure: {getTotalMeasuredDistanceKm().toFixed(2)} km ({measurePoints.length} pts)
+        {totalDistanceMiles.toFixed(2)} mi ({totalDistanceKm.toFixed(2)} km)
       </div>
     )
   }
