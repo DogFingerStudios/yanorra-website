@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { GeoJSON, ImageOverlay, LayerGroup, MapContainer, ScaleControl, useMap, useMapEvents } from 'react-leaflet'
+import { CircleMarker, GeoJSON, ImageOverlay, LayerGroup, MapContainer, Polyline, ScaleControl, useMap, useMapEvents } from 'react-leaflet'
 import MapRightPanel from './MapRightPanel'
 import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
@@ -264,6 +264,8 @@ type MapViewState =
   center: [number, number]
 }
 
+type MeasurePoint = [number, number]
+
 type BaseLayerKey = 'land' | 'biomes'
 
 const LAYER_QUERY_PARAM = 'layer'
@@ -356,7 +358,16 @@ function hasMapViewParamsInUrl(): boolean
   return false
 }
 
-const DebugTracker = ({ onViewChange }: { onViewChange: (view: MapViewState) => void }) =>
+const DebugTracker = (
+  {
+    onViewChange,
+    onMapClick,
+  }:
+  {
+    onViewChange: (view: MapViewState) => void
+    onMapClick?: (point: MeasurePoint) => void
+  }
+) =>
 {
   useMapEvents({
     zoomend: (e) =>
@@ -376,6 +387,15 @@ const DebugTracker = ({ onViewChange }: { onViewChange: (view: MapViewState) => 
         zoom,
         center: [c.lat, c.lng],
       })
+    },
+    click: (event) =>
+    {
+      if (!onMapClick)
+      {
+        return
+      }
+
+      onMapClick([event.latlng.lat, event.latlng.lng])
     },
   })
   return null
@@ -456,6 +476,8 @@ const GeoJsonFullScreen = (
   const [currentZoom, setCurrentZoom] = useState(initialView.zoom)
   const [coords, setCoords] = useState<[number, number]>(initialView.center)
   const [copyMessage, setCopyMessage] = useState('')
+  const [isMeasureMode, setIsMeasureMode] = useState(false)
+  const [measurePoints, setMeasurePoints] = useState<MeasurePoint[]>([])
   const [selectedBaseLayer, setSelectedBaseLayer] = useState<BaseLayerKey>(() =>
   {
     const parsedBaseLayer = parseBaseLayerFromUrl()
@@ -508,6 +530,57 @@ const GeoJsonFullScreen = (
   const navigateTo = (path: string) =>
   {
     window.location.assign(path)
+  }
+
+  const toggleMeasureMode = () =>
+  {
+    if (isMeasureMode)
+    {
+      setIsMeasureMode(false)
+      return
+    }
+
+    setIsMeasureMode(true)
+  }
+
+  const clearMeasurements = () =>
+  {
+    setMeasurePoints([])
+  }
+
+  const handleMeasureMapClick = (point: MeasurePoint) =>
+  {
+    if (!isMeasureMode)
+    {
+      return
+    }
+
+    setMeasurePoints((previousPoints) =>
+    {
+      return [...previousPoints, point]
+    })
+  }
+
+  const getTotalMeasuredDistanceKm = () =>
+  {
+    if (measurePoints.length < 2)
+    {
+      return 0
+    }
+
+    let totalDistanceMeters = 0
+
+    for (let index = 1; index < measurePoints.length; index++)
+    {
+      const previousPoint = measurePoints[index - 1]
+      const currentPoint = measurePoints[index]
+      const previousLatLng = L.latLng(previousPoint[0], previousPoint[1])
+      const currentLatLng = L.latLng(currentPoint[0], currentPoint[1])
+
+      totalDistanceMeters += previousLatLng.distanceTo(currentLatLng)
+    }
+
+    return totalDistanceMeters / 1000
   }
 
   const toggleEarthLayer = () =>
@@ -632,6 +705,45 @@ const GeoJsonFullScreen = (
     )
   }
 
+  const renderMeasurementLayers = () =>
+  {
+    if (measurePoints.length === 0)
+    {
+      return null
+    }
+
+    return (
+      <>
+        <Polyline positions={measurePoints} pathOptions={{ color: '#0C66E4', weight: 3 }} />
+        {measurePoints.map((point, index) =>
+        {
+          return (
+            <CircleMarker
+              key={`measure-point-${index}`}
+              center={point}
+              radius={4}
+              pathOptions={{ color: '#0C66E4', fillColor: '#0C66E4', fillOpacity: 1 }}
+            />
+          )
+        })}
+      </>
+    )
+  }
+
+  const renderMeasureIndicator = () =>
+  {
+    if (!isMeasureMode)
+    {
+      return null
+    }
+
+    return (
+      <div className="measure-indicator">
+        Measure: {getTotalMeasuredDistanceKm().toFixed(2)} km ({measurePoints.length} pts)
+      </div>
+    )
+  }
+
   let earthLayerTitle = 'Turn Earth layer on'
 
   if (isEarthLayerVisible)
@@ -706,6 +818,64 @@ const GeoJsonFullScreen = (
             }}
           >
             🌎
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  let measureControlElement = null
+
+  if (fullScreen)
+  {
+    const measureButtonStyle =
+    {
+      width: '30px',
+      height: '30px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: '18px',
+      borderRadius: 0,
+      padding: 0,
+      backgroundColor: isMeasureMode ? '#e7f0ff' : '#ffffff',
+    }
+
+    measureControlElement = (
+      <div className="leaflet-top leaflet-left" style={{ marginTop: '108px', marginLeft: '0px' }}>
+        <div className="leaflet-control leaflet-bar">
+          <button
+            type="button"
+            onClick={toggleMeasureMode}
+            onMouseDown={(event) => event.stopPropagation()}
+            title={isMeasureMode ? 'Turn off measure mode' : 'Turn on measure mode'}
+            aria-label="Toggle measure mode"
+            aria-pressed={isMeasureMode}
+            style={measureButtonStyle}
+          >
+            📏
+          </button>
+          <button
+            type="button"
+            onClick={clearMeasurements}
+            onMouseDown={(event) => event.stopPropagation()}
+            title="Clear measured points"
+            aria-label="Clear measured points"
+            style={{
+              width: '30px',
+              height: '30px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '18px',
+              borderRadius: 0,
+              padding: 0,
+              borderTop: '1px solid #ccc',
+            }}
+          >
+            ×
           </button>
         </div>
       </div>
@@ -822,6 +992,7 @@ const GeoJsonFullScreen = (
           <EnsureMapPanes />
           {earthLayerElement}
           {baseLayerElement}
+          {renderMeasurementLayers()}
           {otherEntries.map((entry) =>
           {
             return (
@@ -831,11 +1002,13 @@ const GeoJsonFullScreen = (
             )
           })}
           {boundsFitterElement}
-          <DebugTracker onViewChange={handleMapViewChange} />
+          <DebugTracker onViewChange={handleMapViewChange} onMapClick={handleMeasureMapClick} />
           {fullScreenLinkElement}
           {earthLayerControlElement}
+          {measureControlElement}
         </MapContainer>
         {fullScreen && <MapRightPanel selectedBaseLayer={selectedBaseLayer} onBaseLayerChange={handleBaseLayerChange} />}
+        {renderMeasureIndicator()}
         {renderDebug()}
         {loadError ? <div className="geojson-error-banner">{loadError}</div> : null}
       </div>
