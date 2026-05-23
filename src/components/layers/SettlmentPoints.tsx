@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 import L from 'leaflet'
 import './SettlmentPoints.css'
 
+const POPUP_MODE: 'click' | 'hover' = 'hover'
+
 type SettlementPointsLayerEntry =
 {
   id: string
@@ -96,6 +98,156 @@ function shouldShowTown(properties: GeoJSON.GeoJsonProperties, zoom: number): bo
   return true;
 }
 
+function onEachFeatureHandler(feature: GeoJSON.Feature, layer: L.Layer, zoom: number, entry: SettlementPointsLayerEntry)
+{
+    const properties = feature.properties
+
+    if (!properties)
+    {
+        return
+    }
+
+    const burgName = properties.name
+    if (typeof burgName !== 'string' || burgName.trim() === '')
+    {
+        // console.log("Skipping feature with missing or invalid 'name' property:", properties)
+        return
+    }
+
+    if (!shouldShowTown(properties, zoom))
+    {
+        return
+    }
+
+    const tooltipLayer = layer as L.Layer &
+    {
+        bindTooltip?: (content: string, options?: L.TooltipOptions) => L.Layer
+    }
+
+    if (typeof tooltipLayer.bindTooltip === 'function')
+    {
+        tooltipLayer.bindTooltip(burgName, {
+        permanent: true,
+        direction: 'top',
+        // offset: L.point(0, -8),
+        offset: L.point(0, 0),
+        opacity: 0.9,
+        className: 'settlement-point-label-tooltip',
+        })
+    }
+
+    const popupContent = entry.options?.popupFunc?.(feature, entry)
+    const popupLayer = layer as L.Layer &
+    {
+        bindPopup?: (content: string, options?: L.PopupOptions) => L.Layer
+        openPopup?: () => L.Layer
+        closePopup?: () => L.Layer
+        on?: (event: string, handler: L.LeafletEventHandlerFn) => L.Layer
+    }
+
+    if (typeof popupContent !== 'string' || popupContent.trim() === '')
+    {
+        return
+    }
+
+    if (typeof popupLayer.bindPopup !== 'function')
+    {
+        return
+    }
+
+    const isClickMode = POPUP_MODE === 'click'
+
+    popupLayer.bindPopup(popupContent, {
+        closeButton: false,
+        autoClose: isClickMode,
+        closeOnClick: isClickMode,
+    })
+
+    if (POPUP_MODE !== 'hover')
+    {
+        return
+    }
+
+    if (typeof popupLayer.on !== 'function')
+    {
+        return
+    }
+
+    let isMarkerHovered = false
+    let isPopupHovered = false
+    let closeTimeoutId: number | null = null
+
+    const clearCloseTimeout = () =>
+    {
+        if (closeTimeoutId !== null)
+        {
+        window.clearTimeout(closeTimeoutId)
+        closeTimeoutId = null
+        }
+    }
+
+    const scheduleClose = () =>
+    {
+        clearCloseTimeout()
+
+        closeTimeoutId = window.setTimeout(() =>
+        {
+        if (!isMarkerHovered && !isPopupHovered)
+        {
+            if (typeof popupLayer.closePopup === 'function')
+            {
+            popupLayer.closePopup()
+            }
+        }
+        }, 140)
+    }
+
+    popupLayer.on('mouseover', () =>
+    {
+        isMarkerHovered = true
+        clearCloseTimeout()
+
+        if (typeof popupLayer.openPopup === 'function')
+        {
+        popupLayer.openPopup()
+        }
+    })
+
+    popupLayer.on('mouseout', () =>
+    {
+        isMarkerHovered = false
+        scheduleClose()
+    })
+
+    popupLayer.on('popupopen', (event: L.PopupEvent) =>
+    {
+        const popupElement = event.popup.getElement()
+
+        if (!popupElement)
+        {
+        return
+        }
+
+        popupElement.addEventListener('mouseenter', () =>
+        {
+        isPopupHovered = true
+        clearCloseTimeout()
+        })
+
+        popupElement.addEventListener('mouseleave', () =>
+        {
+        isPopupHovered = false
+        scheduleClose()
+        })
+    })
+
+    popupLayer.on('popupclose', () =>
+    {
+        isPopupHovered = false
+        clearCloseTimeout()
+    })
+}
+
 function SettlementPointsLayer({ entry }: { entry: SettlementPointsLayerEntry })
 {
   const map = useMap()
@@ -115,147 +267,6 @@ function SettlementPointsLayer({ entry }: { entry: SettlementPointsLayerEntry })
       map.off('zoomend', handleZoomEnd)
     }
   }, [map])
-
-  const onEachFeatureHandler = (feature: GeoJSON.Feature, layer: L.Layer) =>
-  {
-    const properties = feature.properties
-
-    if (!properties)
-    {
-      return
-    }
-
-    const burgName = properties.name
-    if (typeof burgName !== 'string' || burgName.trim() === '')
-    {
-      // console.log("Skipping feature with missing or invalid 'name' property:", properties)
-      return
-    }
-    
-    if (!shouldShowTown(properties, zoom))
-    {
-      return
-    }
-
-    const tooltipLayer = layer as L.Layer &
-    {
-      bindTooltip?: (content: string, options?: L.TooltipOptions) => L.Layer
-    }
-
-    if (typeof tooltipLayer.bindTooltip === 'function')
-    {
-      tooltipLayer.bindTooltip(burgName, {
-        permanent: true,
-        direction: 'top',
-        // offset: L.point(0, -8),
-        offset: L.point(0, 0),
-        opacity: 0.9,
-        className: 'settlement-point-label-tooltip',
-      })
-    }
-
-    const popupContent = entry.options?.popupFunc?.(feature, entry)
-    const popupLayer = layer as L.Layer &
-    {
-      bindPopup?: (content: string, options?: L.PopupOptions) => L.Layer
-      openPopup?: () => L.Layer
-      closePopup?: () => L.Layer
-      on?: (event: string, handler: L.LeafletEventHandlerFn) => L.Layer
-    }
-
-    if (typeof popupContent !== 'string' || popupContent.trim() === '')
-    {
-      return
-    }
-
-    if (typeof popupLayer.bindPopup !== 'function')
-    {
-      return
-    }
-
-    let isMarkerHovered = false
-    let isPopupHovered = false
-    let closeTimeoutId: number | null = null
-
-    const clearCloseTimeout = () =>
-    {
-      if (closeTimeoutId !== null)
-      {
-        window.clearTimeout(closeTimeoutId)
-        closeTimeoutId = null
-      }
-    }
-
-    const scheduleClose = () =>
-    {
-      clearCloseTimeout()
-
-      closeTimeoutId = window.setTimeout(() =>
-      {
-        if (!isMarkerHovered && !isPopupHovered)
-        {
-          if (typeof popupLayer.closePopup === 'function')
-          {
-            popupLayer.closePopup()
-          }
-        }
-      }, 140)
-    }
-
-    popupLayer.bindPopup(popupContent, {
-      closeButton: false,
-      autoClose: false,
-      closeOnClick: false,
-    })
-
-    if (typeof popupLayer.on === 'function')
-    {
-      popupLayer.on('mouseover', () =>
-      {
-        isMarkerHovered = true
-        clearCloseTimeout()
-
-        if (typeof popupLayer.openPopup === 'function')
-        {
-          popupLayer.openPopup()
-        }
-      })
-
-      popupLayer.on('mouseout', () =>
-      {
-        isMarkerHovered = false
-        scheduleClose()
-      })
-
-      popupLayer.on('popupopen', (event: L.PopupEvent) =>
-      {
-        const popupElement = event.popup.getElement()
-
-        if (!popupElement)
-        {
-          return
-        }
-
-        popupElement.addEventListener('mouseenter', () =>
-        {
-          isPopupHovered = true
-          clearCloseTimeout()
-        })
-
-        popupElement.addEventListener('mouseleave', () =>
-        {
-          isPopupHovered = false
-          scheduleClose()
-        })
-      })
-
-      popupLayer.on('popupclose', () =>
-      {
-        isPopupHovered = false
-        clearCloseTimeout()
-      })
-    }
-  }
 
   const pointToLayerHandler = (_feature: GeoJSON.Feature, latlng: L.LatLng) =>
   {
@@ -277,7 +288,7 @@ function SettlementPointsLayer({ entry }: { entry: SettlementPointsLayerEntry })
     <GeoJSON
       key={`${entry.id}-${zoom}`}
       data={entry.data}
-      onEachFeature={onEachFeatureHandler}
+      onEachFeature={(feature, layer) => onEachFeatureHandler(feature, layer, zoom, entry)}
       pointToLayer={pointToLayerHandler}
     />
   )
