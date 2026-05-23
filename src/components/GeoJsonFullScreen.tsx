@@ -203,13 +203,13 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     color: '#5a5a5a',
     drawFunc: getLabelsLayer,
   },
-  {
-    id: 'lore_labels',
-    srcFile: '/geojson/lore_labels.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    drawFunc: getLabelsLayer,
-  },
+  // {
+  //   id: 'lore_labels',
+  //   srcFile: '/geojson/lore_labels.geojson',
+  //   weight: 1.15,
+  //   color: '#5a5a5a',
+  //   drawFunc: getLabelsLayer,
+  // },
   {
     id: 'political_line_labels',
     srcFile: '/geojson/political_line_labels.geojson',
