@@ -427,6 +427,43 @@ const EnsureMapPanes = () =>
   return null
 }
 
+const RecenterControl = ({ cachedView }: { cachedView: MapViewState }) =>
+{
+  const map = useMap()
+
+  const handleRecenterClick = () =>
+  {
+    map.setView(cachedView.center, cachedView.zoom)
+  }
+
+  return (
+    <div className="leaflet-top leaflet-left" style={{ marginTop: '70px', marginLeft: '0px' }}>
+      <div className="leaflet-control leaflet-bar">
+        <button
+          className="numbered-button"
+          type="button"
+          onClick={handleRecenterClick}
+          title="Recenter map"
+          aria-label="Recenter map"
+          style={{
+            width: '30px',
+            height: '30px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '18px',
+            borderRadius: 0,
+            padding: 0,
+          }}
+        >
+          ⌖
+        </button>
+      </div>
+    </div>
+  )
+}
+
 const GeoJsonBoundsFitter = ({ entries }: { entries: GeoJsonEntry[] }) =>
 {
   const map = useMap()
@@ -476,6 +513,13 @@ const GeoJsonFullScreen = (
   const [initialView] = useState<MapViewState>(() =>
   {
     return parseMapViewFromUrl(initialCenter, initialZoom, minZoom, maxZoom)
+  })
+  const [cachedInitialView] = useState<MapViewState>(() =>
+  {
+    return {
+      zoom: initialView.zoom,
+      center: [initialView.center[0], initialView.center[1]],
+    }
   })
   const [entries, setEntries] = useState<GeoJsonEntry[]>([])
   const [loadError, setLoadError] = useState('')
@@ -824,11 +868,17 @@ const GeoJsonFullScreen = (
   }
 
   let earthLayerControlElement = null
+  let recenterControlElement = null
+
+  if (fullScreen)
+  {
+    recenterControlElement = <RecenterControl cachedView={cachedInitialView} />
+  }
 
   if (fullScreen)
   {
     earthLayerControlElement = (
-      <div className="leaflet-top leaflet-left" style={{ marginTop: '70px', marginLeft: '0px' }}>
+      <div className="leaflet-top leaflet-left" style={{ marginTop: '108px', marginLeft: '0px' }}>
         <div className="leaflet-control leaflet-bar">
           <button
             className="numbered-button"
@@ -875,7 +925,7 @@ const GeoJsonFullScreen = (
     }
 
     measureControlElement = (
-      <div className="leaflet-top leaflet-left" style={{ marginTop: '108px', marginLeft: '0px' }}>
+      <div className="leaflet-top leaflet-left" style={{ marginTop: '146px', marginLeft: '0px' }}>
         <div className="leaflet-control leaflet-bar">
           <button
             type="button"
@@ -1036,6 +1086,7 @@ const GeoJsonFullScreen = (
           {boundsFitterElement}
           <DebugTracker onViewChange={handleMapViewChange} onMapClick={handleMeasureMapClick} />
           {fullScreenLinkElement}
+          {recenterControlElement}
           {earthLayerControlElement}
           {measureControlElement}
         </MapContainer>
