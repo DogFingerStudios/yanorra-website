@@ -699,13 +699,13 @@ const GeoJsonFullScreen = (
     )
   }
 
-  let sidebarElement = null
+  let earthLayerControlElement = null
 
   if (fullScreen)
   {
-    sidebarElement = (
-      <div className="map-sidebar">
-        <div className="map-sidebar-top">
+    earthLayerControlElement = (
+      <div className="leaflet-top leaflet-left" style={{ marginTop: '70px', marginLeft: '0px' }}>
+        <div className="leaflet-control leaflet-bar">
           <button
             className="numbered-button"
             type="button"
@@ -713,19 +713,19 @@ const GeoJsonFullScreen = (
             title={earthLayerTitle}
             aria-label="Toggle Earth layer"
             aria-pressed={isEarthLayerVisible}
+            style={{
+              width: '30px',
+              height: '30px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '20px',
+              borderRadius: 0,
+              padding: 0,
+            }}
           >
             🌎
-          </button>
-        </div>
-        <div className="map-sidebar-bottom">
-          <button
-            className="close-button"
-            type="button"
-            onClick={() => navigateTo('/')}
-            title="Close map"
-            aria-label="Close map"
-          >
-            ✕
           </button>
         </div>
       </div>
@@ -844,7 +844,6 @@ const GeoJsonFullScreen = (
 
   return (
     <div className="map-fullscreen-container">
-      {sidebarElement}
       <div className="map-main">
         <MapContainer
           key={`geojson-map-${initialView.center[0]}-${initialView.center[1]}-${initialView.zoom}-${minZoom}-${maxZoom}`}
@@ -879,6 +878,7 @@ const GeoJsonFullScreen = (
           {boundsFitterElement}
           <DebugTracker onViewChange={handleMapViewChange} />
           {fullScreenLinkElement}
+          {earthLayerControlElement}
         </MapContainer>
         {renderDebug()}
         {loadError ? <div className="geojson-error-banner">{loadError}</div> : null}

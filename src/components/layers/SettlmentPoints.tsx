@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import L from 'leaflet'
 import './SettlmentPoints.css'
 
-const POPUP_MODE: 'click' | 'hover' = 'hover'
+const POPUP_MODE: 'click' | 'hover' = 'click'
 
 type SettlementPointsLayerEntry =
 {
