@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { CircleMarker, GeoJSON, ImageOverlay, LayerGroup, MapContainer, Polyline, ScaleControl, useMap, useMapEvents } from 'react-leaflet'
+import { GeoJSON, ImageOverlay, LayerGroup, MapContainer, Marker, Polyline, ScaleControl, useMap, useMapEvents } from 'react-leaflet'
 import MapRightPanel from './MapRightPanel'
 import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
@@ -269,6 +269,13 @@ type MeasurePoint = [number, number]
 type BaseLayerKey = 'land' | 'biomes'
 
 const LAYER_QUERY_PARAM = 'layer'
+
+const MEASURE_POINT_ICON = L.divIcon({
+  className: 'measure-point-marker',
+  html: '<span class="measure-point-marker-dot"></span>',
+  iconSize: [12, 12],
+  iconAnchor: [6, 6],
+})
 
 function parseBaseLayerFromUrl(): BaseLayerKey | null
 {
@@ -717,12 +724,34 @@ const GeoJsonFullScreen = (
         <Polyline positions={measurePoints} pathOptions={{ color: '#0C66E4', weight: 3 }} />
         {measurePoints.map((point, index) =>
         {
+          const dragHandlers = {
+            drag: (event: L.LeafletEvent) =>
+            {
+              const target = event.target as L.Marker
+              const nextLatLng = target.getLatLng()
+
+              setMeasurePoints((previousPoints) =>
+              {
+                return previousPoints.map((existingPoint, existingIndex) =>
+                {
+                  if (existingIndex !== index)
+                  {
+                    return existingPoint
+                  }
+
+                  return [nextLatLng.lat, nextLatLng.lng]
+                })
+              })
+            },
+          }
+
           return (
-            <CircleMarker
+            <Marker
               key={`measure-point-${index}`}
-              center={point}
-              radius={4}
-              pathOptions={{ color: '#0C66E4', fillColor: '#0C66E4', fillOpacity: 1 }}
+              position={point}
+              draggable={isMeasureMode}
+              icon={MEASURE_POINT_ICON}
+              eventHandlers={dragHandlers}
             />
           )
         })}
