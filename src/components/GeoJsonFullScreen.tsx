@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
-import { GeoJSON, ImageOverlay, LayerGroup, LayersControl, MapContainer, ScaleControl, useMap, useMapEvents } from 'react-leaflet'
+import { GeoJSON, ImageOverlay, LayerGroup, MapContainer, ScaleControl, useMap, useMapEvents } from 'react-leaflet'
+import MapRightPanel from './MapRightPanel'
 import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
 // import { getTownLayer } from './layers/TownLayer'
@@ -377,27 +378,6 @@ const DebugTracker = ({ onViewChange }: { onViewChange: (view: MapViewState) => 
       })
     },
   })
-  return null
-}
-
-const BaseLayerTracker = ({ onBaseLayerChange }: { onBaseLayerChange: (nextLayer: BaseLayerKey) => void }) =>
-{
-  useMapEvents({
-    baselayerchange: (event) =>
-    {
-      if (event.name === 'Land')
-      {
-        onBaseLayerChange('land')
-        return
-      }
-
-      if (event.name === 'Biomes')
-      {
-        onBaseLayerChange('biomes')
-      }
-    },
-  })
-
   return null
 }
 
@@ -790,7 +770,7 @@ const GeoJsonFullScreen = (
     }
   }
 
-  let layerControlElement = null
+  let baseLayerElement = null
 
   if (landEntry || biomesEntry)
   {
@@ -806,38 +786,14 @@ const GeoJsonFullScreen = (
       activeBaseLayer = 'land'
     }
 
-    let landBaseLayerElement = null
-
-    if (landEntry)
+    if (activeBaseLayer === 'land' && landEntry)
     {
-      landBaseLayerElement = (
-        <LayersControl.BaseLayer name="Land" checked={activeBaseLayer === 'land'}>
-          <LayerGroup>
-            {renderEntryLayer(landEntry)}
-          </LayerGroup>
-        </LayersControl.BaseLayer>
-      )
+      baseLayerElement = renderEntryLayer(landEntry)
     }
-
-    let biomesBaseLayerElement = null
-
-    if (biomesEntry)
+    else if (activeBaseLayer === 'biomes' && biomesEntry)
     {
-      biomesBaseLayerElement = (
-        <LayersControl.BaseLayer name="Biomes" checked={activeBaseLayer === 'biomes'}>
-          <LayerGroup>
-            {renderEntryLayer(biomesEntry)}
-          </LayerGroup>
-        </LayersControl.BaseLayer>
-      )
+      baseLayerElement = renderEntryLayer(biomesEntry)
     }
-
-    layerControlElement = (
-      <LayersControl position="topright" collapsed={false}>
-        {landBaseLayerElement}
-        {biomesBaseLayerElement}
-      </LayersControl>
-    )
   }
 
   const boundsFitterElement = fullScreen && shouldFitBounds ? <GeoJsonBoundsFitter entries={entries} /> : null
@@ -864,9 +820,8 @@ const GeoJsonFullScreen = (
             updateWhenIdle={true}
           />
           <EnsureMapPanes />
-          <BaseLayerTracker onBaseLayerChange={handleBaseLayerChange} />
           {earthLayerElement}
-          {layerControlElement}
+          {baseLayerElement}
           {otherEntries.map((entry) =>
           {
             return (
@@ -880,6 +835,7 @@ const GeoJsonFullScreen = (
           {fullScreenLinkElement}
           {earthLayerControlElement}
         </MapContainer>
+        {fullScreen && <MapRightPanel selectedBaseLayer={selectedBaseLayer} onBaseLayerChange={handleBaseLayerChange} />}
         {renderDebug()}
         {loadError ? <div className="geojson-error-banner">{loadError}</div> : null}
       </div>
