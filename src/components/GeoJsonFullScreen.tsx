@@ -813,7 +813,7 @@ const GeoJsonFullScreen = (
           crs={L.CRS.EPSG4326}
         >
           <ScaleControl
-            position="bottomright"
+            position="bottomleft"
             metric={true}
             imperial={true}
             maxWidth={180}

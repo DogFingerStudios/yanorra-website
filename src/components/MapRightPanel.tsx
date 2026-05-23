@@ -19,41 +19,58 @@ const MapRightPanel = ({ selectedBaseLayer, onBaseLayerChange }: MapRightPanelPr
   }
 
   return (
-    <div className={`map-right-panel${isOpen ? ' map-right-panel--open' : ''}`}>
-      <button
+<div className={`map-right-panel${isOpen ? ' map-right-panel--open' : ''}`}>
+    <button
         className="map-right-panel-tab"
         onClick={togglePanel}
         aria-label={isOpen ? 'Close panel' : 'Open panel'}
         title={isOpen ? 'Close panel' : 'Open panel'}
-      >
+        >
         {isOpen ? '▶' : '◀'}
-      </button>
-      <div className="map-right-panel-content">
+    </button>
+
+    <div className="map-right-panel-content">
         <div className="map-right-panel-section">
-          <div className="map-right-panel-section-title">Base Layer</div>
-          <label className="map-right-panel-radio-label">
+            <div className="map-right-panel-section-title">
+                Base Layer
+            </div>
+            <label className="map-right-panel-radio-label">
             <input
-              type="radio"
-              name="base-layer"
-              value="land"
-              checked={selectedBaseLayer === 'land'}
-              onChange={() => onBaseLayerChange('land')}
+                type="radio"
+                name="base-layer"
+                value="land"
+                checked={selectedBaseLayer === 'land'}
+                onChange={() => onBaseLayerChange('land')}
             />
             Land
-          </label>
-          <label className="map-right-panel-radio-label">
+            </label>
+            <label className="map-right-panel-radio-label">
             <input
-              type="radio"
-              name="base-layer"
-              value="biomes"
-              checked={selectedBaseLayer === 'biomes'}
-              onChange={() => onBaseLayerChange('biomes')}
+                type="radio"
+                name="base-layer"
+                value="biomes"
+                checked={selectedBaseLayer === 'biomes'}
+                onChange={() => onBaseLayerChange('biomes')}
             />
             Biomes
-          </label>
+            </label>
         </div>
-      </div>
+
+        <div className="map-right-panel-section">
+            <div className="map-right-panel-section-title">
+                Places</div>
+            <label className="map-right-panel-checkbox-label">
+                <input type="checkbox" name="cities-labels" />Cities
+            </label>
+            <label className="map-right-panel-checkbox-label">
+                <input type="checkbox" name="countries-labels" />Countries
+            </label>
+            <label className="map-right-panel-checkbox-label">
+                <input type="checkbox" name="points-of-interest-labels" />Points of Interest
+            </label>
+        </div>
     </div>
+</div>
   )
 }
 

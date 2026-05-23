@@ -22,3 +22,8 @@
   text-shadow: none;
   font-family: inherit;
 }
+
+.map-main .leaflet-bottom.leaflet-left .leaflet-control-scale
+{
+  margin-left: 12px;
+}

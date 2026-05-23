@@ -195,10 +195,11 @@
   }
 }
 
-.zoom-indicator {
+.zoom-indicator 
+{
   position: absolute;
-  bottom: 20px;
-  left: 20px;
+  top: 13px;
+  left: 55px;
   background-color: rgba(255, 255, 255, 0.9);
   padding: 10px 15px;
   border-radius: 4px;
@@ -213,8 +214,8 @@
 
 .coords-indicator {
   position: absolute;
-  bottom: 20px;
-  left: 200px;
+  top: 13px;
+  left: 185px;
   background-color: rgba(255, 255, 255, 0.9);
   padding: 10px 15px;
   border-radius: 4px;
