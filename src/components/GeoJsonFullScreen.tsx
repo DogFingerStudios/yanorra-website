@@ -811,6 +811,12 @@ const GeoJsonFullScreen = (
     }
 
     const totalDistanceKm = getTotalMeasuredDistanceKm()
+
+    if (totalDistanceKm <= 0)
+    {
+      return null
+    }
+
     const totalDistanceMiles = totalDistanceKm * 0.621371
 
     return (
