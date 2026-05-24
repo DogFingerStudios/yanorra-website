@@ -6,7 +6,7 @@ import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
 // import { getTownLayer } from './layers/TownLayer'
 import { getSettlementPointsLayer } from './layers/SettlmentPoints'
-import { getStatesLayer } from './layers/States'
+// import { getStatesLayer } from './layers/States'
 import { getRailwayLayer } from './layers/RailwayLayer'
 import { getSeawayLayer } from './layers/SeawayLayer'
 import { getStreetsLayer } from './layers/StreetsLayer'
@@ -85,14 +85,14 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     color: '#7bd5e9',
     weight: 1.5,
   },
-  {
-    id: 'states',
-    srcFile: '/geojson/StatesData.geojson',
-    color: '#a6a6c8',
-    weight: 1.25,
-    fillOpacity: 0,
-    drawFunc: getStatesLayer,
-  },
+//   {
+//     id: 'states',
+//     srcFile: '/geojson/StatesData.geojson',
+//     color: '#a6a6c8',
+//     weight: 1.25,
+//     fillOpacity: 0,
+//     drawFunc: getStatesLayer,
+//   },
 
 // ****************************************************
   {
@@ -178,15 +178,15 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         drawFunc: getParksLayer,
     },
 
-  {
-    id: 'settlements_points',
-    srcFile: '/geojson/settlements_points.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    drawFunc: getSettlementPointsLayer,
-    popupFunc: getSettlementPointsPopup,
-    minZoom: 3,
-  },
+    {
+        id: 'settlements_points',
+        srcFile: '/geojson/settlements_points.geojson',
+        weight: 1.15,
+        color: '#5a5a5a',
+        drawFunc: getSettlementPointsLayer,
+        popupFunc: getSettlementPointsPopup,
+        minZoom: 3,
+    },
 
 /************************************************/
   
