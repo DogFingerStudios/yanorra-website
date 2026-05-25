@@ -225,6 +225,33 @@ function drawFixedLabel(label: StateLabelDatum, viewBounds: L.LatLngBounds): Vis
 function StatesLayer({ entry }: { entry: StatesLayerEntry })
 {
     const [currentZoom, setCurrentZoom] = useState(5)
+  const [hoveredStateName, setHoveredStateName] = useState<string | null>(null)
+
+  const getFeatureStateName = (feature: GeoJSON.Feature): string | null =>
+  {
+    const properties = feature.properties as Record<string, unknown> | null | undefined
+
+    if (!properties)
+    {
+      return null
+    }
+
+    const rawStateName = properties.Data_State
+
+    if (typeof rawStateName !== 'string')
+    {
+      return null
+    }
+
+    const normalizedStateName = rawStateName.trim()
+
+    if (normalizedStateName === '')
+    {
+      return null
+    }
+
+    return normalizedStateName
+  }
 
     const map = useMapEvents({
         zoomend: () => {
@@ -338,13 +365,51 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
       <GeoJSON
         key={`${entry.id}-fills`}
         data={entry.data}
-        style={() =>
+        style={(feature) =>
         {
+          let fillOpacity = entry.options.fillOpacity
+          let fillColor = entry.options.fillColor
+
+          if (feature)
+          {
+            const featureStateName = getFeatureStateName(feature)
+
+            if (featureStateName && featureStateName === hoveredStateName)
+            {
+              fillColor = '#F0F4F8'
+
+              if ((fillOpacity ?? 0) < 0.65)
+              {
+                fillOpacity = 0.65
+              }
+            }
+          }
+
           return {
             stroke: false,
-            fillColor: entry.options.fillColor,
-            fillOpacity: entry.options.fillOpacity,
+            fillColor,
+            fillOpacity,
           }
+        }}
+        onEachFeature={(feature, layer) =>
+        {
+          layer.on({
+            mouseover: () =>
+            {
+              const featureStateName = getFeatureStateName(feature)
+
+              if (!featureStateName)
+              {
+                return
+              }
+
+              setHoveredStateName(featureStateName)
+            },
+            mouseout: () =>
+            {
+              setHoveredStateName(null)
+            },
+          })
         }}
       />
 
