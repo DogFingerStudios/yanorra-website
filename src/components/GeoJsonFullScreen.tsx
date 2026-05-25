@@ -28,6 +28,7 @@ type GeoJsonLayerOptions =
 {
   id?: string
   srcFile: string
+  baseLayer?: boolean
   pane?: string
   color?: string
   fillColor?: string
@@ -58,6 +59,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   {
     id: 'land',
     srcFile: '/geojson/land.geojson',
+    baseLayer: true,
     pane: BASE_GEOJSON_PANE,
     color: '#7bd5e9',
     fillColor: '#ffffff',
@@ -67,6 +69,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   {
     id: 'biomes',
     srcFile: '/geojson/BiomesData.geojson',
+    baseLayer: true,
     pane: BASE_GEOJSON_PANE,
     color: '#7bd5e9',
     fillColor: '#ffffff',
@@ -229,8 +232,84 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
 /************************************************/  
 ]
 
-const LAND_LAYER_FILE = '/geojson/land.geojson'
-const BIOMES_LAYER_FILE = '/geojson/BiomesData.geojson'
+type BaseLayerOption =
+{
+  id: string
+  label: string
+}
+
+function getGeoJsonLayerId(options: GeoJsonLayerOptions): string
+{
+  if (options.id)
+  {
+    return options.id
+  }
+
+  return options.srcFile
+}
+
+function formatLayerLabel(layerId: string): string
+{
+  const normalizedName = layerId.split('/').pop() ?? layerId
+  const labelText = normalizedName.replace(/[_-]+/g, ' ')
+
+  return labelText.charAt(0).toUpperCase() + labelText.slice(1)
+}
+
+function getBaseLayerOptions(layers: GeoJsonLayerOptions[]): BaseLayerOption[]
+{
+  return layers
+    .filter((layer) => layer.baseLayer)
+    .map((layer) =>
+    {
+      const id = getGeoJsonLayerId(layer)
+
+      return {
+        id,
+        label: formatLayerLabel(id),
+      }
+    })
+}
+
+function getInitialBaseLayer(baseLayers: BaseLayerOption[]): string
+{
+  const baseLayerIds = baseLayers.map((layer) => layer.id)
+
+  if (baseLayerIds.includes(DEFAULT_MAP_LAYER))
+  {
+    return DEFAULT_MAP_LAYER
+  }
+
+  if (baseLayerIds.length > 0)
+  {
+    return baseLayerIds[0]
+  }
+
+  return DEFAULT_MAP_LAYER
+}
+
+function parseBaseLayerFromUrl(baseLayers: BaseLayerOption[]): string | null
+{
+  const searchParams = new URLSearchParams(window.location.search)
+  const rawLayer = searchParams.get(LAYER_QUERY_PARAM)
+
+  if (!rawLayer)
+  {
+    return null
+  }
+
+  const normalizedLayer = rawLayer.toLowerCase()
+  const allowedLayerIds = new Set(baseLayers.map((layer) => layer.id.toLowerCase()))
+
+  if (allowedLayerIds.has(normalizedLayer))
+  {
+    return normalizedLayer
+  }
+
+  return null
+}
+
+const BASE_LAYER_OPTIONS = getBaseLayerOptions(GEOJSON_FILES)
 
 // Set this to your Earth raster path in /public.
 const EARTH_LAYER_FILE = '/geojson/Earth.png'
@@ -266,8 +345,6 @@ type MapViewState =
 
 type MeasurePoint = [number, number]
 
-type BaseLayerKey = 'land' | 'biomes'
-
 const LAYER_QUERY_PARAM = 'layer'
 
 const MEASURE_POINT_ICON = L.divIcon({
@@ -276,31 +353,6 @@ const MEASURE_POINT_ICON = L.divIcon({
   iconSize: [12, 12],
   iconAnchor: [6, 6],
 })
-
-function parseBaseLayerFromUrl(): BaseLayerKey | null
-{
-  const searchParams = new URLSearchParams(window.location.search)
-  const rawLayer = searchParams.get(LAYER_QUERY_PARAM)
-
-  if (!rawLayer)
-  {
-    return null
-  }
-
-  const normalizedLayer = rawLayer.toLowerCase()
-
-  if (normalizedLayer === 'land')
-  {
-    return 'land'
-  }
-
-  if (normalizedLayer === 'biomes')
-  {
-    return 'biomes'
-  }
-
-  return null
-}
 
 function parseMapViewFromUrl(defaultCenter: [number, number], defaultZoom: number, minZoom: number, maxZoom: number): MapViewState
 {
@@ -496,6 +548,24 @@ const GeoJsonBoundsFitter = ({ entries }: { entries: GeoJsonEntry[] }) =>
   return null
 }
 
+function findSelectedBaseLayerEntry(entries: GeoJsonEntry[], selectedBaseLayer: string): GeoJsonEntry | null
+{
+  for (const entry of entries)
+  {
+    if (!entry.options.baseLayer)
+    {
+      continue
+    }
+
+    if (getGeoJsonLayerId(entry.options) === selectedBaseLayer)
+    {
+      return entry
+    }
+  }
+
+  return null
+}
+
 const GeoJsonFullScreen = (
   {
     fullScreen = true,
@@ -514,6 +584,7 @@ const GeoJsonFullScreen = (
   {
     return parseMapViewFromUrl(initialCenter, initialZoom, minZoom, maxZoom)
   })
+
   const [cachedInitialView] = useState<MapViewState>(() =>
   {
     return {
@@ -521,6 +592,7 @@ const GeoJsonFullScreen = (
       center: [initialView.center[0], initialView.center[1]],
     }
   })
+  
   const [entries, setEntries] = useState<GeoJsonEntry[]>([])
   const [loadError, setLoadError] = useState('')
   const [isEarthLayerVisible, setIsEarthLayerVisible] = useState(false)
@@ -529,19 +601,19 @@ const GeoJsonFullScreen = (
   const [copyMessage, setCopyMessage] = useState('')
   const [isMeasureMode, setIsMeasureMode] = useState(false)
   const [measurePoints, setMeasurePoints] = useState<MeasurePoint[]>([])
-  const [selectedBaseLayer, setSelectedBaseLayer] = useState<BaseLayerKey>(() =>
+  const [selectedBaseLayer, setSelectedBaseLayer] = useState<string>(() =>
   {
-    const parsedBaseLayer = parseBaseLayerFromUrl()
+    const parsedBaseLayer = parseBaseLayerFromUrl(BASE_LAYER_OPTIONS)
 
     if (parsedBaseLayer)
     {
       return parsedBaseLayer
     }
 
-    return DEFAULT_MAP_LAYER
+    return getInitialBaseLayer(BASE_LAYER_OPTIONS)
   })
 
-  const syncViewToUrl = (view: MapViewState, baseLayer: BaseLayerKey) =>
+  const syncViewToUrl = (view: MapViewState, baseLayer: string) =>
   {
     const url = new URL(window.location.href)
     const nextLat = view.center[0].toFixed(4)
@@ -569,7 +641,7 @@ const GeoJsonFullScreen = (
     syncViewToUrl(view, selectedBaseLayer)
   }
 
-  const handleBaseLayerChange = (nextLayer: BaseLayerKey) =>
+  const handleBaseLayerChange = (nextLayer: string) =>
   {
     setSelectedBaseLayer(nextLayer)
     syncViewToUrl({
@@ -1008,51 +1080,9 @@ const GeoJsonFullScreen = (
     )
   }
 
-  let landEntry: GeoJsonEntry | null = null
-  let biomesEntry: GeoJsonEntry | null = null
-  const otherEntries: GeoJsonEntry[] = []
-
-  for (const entry of entries)
-  {
-    if (entry.id === LAND_LAYER_FILE)
-    {
-      landEntry = entry
-    }
-    else if (entry.id === BIOMES_LAYER_FILE)
-    {
-      biomesEntry = entry
-    }
-    else
-    {
-      otherEntries.push(entry)
-    }
-  }
-
-  let baseLayerElement = null
-
-  if (landEntry || biomesEntry)
-  {
-    let activeBaseLayer: BaseLayerKey = selectedBaseLayer
-
-    if (activeBaseLayer === 'land' && !landEntry && biomesEntry)
-    {
-      activeBaseLayer = 'biomes'
-    }
-
-    if (activeBaseLayer === 'biomes' && !biomesEntry && landEntry)
-    {
-      activeBaseLayer = 'land'
-    }
-
-    if (activeBaseLayer === 'land' && landEntry)
-    {
-      baseLayerElement = renderEntryLayer(landEntry)
-    }
-    else if (activeBaseLayer === 'biomes' && biomesEntry)
-    {
-      baseLayerElement = renderEntryLayer(biomesEntry)
-    }
-  }
+  const baseLayerEntry = findSelectedBaseLayerEntry(entries, selectedBaseLayer)
+  const otherEntries = entries.filter((entry) => !entry.options.baseLayer)
+  const baseLayerElement = baseLayerEntry ? renderEntryLayer(baseLayerEntry) : null
 
   const boundsFitterElement = fullScreen && shouldFitBounds ? <GeoJsonBoundsFitter entries={entries} /> : null
 
@@ -1096,7 +1126,7 @@ const GeoJsonFullScreen = (
           {earthLayerControlElement}
           {measureControlElement}
         </MapContainer>
-        {fullScreen && <MapRightPanel selectedBaseLayer={selectedBaseLayer} onBaseLayerChange={handleBaseLayerChange} />}
+        {fullScreen && <MapRightPanel baseLayers={BASE_LAYER_OPTIONS} selectedBaseLayer={selectedBaseLayer} onBaseLayerChange={handleBaseLayerChange} />}
         {renderMeasureIndicator()}
         {renderDebug()}
         {loadError ? <div className="geojson-error-banner">{loadError}</div> : null}

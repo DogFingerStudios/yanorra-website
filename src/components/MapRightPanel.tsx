@@ -1,15 +1,20 @@
 import { useState } from 'react'
 import './MapRightPanel.css'
 
-type BaseLayerKey = 'land' | 'biomes'
+type BaseLayerOption =
+{
+    id: string
+    label: string
+}
 
 type MapRightPanelProps =
 {
-  selectedBaseLayer: BaseLayerKey
-  onBaseLayerChange: (layer: BaseLayerKey) => void
+    baseLayers: BaseLayerOption[]
+    selectedBaseLayer: string
+    onBaseLayerChange: (layer: string) => void
 }
 
-const MapRightPanel = ({ selectedBaseLayer, onBaseLayerChange }: MapRightPanelProps) =>
+const MapRightPanel = ({ baseLayers, selectedBaseLayer, onBaseLayerChange }: MapRightPanelProps) =>
 {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -34,26 +39,21 @@ const MapRightPanel = ({ selectedBaseLayer, onBaseLayerChange }: MapRightPanelPr
             <div className="map-right-panel-section-title">
                 Base Layer
             </div>
-            <label className="map-right-panel-radio-label">
-            <input
-                type="radio"
-                name="base-layer"
-                value="land"
-                checked={selectedBaseLayer === 'land'}
-                onChange={() => onBaseLayerChange('land')}
-            />
-            Land
-            </label>
-            <label className="map-right-panel-radio-label">
-            <input
-                type="radio"
-                name="base-layer"
-                value="biomes"
-                checked={selectedBaseLayer === 'biomes'}
-                onChange={() => onBaseLayerChange('biomes')}
-            />
-            Biomes
-            </label>
+            {baseLayers.map((layer) =>
+            {
+              return (
+                <label key={layer.id} className="map-right-panel-radio-label">
+                <input
+                    type="radio"
+                    name="base-layer"
+                    value={layer.id}
+                    checked={selectedBaseLayer === layer.id}
+                    onChange={() => onBaseLayerChange(layer.id)}
+                />
+                {layer.label}
+                </label>
+              )
+            })}
         </div>
 
         <div className="map-right-panel-section">
