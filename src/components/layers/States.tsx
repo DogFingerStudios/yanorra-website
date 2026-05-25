@@ -285,6 +285,11 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
       {
         const properties = feature.properties
 
+        if (properties?.visible != null && properties.visible === false)
+        {
+            return
+        }
+
         if (!properties) 
         {
             console.log('Feature is missing properties, skipping label generation')
