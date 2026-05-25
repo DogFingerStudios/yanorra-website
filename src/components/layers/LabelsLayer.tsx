@@ -18,6 +18,7 @@ type LabelProperties = GeoJSON.GeoJsonProperties &
   label_type?: unknown
   min_zoom?: unknown
   max_zoom?: unknown
+  font_color?: unknown
   font_size?: unknown
   font_family?: unknown
   font_style?: unknown
@@ -140,7 +141,7 @@ function parseTextAnchor(value: unknown): NormalizedLabelOptions['textAnchor']
   {
     return DEFAULT_TEXT_ANCHOR
   }
-
+ 
   const normalizedValue = value.trim().toLowerCase()
 
   if (normalizedValue === 'start' || normalizedValue === 'middle' || normalizedValue === 'end')
@@ -261,6 +262,12 @@ function normalizeLabelOptions(properties: LabelProperties, fallbackColor: strin
     targetId = properties.target_id.trim()
   }
 
+  let fontColor = fallbackColor
+  if (typeof properties.font_color === 'string' && properties.font_color.trim() !== '')
+  {
+    fontColor = properties.font_color.trim()
+  }
+
   return {
     labelText: properties.label_text.trim(),
     fontSize,
@@ -273,7 +280,7 @@ function normalizeLabelOptions(properties: LabelProperties, fallbackColor: strin
     startOffset,
     textAnchor: parseTextAnchor(properties.text_anchor),
     repeat,
-    fill: fallbackColor,
+    fill: fontColor,
     targetId,
   }
 }
@@ -412,6 +419,18 @@ function renderIslandLabel(feature: GeoJSON.Feature, polyline: L.Polyline, prope
   renderTextAlongPolyline(feature, polyline, options, textElements, pathIdSeed)
 }
 
+function renderIslandGroupLabel(feature: GeoJSON.Feature, polyline: L.Polyline, properties: LabelProperties, textElements: SVGTextElement[], pathIdSeed: string)
+{
+  const options = normalizeLabelOptions(properties, DEFAULT_ISLAND_LABEL_FILL)
+
+  if (!options)
+  {
+    return
+  }
+
+  renderTextAlongPolyline(feature, polyline, options, textElements, pathIdSeed)
+}
+
 function renderCountryLabel(feature: GeoJSON.Feature, polyline: L.Polyline, properties: LabelProperties, textElements: SVGTextElement[], pathIdSeed: string)
 {
   const options = normalizeLabelOptions(properties, DEFAULT_COUNTRY_LABEL_FILL)
@@ -523,6 +542,11 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
         else if (labelType === 'island')
         {
           renderIslandLabel(feature, lineLayer, properties, textElements, pathIdSeed)
+          return
+        }
+        else if (labelType === 'island_group')
+        {
+          renderIslandGroupLabel(feature, lineLayer, properties, textElements, pathIdSeed)
           return
         }
         else if (labelType === 'country')
