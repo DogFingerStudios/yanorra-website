@@ -337,6 +337,11 @@ function renderTextAlongPolyline(feature: GeoJSON.Feature, polyline: L.Polyline,
     return
   }
 
+  if (!pathElement.isConnected)
+  {
+    return
+  }
+
   if (rawOptions.placement !== 'along_line')
   {
     console.warn(`LabelsLayer: unsupported placement "${rawOptions.placement}". Falling back to along_line.`)
@@ -488,6 +493,9 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
 
   useEffect(() =>
   {
+    let isDisposed = false
+    let firstFrameId: number | null = null
+    let secondFrameId: number | null = null
     const textElements: SVGTextElement[] = []
     const labelLayers: Array<{ feature: GeoJSON.Feature, layer: L.Polyline }> = []
 
@@ -503,6 +511,11 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
 
     const renderQueuedLabels = () =>
     {
+      if (isDisposed)
+      {
+        return
+      }
+
       clearTextElements()
       const currentZoom = map.getZoom()
 
@@ -510,6 +523,12 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
       {
         const feature = labelEntry.feature
         const lineLayer = labelEntry.layer
+
+        if (!map.hasLayer(lineLayer))
+        {
+          return
+        }
+
         const properties = (feature.properties ?? {}) as LabelProperties
 
         if (!isLabelVisibleAtZoom(properties, currentZoom))
@@ -583,9 +602,9 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
     })
 
     labelsLayer.addTo(map)
-    requestAnimationFrame(() =>
+    firstFrameId = requestAnimationFrame(() =>
     {
-      requestAnimationFrame(() =>
+      secondFrameId = requestAnimationFrame(() =>
       {
         renderQueuedLabels()
       })
@@ -593,13 +612,23 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
 
     map.on('zoomend', renderQueuedLabels)
     map.on('moveend', renderQueuedLabels)
-    map.on('viewreset', renderQueuedLabels)
 
     return () =>
     {
+      isDisposed = true
+
+      if (firstFrameId !== null)
+      {
+        cancelAnimationFrame(firstFrameId)
+      }
+
+      if (secondFrameId !== null)
+      {
+        cancelAnimationFrame(secondFrameId)
+      }
+
       map.off('zoomend', renderQueuedLabels)
       map.off('moveend', renderQueuedLabels)
-      map.off('viewreset', renderQueuedLabels)
       clearTextElements()
 
       map.removeLayer(labelsLayer)
