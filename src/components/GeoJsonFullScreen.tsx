@@ -6,7 +6,7 @@ import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
 // import { getTownLayer } from './layers/TownLayer'
 import { getSettlementPointsLayer } from './layers/SettlmentPoints'
-import { getStatesLayer } from './layers/States'
+import { getStatesLayer, getStatesColorsLayer } from './layers/States'
 import { getRailwayLayer } from './layers/RailwayLayer'
 import { getSeawayLayer } from './layers/SeawayLayer'
 import { getStreetsLayer } from './layers/StreetsLayer'
@@ -27,6 +27,7 @@ const DEFAULT_MAP_LAYER = 'land'
 type GeoJsonLayerOptions =
 {
   id?: string
+  label?: string
   srcFile: string
   baseLayer?: boolean
   pane?: string
@@ -59,7 +60,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   {
     id: 'land',
     srcFile: '/geojson/land.geojson',
-    baseLayer: true,
+    // baseLayer: true,
     pane: BASE_GEOJSON_PANE,
     color: '#7bd5e9',
     fillColor: '#ffffff',
@@ -68,6 +69,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
   },
   {
     id: 'biomes',
+    label: 'Biomes',
     srcFile: '/geojson/BiomesData.geojson',
     baseLayer: true,
     pane: BASE_GEOJSON_PANE,
@@ -78,6 +80,29 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     drawFunc: getBiomesLayer,
   },
   {
+    id: 'states',
+    label: 'Borders Only',
+    srcFile: '/geojson/StatesData.geojson',
+    color: '#a6a6c8',
+    weight: 1.26,
+    fillOpacity: 0,
+    baseLayer: true,
+    pane: BASE_GEOJSON_PANE,
+    drawFunc: getStatesLayer,
+  },
+  {
+    id: 'states-color',
+    label: 'Political Map',
+    srcFile: '/geojson/StatesData.geojson',
+    color: '#a6a6c8',
+    weight: 1.26,
+    fillOpacity: 0,
+    baseLayer: true,
+    pane: BASE_GEOJSON_PANE,
+    drawFunc: getStatesColorsLayer,
+  },
+
+  {
     id: 'lakes',
     srcFile: '/geojson/Lakes.geojson',
     color: '#7bd5e9',
@@ -87,14 +112,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     srcFile: '/geojson/Rivers.geojson',
     color: '#7bd5e9',
     weight: 1.5,
-  },
-  {
-    id: 'states',
-    srcFile: '/geojson/StatesData.geojson',
-    color: '#a6a6c8',
-    weight: 1.26,
-    fillOpacity: 0,
-    drawFunc: getStatesLayer,
   },
 
 // ****************************************************
@@ -263,10 +280,11 @@ function getBaseLayerOptions(layers: GeoJsonLayerOptions[]): BaseLayerOption[]
     .map((layer) =>
     {
       const id = getGeoJsonLayerId(layer)
+      const label = layer.label ?? id
 
       return {
         id,
-        label: formatLayerLabel(id),
+        label: formatLayerLabel(label),
       }
     })
 }

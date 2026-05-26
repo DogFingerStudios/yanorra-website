@@ -26,7 +26,12 @@ type BorderSegment =
 
 export function getStatesLayer(entry: StatesLayerEntry)
 {
-  return <StatesLayer entry={entry} />
+  return <StatesLayer entry={entry} showColors={false} />
+}
+
+export function getStatesColorsLayer(entry: StatesLayerEntry)
+{
+  return <StatesLayer entry={entry} showColors={true} />
 }
 
 type StateLabelDatum =
@@ -195,106 +200,82 @@ function drawFixedLabel(label: StateLabelDatum, viewBounds: L.LatLngBounds): Vis
   }
 }
 
-// function drawDynamicLabel(label: StateLabelDatum, viewBounds: L.LatLngBounds): VisibleStateLabel | null
-// {
-//   if (!viewBounds.intersects(label.bounds))
-//   {
-//     return null
-//   }
-
-//   const visibleSouth = Math.max(viewBounds.getSouth(), label.bounds.getSouth())
-//   const visibleNorth = Math.min(viewBounds.getNorth(), label.bounds.getNorth())
-//   const visibleWest = Math.max(viewBounds.getWest(), label.bounds.getWest())
-//   const visibleEast = Math.min(viewBounds.getEast(), label.bounds.getEast())
-
-//   if (visibleSouth > visibleNorth || visibleWest > visibleEast)
-//   {
-//     return null
-//   }
-
-//   const centerLat = (visibleSouth + visibleNorth) / 2
-//   const centerLng = (visibleWest + visibleEast) / 2
-
-//   return {
-//     id: label.id,
-//     stateName: label.stateName,
-//     center: L.latLng(centerLat, centerLng),
-//   }
-// }
-
-function StatesLayer({ entry }: { entry: StatesLayerEntry })
+function getFeatureStateName(feature: GeoJSON.Feature): string | null
 {
-    const [currentZoom, setCurrentZoom] = useState(5)
-  const [hoveredStateName, setHoveredStateName] = useState<string | null>(null)
+  const properties = feature.properties as Record<string, unknown> | null | undefined
 
-  const getFeatureStateName = (feature: GeoJSON.Feature): string | null =>
+  if (!properties)
   {
-    const properties = feature.properties as Record<string, unknown> | null | undefined
-
-    if (!properties)
-    {
-      return null
-    }
-
-    const rawStateName = properties.Data_State
-
-    if (typeof rawStateName !== 'string')
-    {
-      return null
-    }
-
-    const normalizedStateName = rawStateName.trim()
-
-    if (normalizedStateName === '')
-    {
-      return null
-    }
-
-    return normalizedStateName
+    return null
   }
 
-    const map = useMapEvents({
-        zoomend: () => {
-            setCurrentZoom(map.getZoom())
-        },
-    })
+  const rawStateName = properties.Data_State
 
-    useEffect(() => {
-        setCurrentZoom(map.getZoom())
-    }, [map])
+  if (typeof rawStateName !== 'string')
+  {
+    return null
+  }
 
-    const getBorderWeight = (zoom: number): number => 
+  const normalizedStateName = rawStateName.trim()
+
+  if (normalizedStateName === '')
+  {
+    return null
+  }
+
+  return normalizedStateName
+}
+
+function getBorderWeight(baseWeight: number | undefined, zoom: number): number
+{
+  let retval = baseWeight ?? 1
+
+  if (zoom <= 3)
+  {
+    retval *= 1.15
+  }
+  else if (zoom <= 5)
+  {
+    retval *= 1.3
+  }
+  else if (zoom <= 7)
+  {
+    retval *= 1.85
+  }
+  else if (zoom <= 11)
+  {
+    retval *= 2.85
+  }
+  else
+  {
+    retval *= 3.6
+  }
+
+  return retval
+}
+
+function StatesLayer({ entry, showColors }: { entry: StatesLayerEntry, showColors: boolean   })
+{
+  const [currentZoom, setCurrentZoom] = useState(5)
+  const [hoveredStateName, setHoveredStateName] = useState<string | null>(null)
+
+  const map = useMapEvents(
+  {
+    zoomend: () => 
     {
-        let retval = entry.options.weight ?? 1
+      setCurrentZoom(map.getZoom())
+    },
+  })
 
-        if (zoom <= 3)
-        {
-            retval *= 1.15
-        }
-        else if (zoom <= 5)
-        {
-            retval *= 1.3
-        }
-        else if (zoom <= 7)
-        {            
-            retval *= 1.85
-        }
-        else if (zoom <= 11)
-        {
-            retval *= 2.85
-        }
-        else
-        {
-            retval *= 3.6
-        }
+  useEffect(() => 
+  {
+      setCurrentZoom(map.getZoom())
+  }, [map])
 
-        return retval
-    }
-
-    const internalBorders = useMemo(() => 
-    {
-        return buildInternalStateBorders(entry.data)
-    }, [entry.data])
+  const internalBorders = useMemo(() => 
+  {
+      return buildInternalStateBorders(entry.data)
+  }, [entry.data])
 
   const labelData = useMemo(() =>
   {
@@ -373,11 +354,22 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
           if (feature)
           {
             const featureStateName = getFeatureStateName(feature)
+            const featureColor = feature.properties?.Data_Color
+
+            if (typeof featureColor === 'string' && featureColor.trim() !== '')
+            {
+              fillColor = featureColor
+            }
+
+            if (showColors)
+            {
+              fillColor = feature.properties?.Data_Color 
+              fillOpacity = 0.35
+            }
 
             if (featureStateName && featureStateName === hoveredStateName)
             {
-              fillColor = '#F0F4F8'
-
+              fillColor = showColors ? feature.properties?.Data_Color : '#F0F4F8'
               if ((fillOpacity ?? 0) < 0.65)
               {
                 fillOpacity = 0.65
@@ -391,13 +383,13 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
             fillOpacity,
           }
         }}
+
         onEachFeature={(feature, layer) =>
         {
           layer.on({
             mouseover: () =>
             {
               const featureStateName = getFeatureStateName(feature)
-
               if (!featureStateName)
               {
                 return
@@ -420,7 +412,7 @@ function StatesLayer({ entry }: { entry: StatesLayerEntry })
         {
           return {
             color: entry.options.color,
-            weight: getBorderWeight(currentZoom),
+            weight: getBorderWeight(entry.options.weight, currentZoom),
             opacity: 1,
             fillOpacity: 0,
             interactive: false,
