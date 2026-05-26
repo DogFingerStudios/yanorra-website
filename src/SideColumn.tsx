@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import './SideColumn.css'
 import { docLinks } from './docsConfig'
 import { Link } from 'react-router-dom'
@@ -13,17 +14,58 @@ const encodeDocPath = (docPath: string): string =>
 
 function SideColumn() 
 {
+  const [isOpen, setIsOpen] = useState(true)
+
+  function togglePanel()
+  {
+    setIsOpen(!isOpen)
+  }
+
   return (
-    <aside className="side-column">
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {docLinks.map((doc) => (
-          <li key={doc.path} style={{ marginBottom: '0.5rem' }}>
-            <Link className="side-column-link" to={`/${encodeDocPath(doc.path)}`}>
-              {doc.title}
-            </Link>
-          </li>
-        ))}
-      </ul>
+    <aside className={`side-column-shell${isOpen ? ' side-column-shell--open' : ''}`}>
+      <div className="side-column">
+        {isOpen ? (
+          <button
+            type="button"
+            className="side-column-collapse-button"
+            onClick={togglePanel}
+            aria-label="Collapse wiki sidebar"
+            title="Collapse wiki sidebar"
+          >
+            ◀
+          </button>
+        ) : null}
+        <ul className="side-column-list">
+          {docLinks.map((doc) => (
+            <li key={doc.path} className="side-column-list-item">
+              <Link className="side-column-link" to={`/${encodeDocPath(doc.path)}`}>
+                {doc.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {!isOpen ? (
+        <div className="side-column-mini-panel" aria-label="Sidebar controls">
+          <button
+            type="button"
+            className="side-column-mini-button"
+            onClick={togglePanel}
+            aria-label="Expand wiki sidebar"
+            title="Expand wiki sidebar"
+          >
+            ▶
+          </button>
+          <a
+            className="side-column-mini-button side-column-mini-link"
+            href="/"
+            aria-label="Go to yanorra.world"
+            title="Go to yanorra.world"
+          >
+            ⌂
+          </a>
+        </div>
+      ) : null}
     </aside>
   )
 }
