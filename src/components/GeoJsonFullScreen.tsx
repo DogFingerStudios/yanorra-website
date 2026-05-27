@@ -327,6 +327,11 @@ function parseBaseLayerFromUrl(baseLayers: BaseLayerOption[]): string | null
   return null
 }
 
+function hasBaseLayerInUrl(baseLayers: BaseLayerOption[]): boolean
+{
+  return parseBaseLayerFromUrl(baseLayers) !== null
+}
+
 const BASE_LAYER_OPTIONS = getBaseLayerOptions(GEOJSON_FILES)
 
 // Set this to your Earth raster path in /public.
@@ -630,6 +635,16 @@ const GeoJsonFullScreen = (
 
     return getInitialBaseLayer(BASE_LAYER_OPTIONS)
   })
+
+  useEffect(() =>
+  {
+    if (hasBaseLayerInUrl(BASE_LAYER_OPTIONS))
+    {
+      return
+    }
+
+    syncViewToUrl(initialView, selectedBaseLayer)
+  }, [initialView, selectedBaseLayer])
 
   const syncViewToUrl = (view: MapViewState, baseLayer: string) =>
   {
