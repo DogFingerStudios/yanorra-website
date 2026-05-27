@@ -120,7 +120,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     srcFile: '/geojson/roads_highway.geojson',
     weight: 1.35,
     color: '#5a5a5a',
-    minZoom: 2,
+    minZoom: 3,
     drawFunc: getRoutesLayer,
   },
   {
@@ -128,7 +128,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     srcFile: '/geojson/roads_major.geojson',
     weight: 1.15,
     color: '#5a5a5a',
-    minZoom: 3,
+    minZoom: 4,
     drawFunc: getRoutesLayer,
   },
   {
