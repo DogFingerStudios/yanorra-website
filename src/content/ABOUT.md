@@ -28,3 +28,16 @@ The result is a world both familiar and fractured, shaped by environmental insta
 
 It serves as a resource for players to explore the rich lore of Yanorra, providing insights into its various regions, factions, and the impact of The Drift on its inhabitants.
 
+## About About
+
+This page is a work in progress, and honestly, it will probably never be finished. 
+
+When I was 11 years old, in the mid 80s, I created my first world called *Kacklylaphlum*. It was a planet with multiple continents, countries and oddities that reflected my interests at the time (namely, cold places). I created maps, wrote stories, royal lineages, and eventually made a 3D model of the planet in 3D Studio.
+
+As I grew up, I created more worlds, but they were always on paper, and I never shared them with anyone. 
+
+Then in 2024 I started working on a game, and I wanted to create a world for it. I wanted to create a world that was rich and detailed. Thus, Yanorra was born.
+
+Given the level of detail I want to achieve, I see this project as a lifelong endeavor. I will be adding to it and refining it for years to come. I don't know if anyone else will ever be interested in it, but that's not the point. The point is that I enjoy creating it, and I want to share it with anyone who might be interested.
+
+- Addy ([@AddyGoesPlaces](https://youtube.com/AddyGoesPlaces)), May 26 2026
