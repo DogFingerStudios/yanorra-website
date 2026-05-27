@@ -22,7 +22,7 @@ import './MapFullScreen.css'
 const MIN_ZOOM = 2
 const MAX_ZOOM = 20
 const DEFAULT_CENTER: [number, number] = [0, 0]
-const DEFAULT_MAP_LAYER = 'land'
+const DEFAULT_MAP_LAYER = 'states'
 
 type GeoJsonLayerOptions =
 {
