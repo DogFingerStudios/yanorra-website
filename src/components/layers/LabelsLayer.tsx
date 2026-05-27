@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { useMap } from 'react-leaflet'
 import L from 'leaflet'
 
+const WATER_LABEL_TYPES = ['ocean', 'sea', 'lake', 'bay']
+
 type LabelsLayerEntry =
 {
   id: string
@@ -553,7 +555,7 @@ function LabelsLayer({ entry }: { entry: LabelsLayerEntry })
           fallbackColor = entry.options.color
         }
 
-        if (labelType === 'ocean' || labelType === 'sea' || labelType === 'lake')
+        if (WATER_LABEL_TYPES.includes(labelType))
         {
           renderWaterLabel(feature, lineLayer, properties, textElements, pathIdSeed, fallbackColor)
           return
