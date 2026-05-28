@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import { marked } from 'marked'
 import { createRoot, type Root } from 'react-dom/client'
+import { parse as parseYaml } from 'yaml'
 import GeoJsonFullScreen from './GeoJsonFullScreen'
 
 interface MarkdownPageProps
@@ -19,6 +20,52 @@ interface MapElementConfig
   scrollWheelZoom?: string
   debug?: string
   showFullScreenLink?: string
+}
+
+interface FrontMatterExtractionResult
+{
+  frontMatter: unknown | null
+  content: string
+}
+
+const FRONT_MATTER_PATTERN = /^\uFEFF?---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/
+
+function extractFrontMatter(markdown: string): FrontMatterExtractionResult
+{
+  const match = markdown.match(FRONT_MATTER_PATTERN)
+
+  if (!match)
+  {
+    return {
+      frontMatter: null,
+      content: markdown,
+    }
+  }
+
+  const yamlSource = match[1]
+  const contentWithoutFrontMatter = markdown.slice(match[0].length)
+
+  try
+  {
+    return {
+      frontMatter: parseYaml(yamlSource),
+      content: contentWithoutFrontMatter,
+    }
+  }
+  catch (error)
+  {
+    console.warn('Failed to parse frontmatter YAML')
+
+    if (error instanceof Error)
+    {
+      console.warn(error.message)
+    }
+
+    return {
+      frontMatter: null,
+      content: contentWithoutFrontMatter,
+    }
+  }
 }
 
 const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
@@ -40,13 +87,15 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
         setLoading(true)
         setError(null)
 
+        let resolvedMarkdownPath = markdownPath
+
         // if markdownPath ends with `.md.md` then remove the duplicate extension
-        if (markdownPath.toLowerCase().endsWith('.md.md'))
+        if (resolvedMarkdownPath.toLowerCase().endsWith('.md.md'))
         {
-          markdownPath = markdownPath.slice(0, -3)
+          resolvedMarkdownPath = resolvedMarkdownPath.slice(0, -3)
         }
 
-        const response = await fetch(markdownPath)
+        const response = await fetch(resolvedMarkdownPath)
         if (!response.ok)
         {
           throw new Error(`Failed to load markdown: ${response.statusText}`)
@@ -55,14 +104,23 @@ const MarkdownPage = ({ markdownPath }: MarkdownPageProps) =>
         const contentType = response.headers.get('content-type')?.toLowerCase() ?? ''
         const markdown = await response.text()
         const looksLikeHtmlDocument = /^\s*<!doctype html>|^\s*<html[\s>]/i.test(markdown)
-        const requestsMarkdownFile = markdownPath.toLowerCase().endsWith('.md')
+        const requestsMarkdownFile = resolvedMarkdownPath.toLowerCase().endsWith('.md')
         if (requestsMarkdownFile && (contentType.includes('text/html') || looksLikeHtmlDocument))
         {
-          throw new Error(`Markdown file not found: ${markdownPath}`)
+          throw new Error(`Markdown file not found: ${resolvedMarkdownPath}`)
+        }
+
+        const frontMatterExtraction = extractFrontMatter(markdown)
+        const frontMatter = frontMatterExtraction.frontMatter
+        const markdownContent = frontMatterExtraction.content
+
+        if (frontMatter !== null)
+        {
+          console.log('Parsed frontmatter YAML:', frontMatter)
         }
 
         // Convert markdown to HTML with custom handling for map element spans
-        const rawHtml = await marked(markdown)
+        const rawHtml = await marked(markdownContent)
 
         // Replace <span y-type="mapelement"> tags with placeholders
         const processedHtml = rawHtml.replace(

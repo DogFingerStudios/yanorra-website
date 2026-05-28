@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { fileURLToPath } from 'url'
+import { parse as parseYaml } from 'yaml'
 
 interface DocLink
 {
@@ -8,15 +9,8 @@ interface DocLink
   path: string
 }
 
-// const docLinks: DocLink[] = 
-// [
-//   {
-//     title: 'Yanorra',
-//     path: '/Yanorra.html'
-//   }
-// ]
-
 const docLinks: DocLink[] = []
+const nationLinks: DocLink[] = []
 const excludedFiles = ['TEMPLATE']
 
 const isExcludedFile = (fileName: string): boolean =>
@@ -26,6 +20,39 @@ const isExcludedFile = (fileName: string): boolean =>
   {
     return normalizedFileName.startsWith(excludedFile.toLowerCase())
   })
+}
+
+const FRONT_MATTER_PATTERN = /^---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/
+
+const isNationFile = (filePath: string, fileName: string): boolean =>
+{
+  const fileContents = fs.readFileSync(filePath, 'utf-8')
+  const match = fileContents.match(FRONT_MATTER_PATTERN)
+
+  if (!match)
+  {
+    return false
+  }
+
+  const yamlSource = match[1]
+
+  try
+  {
+    const parsedYaml = parseYaml(yamlSource)
+    // console.log(`[frontmatter] ${fileName}`)
+    // console.log(parsedYaml)
+    return parsedYaml.subcategory === 'nations'
+  }
+  catch (error)
+  {
+    console.warn(`[frontmatter] Failed to parse YAML in ${fileName}`)
+    if (error instanceof Error)
+    {
+      console.warn(error.message)
+    }
+
+    return false
+  }
 }
 
 const generateDocLinks = async (): Promise<void> =>
@@ -44,9 +71,25 @@ const generateDocLinks = async (): Promise<void> =>
   const files = fs.readdirSync(wikiDir)
   files.forEach((file) =>
   {
+    const isMarkdownFile = file.toLowerCase().endsWith('.md')
+
+    if (!isMarkdownFile)
+    {
+      return
+    }
+
     if (!isExcludedFile(file))
     {
       console.log(`Adding file: ${file} from Wiki folder`)
+      const filePath = path.join(wikiDir, file)
+      if (isNationFile(filePath, file))
+      {
+        nationLinks.push(
+        {
+          title: file.replace(/\.md$/i, '').replace(/_/g, ' '),
+          path: `/wiki/${file.replace(/\.md$/i, '')}`
+        })
+      }
 
       docLinks.push(
       {
@@ -72,6 +115,7 @@ export interface DocLink
 }
 
 export const docLinks: DocLink[] = ${JSON.stringify(docLinks, null, 2)}
+export const nationLinks: DocLink[] = ${JSON.stringify(nationLinks, null, 2)}
 `
 
   const outputPath = path.join(process.cwd(), 'src', 'docsConfig.ts')
