@@ -648,6 +648,11 @@ const GeoJsonFullScreen = (
 
   const syncViewToUrl = (view: MapViewState, baseLayer: string) =>
   {
+    if (!fullScreen)
+    {
+      return
+    }
+
     const url = new URL(window.location.href)
     const nextLat = view.center[0].toFixed(4)
     const nextLng = view.center[1].toFixed(4)
