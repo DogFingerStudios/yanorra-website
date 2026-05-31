@@ -49,25 +49,25 @@ type VisibleStateLabel =
   center: L.LatLng
 }
 
-function parseFiniteNumber(value: unknown): number | null
-{
-  if (typeof value === 'number' && Number.isFinite(value))
-  {
-    return value
-  }
+// function parseFiniteNumber(value: unknown): number | null
+// {
+//   if (typeof value === 'number' && Number.isFinite(value))
+//   {
+//     return value
+//   }
 
-  if (typeof value === 'string')
-  {
-    const parsedValue = Number(value)
+//   if (typeof value === 'string')
+//   {
+//     const parsedValue = Number(value)
 
-    if (Number.isFinite(parsedValue))
-    {
-      return parsedValue
-    }
-  }
+//     if (Number.isFinite(parsedValue))
+//     {
+//       return parsedValue
+//     }
+//   }
 
-  return null
-}
+//   return null
+// }
 
 function coordinateKey(coordinate: Coordinate): string
 {
@@ -277,69 +277,69 @@ function StatesLayer({ entry, showColors }: { entry: StatesLayerEntry, showColor
       return buildInternalStateBorders(entry.data)
   }, [entry.data])
 
-  const labelData = useMemo(() =>
-  {
-    const data = entry.data
-    const nextLabelData: StateLabelDatum[] = []
-
-    if (data.type !== 'FeatureCollection')
+    const labelData = useMemo(() =>
     {
-      return nextLabelData
-    }
+        // const data = entry.data
+        const nextLabelData: StateLabelDatum[] = []
 
-    const featureCollection = data as GeoJSON.FeatureCollection
+        // if (data.type !== 'FeatureCollection')
+        // {
+        //     return nextLabelData
+        // }
 
-      featureCollection.features.forEach((feature: GeoJSON.Feature, index: number) => 
-      {
-        const properties = feature.properties
+        // const featureCollection = data as GeoJSON.FeatureCollection
 
-        if (properties?.visible != null && properties.visible === false)
-        {
-            return
-        }
+        // featureCollection.features.forEach((feature: GeoJSON.Feature, index: number) => 
+        // {
+        //     const properties = feature.properties
 
-        if (!properties) 
-        {
-            console.log('Feature is missing properties, skipping label generation')
-            return
-        }
+        //     if (properties?.visible != null && properties.visible === false) 
+        //     {
+        //         return
+        //     }
 
-        const stateName = properties.Data_State
-        if ((typeof stateName !== 'string' || stateName.trim() === '') && properties.type !== "island") 
-        {
-            console.warn('Feature is missing state name. Feature:', feature, "Properties:", properties)
-            return
-        }
+        //     if (!properties) 
+        //     {
+        //         console.log('Feature is missing properties, skipping label generation')
+        //         return
+        //     }
 
-        const featureLayer = L.geoJSON(feature)
-        const featureBounds = featureLayer.getBounds()
+        //     const stateName = properties.Data_State
+        //     if ((typeof stateName !== 'string' || stateName.trim() === '') && properties.type !== "island") 
+        //     {
+        //         console.warn('Feature is missing state name. Feature:', feature, "Properties:", properties)
+        //         return
+        //     }
 
-        if (!featureBounds.isValid()) 
-        {
-            console.log('Feature has invalid bounds, skipping label generation')
-            return
-        }
+        //     const featureLayer = L.geoJSON(feature)
+        //     const featureBounds = featureLayer.getBounds()
 
-        const labelLong = parseFiniteNumber(properties.Label_Longitude)
-        const labelLat = parseFiniteNumber(properties.Label_Latitude)
+        //     if (!featureBounds.isValid()) 
+        //     {
+        //         console.log('Feature has invalid bounds, skipping label generation')
+        //         return
+        //     }
 
-        let fixedCenter: L.LatLng | null = null
+        //     const labelLong = parseFiniteNumber(properties.Label_Longitude)
+        //     const labelLat = parseFiniteNumber(properties.Label_Latitude)
 
-        if (labelLong !== null && labelLat !== null) 
-        {
-            fixedCenter = L.latLng(labelLat, labelLong)
-        }
+        //     let fixedCenter: L.LatLng | null = null
 
-        nextLabelData.push({
-            id: `${entry.id}-${index}`,
-            stateName,
-            bounds: featureBounds,
-            fixedCenter,
-        })
-    })
+        //     if (labelLong !== null && labelLat !== null) 
+        //     {
+        //         fixedCenter = L.latLng(labelLat, labelLong)
+        //     }
 
-    return nextLabelData
-  }, [entry.data, entry.id])
+        //     nextLabelData.push({
+        //         id: `${entry.id}-${index}`,
+        //         stateName,
+        //         bounds: featureBounds,
+        //         fixedCenter,
+        //     })
+        // })
+
+        return nextLabelData
+    }, [entry.data, entry.id])
 
   return (
     <>

@@ -10,7 +10,8 @@
     "postbuild": "tsx scripts/postbuild-docs.ts",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "npm run build && npm run dev"
+    "start": "npm run build && npm run dev",
+    "git-reset": "cd yanorra-wiki && git reset --hard origin/master && cd ../yanorra-maps && git reset --hard origin/master && cd .."
   },
   "dependencies": {
     "@asciidoctor/core": "^3.0.4",
