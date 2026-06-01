@@ -238,13 +238,13 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     color: '#5a5a5a',
     drawFunc: getLabelsLayer,
   },
-  {
-    id: 'route_labels',
-    srcFile: '/geojson/route_labels.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    drawFunc: getLabelsLayer,
-  },
+  // {
+  //   id: 'route_labels',
+  //   srcFile: '/geojson/route_labels.geojson',
+  //   weight: 1.15,
+  //   color: '#5a5a5a',
+  //   drawFunc: getLabelsLayer,
+  // },
 
 /************************************************/  
 ]
