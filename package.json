@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx scripts/prebuild-docs.ts && vite",
+    "dev-lite": "vite --mode lite",
     "prebuild": "tsx scripts/updateRepos.ts && tsx scripts/prebuild-docs.ts",
     "build": "tsc -b && vite build",
     "postbuild": "tsx scripts/postbuild-docs.ts",
