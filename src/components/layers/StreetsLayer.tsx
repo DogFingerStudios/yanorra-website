@@ -1,5 +1,7 @@
-import { GeoJSON } from 'react-leaflet'
-import './BuildingsLayer.css'
+import { useEffect, useMemo, useState } from 'react'
+import { GeoJSON, Marker, Tooltip, useMap } from 'react-leaflet'
+import L from 'leaflet'
+import './StreetsLayer.css'
 
 type StreetsLayerEntry =
 {
@@ -11,6 +13,8 @@ type StreetsLayerEntry =
     fillColor?: string
     weight?: number
     fillOpacity?: number
+    labelMinZoom?: number
+    labelMaxCount?: number
   }
 }
 
@@ -30,163 +34,228 @@ export function getStreetsLayer(entry: StreetsLayerEntry)
   }
 
   return (
-    <GeoJSON
-      key={entry.id}
-      data={entry.data}
-      style={styleFeature}
-    />
+    <>
+      <GeoJSON
+        key={entry.id}
+        data={entry.data}
+        style={styleFeature}
+      />
+      <StreetNameLabels
+        entry={entry}
+        labelMinZoom={entry.options.labelMinZoom ?? 10}
+        labelMaxCount={entry.options.labelMaxCount ?? 200}
+      />
+    </>
   )
 }
 
+type StreetLabel =
+{
+  id: string
+  name: string
+  position: [number, number]
+}
 
-// import { useEffect, useState } from 'react'
-// import { GeoJSON, useMapEvents } from 'react-leaflet'
-// import './Routes.css'
+function getMidpointPosition(lineCoordinates: unknown): [number, number] | null
+{
+  if (!Array.isArray(lineCoordinates) || lineCoordinates.length === 0)
+  {
+    return null
+  }
 
-// type StreetsLayerEntry =
-// {
-//   id: string
-//   data: GeoJSON.GeoJsonObject
-//   options:
-//   {
-//     color?: string
-//     weight?: number
-//   }
-// }
+  const midpointIndex = Math.floor(lineCoordinates.length / 2)
+  const midpoint = lineCoordinates[midpointIndex]
 
-// export function getStreetsLayer(entry: StreetsLayerEntry)
-// {
-//   const getUniformStreetWeight = (zoom: number) =>
-//   {
-//     let retval = 8;
-//     if (zoom <= 8)
-//     {
-//       retval = 1
-//     }
-//     else if (zoom <= 11)
-//     {
-//       retval = 1.5
-//     }
-//     else if (zoom <= 13)
-//     {
-//       retval = 5.2
-//     }
-//     else if (zoom <= 15)
-//     {
-//       retval = 6.6
-//     }
+  if (!Array.isArray(midpoint) || midpoint.length < 2)
+  {
+    return null
+  }
 
-//     // console.debug(`Zoom ${zoom} - using base street weight ${retval}`)
-//     return retval;
-//   }
+  const lng = midpoint[0]
+  const lat = midpoint[1]
 
-//   const StreetsGeoJson = () =>
-//   {
-//     const [currentZoom, setCurrentZoom] = useState(5)
+  if (typeof lat !== 'number' || typeof lng !== 'number')
+  {
+    return null
+  }
 
-//     const map = useMapEvents({
-//       zoomend: () =>
-//       {
-//         setCurrentZoom(map.getZoom())
-//       },
-//     })
+  return [lat, lng]
+}
 
-//     useEffect(() =>
-//     {
-//       setCurrentZoom(map.getZoom())
-//     }, [map])
+function getFeatureLabelPosition(feature: GeoJSON.Feature): [number, number] | null
+{
+  const geometry = feature.geometry
 
-//     const getStreetStyle = (feature: GeoJSON.Feature, stylePass: 'casing' | 'fill') =>
-//     {
-//       const baseWeight = getUniformStreetWeight(currentZoom)
-//       const properties = feature.properties
+  if (!geometry)
+  {
+    return null
+  }
 
-//       // Use this block to style specific roads later by feature properties.
-//       // Example fields often available: name, class, type, category.
-//       let roadColor = '#ffffff'
-//       let roadWeight = baseWeight
+  if (geometry.type === 'LineString')
+  {
+    return getMidpointPosition(geometry.coordinates)
+  }
 
-//       if (properties && typeof properties === 'object')
-//       {
-//         // Example: make a specific road wider.
-//         // if (properties.name === 'West 2nd Avenue')
-//         // {
-//         //   roadWeight = baseWeight * 1.35
-//         // }
+  if (geometry.type === 'MultiLineString')
+  {
+    const lines = geometry.coordinates
 
-//         // Example: recolor one road class.
-//         // if (properties.class === 'major')
-//         // {
-//         //   roadColor = '#f2d589'
-//         // }
-//       }
+    if (!Array.isArray(lines) || lines.length === 0)
+    {
+      return null
+    }
 
-//       if (stylePass === 'casing')
-//       {
-//         return {
-//           // color: '#dfdddb',
-//           color: '#000000',
-//           weight: roadWeight + 1.6,
-//           opacity: 1,
-//           lineCap: 'round' as const,
-//           lineJoin: 'round' as const,
-//         }
-//       }
+    let longestLine: unknown[] | null = null
 
-//       let fallbackColor = '#ffff00'
+    for (const line of lines)
+    {
+      if (!Array.isArray(line))
+      {
+        continue
+      }
 
-//       if (entry.options.color)
-//       {
-//         fallbackColor = entry.options.color
-//       }
+      if (longestLine === null || line.length > longestLine.length)
+      {
+        longestLine = line
+      }
+    }
 
-//       let finalColor = roadColor
+    if (!longestLine)
+    {
+      return null
+    }
 
-//       if (finalColor === '#f7f7f5')
-//       {
-//         finalColor = fallbackColor
-//       }
+    return getMidpointPosition(longestLine)
+  }
 
-//       return {
-//         color: finalColor,
-//         weight: roadWeight,
-//         opacity: 1,
-//         lineCap: 'round' as const,
-//         lineJoin: 'round' as const,
-//       }
-//     }
+  return null
+}
 
-//     return (
-//       <>
-//         <GeoJSON
-//           key={`${entry.id}-casing`}
-//           data={entry.data}
-//           style={(feature) =>
-//           {
-//             if (!feature)
-//             {
-//               return {}
-//             }
+function extractStreetLabels(data: GeoJSON.GeoJsonObject, maxCount: number): StreetLabel[]
+{
+  const labels: StreetLabel[] = []
+  const seenNames = new Set<string>()
+  const safeMaxCount = Math.max(maxCount, 0)
 
-//             return getStreetStyle(feature, 'casing')
-//           }}
-//         />
-//         <GeoJSON
-//           key={`${entry.id}-fill`}
-//           data={entry.data}
-//           style={(feature) =>
-//           {
-//             if (!feature)
-//             {
-//               return {}
-//             }
+  if (!('features' in data) || !Array.isArray(data.features))
+  {
+    return labels
+  }
 
-//             return getStreetStyle(feature, 'fill')
-//           }}
-//         />
-//       </>
-//     )
-//   }
+  for (let index = 0; index < data.features.length; index += 1)
+  {
+    if (labels.length >= safeMaxCount)
+    {
+      break
+    }
 
-//   return <StreetsGeoJson key={entry.id} />
-// }
+    const feature = data.features[index]
+
+    if (!feature || feature.type !== 'Feature')
+    {
+      continue
+    }
+
+    const properties = feature.properties
+
+    if (!properties)
+    {
+      continue
+    }
+
+    // const streetName = properties.name
+    const streetName = 'Street Name'
+
+    if (typeof streetName !== 'string' || streetName.trim() === '')
+    {
+      continue
+    }
+
+    const normalizedName = streetName.trim().toLowerCase()
+
+    if (seenNames.has(normalizedName))
+    {
+      continue
+    }
+
+    const position = getFeatureLabelPosition(feature)
+
+    if (!position)
+    {
+      continue
+    }
+
+    seenNames.add(normalizedName)
+    labels.push({
+      id: `${index}-${normalizedName}`,
+      name: streetName.trim(),
+      position,
+    })
+  }
+
+  return labels
+}
+
+function StreetNameLabels({ entry, labelMinZoom, labelMaxCount }: { entry: StreetsLayerEntry, labelMinZoom: number, labelMaxCount: number })
+{
+  const map = useMap()
+  const [zoom, setZoom] = useState(map.getZoom())
+  const labelAnchorIcon = useMemo(() =>
+  {
+    return L.divIcon({
+      className: 'street-label-anchor',
+      iconSize: [1, 1],
+      iconAnchor: [0, 0],
+    })
+  }, [])
+  const labels = useMemo(() =>
+  {
+    return extractStreetLabels(entry.data, labelMaxCount)
+  }, [entry.data, labelMaxCount])
+
+  useEffect(() =>
+  {
+    const handleZoomEnd = () =>
+    {
+      setZoom(map.getZoom())
+    }
+
+    map.on('zoomend', handleZoomEnd)
+
+    return () =>
+    {
+      map.off('zoomend', handleZoomEnd)
+    }
+  }, [map])
+
+  if (zoom < labelMinZoom)
+  {
+    return null
+  }
+
+  return (
+    <>
+      {labels.map((label) =>
+      {
+        return (
+          <Marker
+            key={`${entry.id}-street-label-${label.id}`}
+            position={label.position}
+            icon={labelAnchorIcon}
+            opacity={0}
+            interactive={false}
+          >
+            <Tooltip
+              permanent
+              direction='center'
+              opacity={0.95}
+              className='street-label-tooltip'
+            >
+              {label.name}
+            </Tooltip>
+          </Marker>
+        )
+      })}
+    </>
+  )
+}
