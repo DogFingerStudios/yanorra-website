@@ -21,6 +21,9 @@ import './MapFullScreen.css'
 
 const MIN_ZOOM = 2
 const MAX_ZOOM = 20
+const ZOOM_SNAP = 0.5
+const ZOOM_DELTA = 0.5
+const WHEEL_PX_PER_ZOOM_LEVEL = 80
 const DEFAULT_CENTER: [number, number] = [0, 0]
 const DEFAULT_MAP_LAYER = 'states'
 
@@ -57,137 +60,137 @@ const BASE_GEOJSON_Z_INDEX = '200'
 // Add your GeoJSON file URLs here (must be publicly served paths, usually from /public).
 const GEOJSON_FILES : GeoJsonLayerOptions[] = 
 [
-  {
-    id: 'land',
-    srcFile: '/geojson/land.geojson',
-    // baseLayer: true,
-    pane: BASE_GEOJSON_PANE,
-    color: '#7bd5e9',
-    fillColor: '#ffffff',
-    weight: 1,
-    fillOpacity: 1,
-  },
-  {
-    id: 'biomes',
-    label: 'Biomes',
-    srcFile: '/geojson/BiomesData.geojson',
-    baseLayer: true,
-    pane: BASE_GEOJSON_PANE,
-    color: '#7bd5e9',
-    fillColor: '#ffffff',
-    weight: 1,
-    fillOpacity: .75,
-    drawFunc: getBiomesLayer,
-  },
-  {
-    id: 'states',
-    label: 'Borders Only',
-    srcFile: '/geojson/StatesData.geojson',
-    color: '#a6a6c8',
-    weight: 1.26,
-    fillOpacity: 0,
-    baseLayer: true,
-    pane: BASE_GEOJSON_PANE,
-    drawFunc: getStatesLayer,
-  },
-  {
-    id: 'states-color',
-    label: 'Political Map',
-    srcFile: '/geojson/StatesData.geojson',
-    color: '#a6a6c8',
-    weight: 1.26,
-    fillOpacity: 0,
-    baseLayer: true,
-    pane: BASE_GEOJSON_PANE,
-    drawFunc: getStatesColorsLayer,
-  },
+    {
+        id: 'land',
+        srcFile: '/geojson/land.geojson',
+        // baseLayer: true,
+        pane: BASE_GEOJSON_PANE,
+        color: '#7bd5e9',
+        fillColor: '#ffffff',
+        weight: 1,
+        fillOpacity: 1,
+    },
+    {
+        id: 'biomes',
+        label: 'Biomes',
+        srcFile: '/geojson/BiomesData.geojson',
+        baseLayer: true,
+        pane: BASE_GEOJSON_PANE,
+        color: '#7bd5e9',
+        fillColor: '#ffffff',
+        weight: 1,
+        fillOpacity: .75,
+        drawFunc: getBiomesLayer,
+    },
+    {
+        id: 'states',
+        label: 'Borders Only',
+        srcFile: '/geojson/StatesData.geojson',
+        color: '#a6a6c8',
+        weight: 1.26,
+        fillOpacity: 0,
+        baseLayer: true,
+        pane: BASE_GEOJSON_PANE,
+        drawFunc: getStatesLayer,
+    },
+    {
+        id: 'states-color',
+        label: 'Political Map',
+        srcFile: '/geojson/StatesData.geojson',
+        color: '#a6a6c8',
+        weight: 1.26,
+        fillOpacity: 0,
+        baseLayer: true,
+        pane: BASE_GEOJSON_PANE,
+        drawFunc: getStatesColorsLayer,
+    },
 
-  {
-    id: 'lakes',
-    srcFile: '/geojson/Lakes.geojson',
-    color: '#7bd5e9',
-  },
-  {
-    id: 'rivers',
-    srcFile: '/geojson/Rivers.geojson',
-    color: '#7bd5e9',
-    weight: 1.5,
-  },
+    {
+        id: 'lakes',
+        srcFile: '/geojson/Lakes.geojson',
+        color: '#7bd5e9',
+    },
+    {
+        id: 'rivers',
+        srcFile: '/geojson/Rivers.geojson',
+        color: '#7bd5e9',
+        weight: 1.5,
+    },
 
-// ****************************************************
-  {
-    id: 'roads_highway',
-    srcFile: '/geojson/roads_highway.geojson',
-    weight: 1.35,
-    color: '#5a5a5a',
-    minZoom: 3,
-    drawFunc: getRoutesLayer,
-  },
-  {
-    id: 'roads_major',
-    srcFile: '/geojson/roads_major.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    minZoom: 4,
-    drawFunc: getRoutesLayer,
-  },
-  {
-    id: 'roads_minor',
-    srcFile: '/geojson/roads_minor.geojson',
-    weight: 1.0,
-    color: '#5a5a5a',
-    minZoom: 5,
-    drawFunc: getRoutesLayer,
-  },
+    // ****************************************************
+    {
+        id: 'roads_highway',
+        srcFile: '/geojson/roads_highway.geojson',
+        weight: 1.35,
+        color: '#5a5a5a',
+        minZoom: 3,
+        drawFunc: getRoutesLayer,
+    },
+    {
+        id: 'roads_major',
+        srcFile: '/geojson/roads_major.geojson',
+        weight: 1.15,
+        color: '#5a5a5a',
+        minZoom: 4,
+        drawFunc: getRoutesLayer,
+    },
+    {
+        id: 'roads_minor',
+        srcFile: '/geojson/roads_minor.geojson',
+        weight: 1.0,
+        color: '#5a5a5a',
+        minZoom: 5,
+        drawFunc: getRoutesLayer,
+    },
 
-  {
-    id: 'streets_major',
-    srcFile: '/geojson/streets_major.geojson',
-    weight: 1.5,
-    color: '#b9c8d6',
-    minZoom: 10,
-    drawFunc: getStreetsLayer,
-  },
-  {
-    id: 'streets_minor',
-    srcFile: '/geojson/streets_minor.geojson',
-    weight: 1.25,
-    color: '#b9c8d6',
-    minZoom: 12,
-    drawFunc: getStreetsLayer,
-  },
-  {
-    id: 'alleys',
-    srcFile: '/geojson/alleys.geojson',
-    weight: 1.0,
-    color: '#b9c8d6',
-    minZoom: 14,
-    drawFunc: getStreetsLayer,
-  },
+    {
+        id: 'streets_major',
+        srcFile: '/geojson/streets_major.geojson',
+        weight: 1.5,
+        color: '#b9c8d6',
+        minZoom: 10,
+        drawFunc: getStreetsLayer,
+    },
+    {
+        id: 'streets_minor',
+        srcFile: '/geojson/streets_minor.geojson',
+        weight: 1.25,
+        color: '#b9c8d6',
+        minZoom: 12,
+        drawFunc: getStreetsLayer,
+    },
+    {
+        id: 'alleys',
+        srcFile: '/geojson/alleys.geojson',
+        weight: 1.0,
+        color: '#b9c8d6',
+        minZoom: 14,
+        drawFunc: getStreetsLayer,
+    },
 
-  {
-    id: 'seaways',
-    srcFile: '/geojson/seaways.geojson',
-    minZoom: 5,
-    drawFunc: getSeawayLayer,
-  },
-  {
-    id: 'railways',
-    srcFile: '/geojson/railways.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    minZoom: 5,
-    drawFunc: getRailwayLayer,
-  },
+    {
+        id: 'seaways',
+        srcFile: '/geojson/seaways.geojson',
+        minZoom: 5,
+        drawFunc: getSeawayLayer,
+    },
+    {
+        id: 'railways',
+        srcFile: '/geojson/railways.geojson',
+        weight: 1.15,
+        color: '#5a5a5a',
+        minZoom: 5,
+        drawFunc: getRailwayLayer,
+    },
 
-  {
-    id: 'buildings_major',
-    srcFile: '/geojson/buildings_major.geojson',
-    weight: 1.15,
-    color: '#e8e9ed',
-    minZoom: 15,
-    drawFunc: getBuildingsLayer,
-  },
+    {
+        id: 'buildings_major',
+        srcFile: '/geojson/buildings_major.geojson',
+        weight: 1.15,
+        color: '#e8e9ed',
+        minZoom: 15,
+        drawFunc: getBuildingsLayer,
+    },
 
     {
         id: 'parks',
@@ -208,45 +211,45 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         minZoom: 3,
     },
 
-/************************************************/
-  
-  {
-    id: 'water_labels',
-    srcFile: '/geojson/water_labels.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    drawFunc: getLabelsLayer,
-  },
-  {
-    id: 'landform_labels',
-    srcFile: '/geojson/landform_labels.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    drawFunc: getLabelsLayer,
-  },
-  // {
-  //   id: 'lore_labels',
-  //   srcFile: '/geojson/lore_labels.geojson',
-  //   weight: 1.15,
-  //   color: '#5a5a5a',
-  //   drawFunc: getLabelsLayer,
-  // },
-  {
-    id: 'political_line_labels',
-    srcFile: '/geojson/political_line_labels.geojson',
-    weight: 1.15,
-    color: '#5a5a5a',
-    drawFunc: getLabelsLayer,
-  },
-  // {
-  //   id: 'route_labels',
-  //   srcFile: '/geojson/route_labels.geojson',
-  //   weight: 1.15,
-  //   color: '#5a5a5a',
-  //   drawFunc: getLabelsLayer,
-  // },
+    /************************************************/
 
-/************************************************/  
+    {
+        id: 'water_labels',
+        srcFile: '/geojson/water_labels.geojson',
+        weight: 1.15,
+        color: '#5a5a5a',
+        drawFunc: getLabelsLayer,
+    },
+    {
+        id: 'landform_labels',
+        srcFile: '/geojson/landform_labels.geojson',
+        weight: 1.15,
+        color: '#5a5a5a',
+        drawFunc: getLabelsLayer,
+    },
+    // {
+    //   id: 'lore_labels',
+    //   srcFile: '/geojson/lore_labels.geojson',
+    //   weight: 1.15,
+    //   color: '#5a5a5a',
+    //   drawFunc: getLabelsLayer,
+    // },
+    {
+        id: 'political_line_labels',
+        srcFile: '/geojson/political_line_labels.geojson',
+        weight: 1.15,
+        color: '#5a5a5a',
+        drawFunc: getLabelsLayer,
+    },
+    // {
+    //   id: 'route_labels',
+    //   srcFile: '/geojson/route_labels.geojson',
+    //   weight: 1.15,
+    //   color: '#5a5a5a',
+    //   drawFunc: getLabelsLayer,
+    // },
+
+    /************************************************/
 ]
 
 type BaseLayerOption =
@@ -414,8 +417,7 @@ function parseMapViewFromUrl(defaultCenter: [number, number], defaultZoom: numbe
 
     if (Number.isFinite(parsedZoom))
     {
-      const roundedZoom = Math.round(parsedZoom)
-      zoom = Math.max(minZoom, Math.min(maxZoom, roundedZoom))
+      zoom = Math.max(minZoom, Math.min(maxZoom, parsedZoom))
     }
   }
 
@@ -1133,6 +1135,9 @@ const GeoJsonFullScreen = (
           zoom={initialView.zoom}
           minZoom={minZoom}
           maxZoom={maxZoom}
+          zoomSnap={ZOOM_SNAP}
+          zoomDelta={ZOOM_DELTA}
+          wheelPxPerZoomLevel={WHEEL_PX_PER_ZOOM_LEVEL}
           scrollWheelZoom={scrollWheelZoom}
           style={{ height: '100%', width: '100%', backgroundColor: '#7bd5e9' }}
           attributionControl={false}
