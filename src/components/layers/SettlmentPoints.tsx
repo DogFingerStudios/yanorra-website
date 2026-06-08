@@ -41,61 +41,58 @@ function getTownPopulation(properties: GeoJSON.GeoJsonProperties): number | null
   return null
 }
 
-function shouldShowTown(properties: GeoJSON.GeoJsonProperties, zoom: number): boolean
+function shouldShowTown(properties: GeoJSON.GeoJsonProperties, zoom: number): boolean 
 {
-  const maxZoom = properties?.max_zoom;
-  const minZoom = properties?.min_zoom;
+    const maxZoom = properties?.max_zoom;
+    const minZoom = properties?.min_zoom;
 
-  // print out the burg name, the population, the max zoom, min zoom, and the current zoom
-  // const burgName = properties?.Burg ?? 'Unknown'
-  // const population2 = getTownPopulation(properties) ?? 'Unknown'
-  // console.log(`Burg: ${burgName}, Population: ${population2}, MaxZoom: ${maxZoom}, MinZoom: ${minZoom}, Current Zoom: ${zoom}`)
+    // print out the burg name, the population, the max zoom, min zoom, and the current zoom
+    // const burgName = properties?.Burg ?? 'Unknown'
+    // const population2 = getTownPopulation(properties) ?? 'Unknown'
+    // console.log(`Burg: ${burgName}, Population: ${population2}, MaxZoom: ${maxZoom}, MinZoom: ${minZoom}, Current Zoom: ${zoom}`)
 
-  // When the data has an explicit zoom window, respect it for the upper range (zoomed in
-  // detail view). Below min_zoom, fall through to population-based logic so major cities
-  // still appear when zoomed out.
-  if (typeof maxZoom === 'number' && zoom > maxZoom)
-  {
-    return false
-  }
+    // When the data has an explicit zoom window, respect it for the upper range (zoomed in
+    // detail view). Below min_zoom, fall through to population-based logic so major cities
+    // still appear when zoomed out.
+    if (typeof maxZoom === 'number' && zoom > maxZoom) 
+    {
+        return false
+    }
 
-  if (typeof minZoom === 'number' && zoom >= minZoom)
-  {
-    return true
-  }
+    if (typeof minZoom === 'number' && zoom >= minZoom) 
+    {
+        return true
+    }
 
-  const population = getTownPopulation(properties)
-  // console.log("The population for this town is:", population);
-  if (population === null)
-  {
-    return true
-  }
+    const population = getTownPopulation(properties)
+    // console.log("The population for this town is:", population);
+    if (population === null) 
+    {
+        return true
+    }
 
-  switch (zoom)
-  {
-    case 0:
-    case 1:
-    case 2:
-      return population >= 250_000
-    case 3:
-    case 4:
-    case 5:
-      return population >= 100_000
-    case 6:
-      return population >= 5_000
-    case 7:
-    case 8:
-    case 9:
-      return population >= 1_000
-    case 10:
-    case 11:
-    case 12:
-      return population >= 500
-    default:
-      return true
-  }
+    if (zoom <= 2)
+    {
+        return population >= 250_000
+    }
+    else if (zoom <= 5)
+    {
+        return population >= 100_000
+    }
+    else if (zoom === 6)
+    {
+        return population >= 5_000
+    }
+    else if (zoom <= 9)
+    {
+        return population >= 1_000
+    }
+    else if (zoom <= 12)
+    {
+        return population >= 500
+    }
 
-  return true;
+    return true;
 }
 
 function onEachFeatureHandler(feature: GeoJSON.Feature, layer: L.Layer, zoom: number, entry: SettlementPointsLayerEntry)
