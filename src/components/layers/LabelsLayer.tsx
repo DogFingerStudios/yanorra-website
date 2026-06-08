@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useMap } from 'react-leaflet'
 import L from 'leaflet'
 
-const WATER_LABEL_TYPES = ['ocean', 'sea', 'lake', 'bay']
+const WATER_LABEL_TYPES = ['ocean', 'sea', 'lake', 'bay', 'river']
 
 type LabelsLayerEntry =
 {
