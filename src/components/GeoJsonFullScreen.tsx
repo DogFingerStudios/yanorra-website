@@ -21,9 +21,9 @@ import './MapFullScreen.css'
 
 const MIN_ZOOM = 2
 const MAX_ZOOM = 20
-const ZOOM_SNAP = 0.5
-const ZOOM_DELTA = 0.5
-const WHEEL_PX_PER_ZOOM_LEVEL = 80
+const ZOOM_SNAP = 0.1
+const ZOOM_DELTA = 0.1
+const WHEEL_PX_PER_ZOOM_LEVEL = 5
 const DEFAULT_CENTER: [number, number] = [0, 0]
 const DEFAULT_MAP_LAYER = 'states'
 
@@ -148,7 +148,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
                 srcFile: '/geojson/streets_major.geojson',
                 weight: 1.5,
                 color: '#b9c8d6',
-                minZoom: 10,
+                minZoom: 7,
                 drawFunc: getStreetsLayer,
         },
         {
@@ -156,7 +156,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
                 srcFile: '/geojson/streets_minor.geojson',
                 weight: 1.25,
                 color: '#b9c8d6',
-                minZoom: 12,
+                minZoom: 7,
                 drawFunc: getStreetsLayer,
         },
         {
@@ -186,9 +186,10 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         {
                 id: 'buildings_major',
                 srcFile: '/geojson/buildings_major.geojson',
-                weight: 1.15,
-                color: '#e8e9ed',
-                minZoom: 15,
+                weight: 0.25,
+                color: '#000',
+                fillColor: '#e8e9ed',
+                minZoom: 14,
                 drawFunc: getBuildingsLayer,
         },
 
@@ -196,8 +197,8 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
                 id: 'parks',
                 srcFile: '/geojson/parks.geojson',
                 weight: 1.15,
-                color: '#00DD00',
-                minZoom: 15,
+                color: '#a7d9b4',
+                minZoom: 7,
                 drawFunc: getParksLayer,
         },
 
