@@ -367,7 +367,8 @@ function StatesLayer({ entry, showColors }: { entry: StatesLayerEntry, showColor
               fillOpacity = 0.35
             }
 
-            if (featureStateName && featureStateName === hoveredStateName)
+            if (currentZoom <= 6 &&
+              featureStateName && featureStateName === hoveredStateName)
             {
               fillColor = showColors ? feature.properties?.Data_Color : '#F0F4F8'
               if ((fillOpacity ?? 0) < 0.65)
