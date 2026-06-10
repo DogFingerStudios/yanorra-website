@@ -10,7 +10,7 @@ import { getStatesLayer, getStatesColorsLayer } from './layers/States'
 import { getRailwayLayer } from './layers/RailwayLayer'
 import { getSeawayLayer } from './layers/SeawayLayer'
 import { getStreetsLayer } from './layers/StreetsLayer'
-import { getRoutesLayer } from './layers/Routes'
+// import { getRoutesLayer } from './layers/Routes'
 import { getLabelsLayer } from './layers/LabelsLayer'
 import { getBuildingsLayer } from './layers/BuildingsLayer'
 import { getParksLayer } from './layers/ParksLayer'
@@ -119,28 +119,36 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
 
         // ****************************************************
         {
+                // major roads spanning large regions and connecting major settlements, often highways 
+                // or primary routes
+                // real world examples: I95 east coast USA, 495 in the Washington DC area
                 id: 'roads_highway',
                 srcFile: '/geojson/roads_highway.geojson',
-                weight: 1.35,
-                color: '#5a5a5a',
+                weight: 1.5,
+                color: '#ffb47f',
                 minZoom: 3,
-                drawFunc: getRoutesLayer,
+                drawFunc: getStreetsLayer,
         },
         {
+                // major roads that are important but not highways, such as long country roads
+                // connecting minor settlements or serving as main roads within larger regions
+                // real world examples: US Route 50, Rt 15 north of Frederick MD
                 id: 'roads_major',
                 srcFile: '/geojson/roads_major.geojson',
-                weight: 1.15,
-                color: '#5a5a5a',
+                weight: 1.25,
+                color: '#ffb47f',
                 minZoom: 4,
-                drawFunc: getRoutesLayer,
+                drawFunc: getStreetsLayer,
         },
         {
+                // minor roads connecting smaller towns but are not main routes
+                // real world examples: route 77 in Maryland connecting Thurmont and Westminster
                 id: 'roads_minor',
                 srcFile: '/geojson/roads_minor.geojson',
                 weight: 1.0,
                 color: '#5a5a5a',
                 minZoom: 5,
-                drawFunc: getRoutesLayer,
+                drawFunc: getStreetsLayer,
         },
 
         {
