@@ -42,6 +42,7 @@ type GeoJsonLayerOptions =
     maxZoom?: number
     drawFunc?: (entry: GeoJsonEntry) => ReactNode
     popupFunc?: (feature: GeoJSON.Feature, entry: GeoJsonEntry) => string
+    _renderPhase?: 'outline' | 'center' | 'both'
 }
 
 const DEFAULT_LAYER_OPTIONS =
@@ -1164,14 +1165,33 @@ const GeoJsonFullScreen = (
                     {earthLayerElement}
                     {baseLayerElement}
                     {renderMeasurementLayers()}
-                    {otherEntries.map((entry) =>
-                    {
-                        return (
+                    
+                    {/* Render all road layer outlines first */}
+                    {otherEntries
+                        .filter((entry) => entry.options.drawFunc === getStreetsLayer)
+                        .map((entry) => (
+                            <LayerGroup key={`${entry.id}-outline-phase`}>
+                                {renderEntryLayer({ ...entry, options: { ...entry.options, _renderPhase: 'outline' as const } })}
+                            </LayerGroup>
+                        ))}
+                    
+                    {/* Render all non-road entries */}
+                    {otherEntries
+                        .filter((entry) => entry.options.drawFunc !== getStreetsLayer)
+                        .map((entry) => (
                             <LayerGroup key={entry.id}>
                                 {renderEntryLayer(entry)}
                             </LayerGroup>
-                        )
-                    })}
+                        ))}
+                    
+                    {/* Render all road layer centers last */}
+                    {otherEntries
+                        .filter((entry) => entry.options.drawFunc === getStreetsLayer)
+                        .map((entry) => (
+                            <LayerGroup key={`${entry.id}-center-phase`}>
+                                {renderEntryLayer({ ...entry, options: { ...entry.options, _renderPhase: 'center' as const } })}
+                            </LayerGroup>
+                        ))}
                     {boundsFitterElement}
                     <DebugTracker onViewChange={handleMapViewChange} onMapClick={handleMeasureMapClick} />
                     {fullScreenLinkElement}
