@@ -84,9 +84,9 @@ function copyYamlWikiPlugin(): PluginOption
 
         fs.copyFileSync(path.join(mapsSrc, 'layers', 'settlements', 'settlements_points.geojson'), path.join(docsDest, 'settlements_points.geojson'))
 
-        fs.copyFileSync(path.join(mapsSrc, 'layers', 'transportation', 'roads', 'roads_highway.geojson'), path.join(docsDest, 'roads_highway.geojson'))
-        fs.copyFileSync(path.join(mapsSrc, 'layers', 'transportation', 'roads', 'roads_major.geojson'), path.join(docsDest, 'roads_major.geojson'))
-        fs.copyFileSync(path.join(mapsSrc, 'layers', 'transportation', 'roads', 'roads_minor.geojson'), path.join(docsDest, 'roads_minor.geojson'))
+        fs.copyFileSync(path.join(mapsSrc, 'layers', 'transportation', 'roads', 'generated', 'roads_highway_generated.geojson'), path.join(docsDest, 'roads_highway.geojson'))
+        fs.copyFileSync(path.join(mapsSrc, 'layers', 'transportation', 'roads', 'generated', 'roads_major_generated.geojson'), path.join(docsDest, 'roads_major.geojson'))
+        fs.copyFileSync(path.join(mapsSrc, 'layers', 'transportation', 'roads', 'generated', 'roads_minor_generated.geojson'), path.join(docsDest, 'roads_minor.geojson'))
         fs.copyFileSync(path.join(mapsSrc, 'layers', 'transportation', 'railways.geojson'), path.join(docsDest, 'railways.geojson'))
         fs.copyFileSync(path.join(mapsSrc, 'layers', 'transportation', 'seaways.geojson'), path.join(docsDest, 'seaways.geojson'))
 
