@@ -3,6 +3,9 @@ import { GeoJSON, Marker, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import './StreetsLayer.css'
 
+export const STREET_OUTLINE_PANE = 'streetOutlinePane'
+export const STREET_CENTER_PANE = 'streetCenterPane'
+
 type StreetsLayerEntry =
 {
   id: string
@@ -185,6 +188,7 @@ export function getStreetsLayer(entry: StreetsLayerEntry)
           key={`${entry.id}-outline`}
           data={outlines}
           style={outlineStyle}
+          pane={STREET_OUTLINE_PANE}
         />
       )}
       {(renderPhase === 'center' || renderPhase === 'both') && (
@@ -192,6 +196,7 @@ export function getStreetsLayer(entry: StreetsLayerEntry)
           key={`${entry.id}-center`}
           data={centers}
           style={centerStyle}
+          pane={STREET_CENTER_PANE}
         />
       )}
       {renderPhase === 'both' && (

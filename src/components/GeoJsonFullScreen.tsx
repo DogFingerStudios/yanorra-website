@@ -9,7 +9,7 @@ import { getSettlementPointsLayer } from './layers/SettlmentPoints'
 import { getStatesLayer, getStatesColorsLayer } from './layers/States'
 import { getRailwayLayer } from './layers/RailwayLayer'
 import { getSeawayLayer } from './layers/SeawayLayer'
-import { getStreetsLayer } from './layers/StreetsLayer'
+import { getStreetsLayer, STREET_OUTLINE_PANE, STREET_CENTER_PANE } from './layers/StreetsLayer'
 // import { getRoutesLayer } from './layers/Routes'
 import { getLabelsLayer } from './layers/LabelsLayer'
 import { getBuildingsLayer } from './layers/BuildingsLayer'
@@ -57,6 +57,8 @@ const DEFAULT_LAYER_OPTIONS =
 
 const BASE_GEOJSON_PANE = 'baseGeoJsonPane'
 const BASE_GEOJSON_Z_INDEX = '200'
+const STREET_OUTLINE_PANE_Z_INDEX = '401'
+const STREET_CENTER_PANE_Z_INDEX = '402'
 
 // Add your GeoJSON file URLs here (must be publicly served paths, usually from /public).
 const GEOJSON_FILES : GeoJsonLayerOptions[] = 
@@ -501,14 +503,32 @@ const EnsureMapPanes = () =>
 
     useEffect(() =>
     {
-        let pane = map.getPane(BASE_GEOJSON_PANE)
+        let basePane = map.getPane(BASE_GEOJSON_PANE)
 
-        if (!pane)
+        if (!basePane)
         {
-            pane = map.createPane(BASE_GEOJSON_PANE)
+            basePane = map.createPane(BASE_GEOJSON_PANE)
         }
 
-        pane.style.zIndex = BASE_GEOJSON_Z_INDEX
+        basePane.style.zIndex = BASE_GEOJSON_Z_INDEX
+
+        let streetOutlinePane = map.getPane(STREET_OUTLINE_PANE)
+
+        if (!streetOutlinePane)
+        {
+            streetOutlinePane = map.createPane(STREET_OUTLINE_PANE)
+        }
+
+        streetOutlinePane.style.zIndex = STREET_OUTLINE_PANE_Z_INDEX
+
+        let streetCenterPane = map.getPane(STREET_CENTER_PANE)
+
+        if (!streetCenterPane)
+        {
+            streetCenterPane = map.createPane(STREET_CENTER_PANE)
+        }
+
+        streetCenterPane.style.zIndex = STREET_CENTER_PANE_Z_INDEX
     }, [map])
 
     return null
