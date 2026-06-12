@@ -287,6 +287,27 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     /************************************************/
 ]
 
+type ToggleGroup = {
+    id: string;
+    label: string;
+    layerIds: readonly string[];
+};
+
+const TOGGLE_GROUPS: readonly ToggleGroup[] = [
+    {
+        id: 'streets',
+        label: 'Streets',
+        layerIds: [
+            'roads_highway',
+            'roads_major',
+            'roads_minor',
+            'streets_major',
+            'streets_minor',
+            'alleys',
+        ],
+    },
+];
+
 type LayerOption =
 {
     id: string
