@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
-import { GeoJSON, Marker, Tooltip, useMap } from 'react-leaflet'
+import { GeoJSON, Marker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import './StreetsLayer.css'
 
 export const STREET_OUTLINE_PANE = 'streetOutlinePane'
 export const STREET_CENTER_PANE = 'streetCenterPane'
+export const STREET_LABEL_PANE = 'streetLabelPane'
+const STREET_NAME_FALLBACK_PRIMARY = 'Test Street'
+const STREET_NAME_FALLBACK_SECONDARY = 'Unnamed Road'
 
 type StreetsLayerEntry =
 {
@@ -199,10 +202,10 @@ export function getStreetsLayer(entry: StreetsLayerEntry)
           pane={STREET_CENTER_PANE}
         />
       )}
-      {renderPhase === 'both' && (
+      {renderPhase !== 'outline' && (
         <StreetNameLabels
           entry={entry}
-          labelMinZoom={entry.options.labelMinZoom ?? 10}
+          labelMinZoom={entry.options.labelMinZoom ?? 17}
           labelMaxCount={entry.options.labelMaxCount ?? 200}
         />
       )}
@@ -215,6 +218,83 @@ type StreetLabel =
   id: string
   name: string
   position: [number, number]
+  angle: number
+}
+
+type LabelPlacement =
+{
+  position: [number, number]
+  angle: number
+}
+
+function escapeHtml(value: string): string
+{
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function getStreetLabelIcon(label: StreetLabel): L.DivIcon
+{
+  const rotation = -label.angle.toFixed(1)
+  const safeName = escapeHtml(`${label.name} [${rotation}°]`)
+
+  return L.divIcon({
+    className: 'street-label-marker',
+    html: `<span class="street-label-text" style="transform: rotate(${rotation}deg)">${safeName}</span>`,
+    iconSize: [1, 1],
+    iconAnchor: [0, 0],
+  })
+}
+
+function getLineLength(lineCoordinates: unknown): number
+{
+  if (!Array.isArray(lineCoordinates) || lineCoordinates.length < 2)
+  {
+    return 0
+  }
+
+  let totalLength = 0
+
+  for (let index = 1; index < lineCoordinates.length; index += 1)
+  {
+    const previousPoint = lineCoordinates[index - 1]
+    const currentPoint = lineCoordinates[index]
+
+    if (!Array.isArray(previousPoint) || !Array.isArray(currentPoint))
+    {
+      continue
+    }
+
+    if (previousPoint.length < 2 || currentPoint.length < 2)
+    {
+      continue
+    }
+
+    const previousLng = previousPoint[0]
+    const previousLat = previousPoint[1]
+    const currentLng = currentPoint[0]
+    const currentLat = currentPoint[1]
+
+    if (
+      typeof previousLng !== 'number'
+      || typeof previousLat !== 'number'
+      || typeof currentLng !== 'number'
+      || typeof currentLat !== 'number'
+    )
+    {
+      continue
+    }
+
+    const deltaLng = currentLng - previousLng
+    const deltaLat = currentLat - previousLat
+    totalLength += Math.sqrt((deltaLng * deltaLng) + (deltaLat * deltaLat))
+  }
+
+  return totalLength
 }
 
 function getMidpointPosition(lineCoordinates: unknown): [number, number] | null
@@ -224,16 +304,111 @@ function getMidpointPosition(lineCoordinates: unknown): [number, number] | null
     return null
   }
 
-  const midpointIndex = Math.floor(lineCoordinates.length / 2)
-  const midpoint = lineCoordinates[midpointIndex]
+  if (lineCoordinates.length === 1)
+  {
+    const point = lineCoordinates[0]
 
-  if (!Array.isArray(midpoint) || midpoint.length < 2)
+    if (!Array.isArray(point) || point.length < 2)
+    {
+      return null
+    }
+
+    const lng = point[0]
+    const lat = point[1]
+
+    if (typeof lat !== 'number' || typeof lng !== 'number')
+    {
+      return null
+    }
+
+    return [lat, lng]
+  }
+
+  const totalLength = getLineLength(lineCoordinates)
+
+  if (totalLength <= 0)
+  {
+    const fallbackPoint = lineCoordinates[Math.floor(lineCoordinates.length / 2)]
+
+    if (!Array.isArray(fallbackPoint) || fallbackPoint.length < 2)
+    {
+      return null
+    }
+
+    const fallbackLng = fallbackPoint[0]
+    const fallbackLat = fallbackPoint[1]
+
+    if (typeof fallbackLat !== 'number' || typeof fallbackLng !== 'number')
+    {
+      return null
+    }
+
+    return [fallbackLat, fallbackLng]
+  }
+
+  const midpointDistance = totalLength / 2
+  let traversedDistance = 0
+
+  for (let index = 1; index < lineCoordinates.length; index += 1)
+  {
+    const previousPoint = lineCoordinates[index - 1]
+    const currentPoint = lineCoordinates[index]
+
+    if (!Array.isArray(previousPoint) || !Array.isArray(currentPoint))
+    {
+      continue
+    }
+
+    if (previousPoint.length < 2 || currentPoint.length < 2)
+    {
+      continue
+    }
+
+    const previousLng = previousPoint[0]
+    const previousLat = previousPoint[1]
+    const currentLng = currentPoint[0]
+    const currentLat = currentPoint[1]
+
+    if (
+      typeof previousLng !== 'number'
+      || typeof previousLat !== 'number'
+      || typeof currentLng !== 'number'
+      || typeof currentLat !== 'number'
+    )
+    {
+      continue
+    }
+
+    const deltaLng = currentLng - previousLng
+    const deltaLat = currentLat - previousLat
+    const segmentLength = Math.sqrt((deltaLng * deltaLng) + (deltaLat * deltaLat))
+
+    if (segmentLength === 0)
+    {
+      continue
+    }
+
+    if (traversedDistance + segmentLength >= midpointDistance)
+    {
+      const remainingDistance = midpointDistance - traversedDistance
+      const ratio = remainingDistance / segmentLength
+      const midpointLng = previousLng + (deltaLng * ratio)
+      const midpointLat = previousLat + (deltaLat * ratio)
+      return [midpointLat, midpointLng]
+    }
+
+    traversedDistance += segmentLength
+  }
+
+  const lastPoint = lineCoordinates[lineCoordinates.length - 1]
+
+  if (!Array.isArray(lastPoint) || lastPoint.length < 2)
   {
     return null
   }
 
-  const lng = midpoint[0]
-  const lat = midpoint[1]
+  const lng = lastPoint[0]
+  const lat = lastPoint[1]
 
   if (typeof lat !== 'number' || typeof lng !== 'number')
   {
@@ -243,7 +418,109 @@ function getMidpointPosition(lineCoordinates: unknown): [number, number] | null
   return [lat, lng]
 }
 
-function getFeatureLabelPosition(feature: GeoJSON.Feature): [number, number] | null
+function normalizeTextAngle(angle: number): number
+{
+  if (angle > 90)
+  {
+    return angle - 180
+  }
+
+  if (angle < -90)
+  {
+    return angle + 180
+  }
+
+  return angle
+}
+
+function getLineMidpointPlacement(lineCoordinates: unknown): LabelPlacement | null
+{
+  const midpoint = getMidpointPosition(lineCoordinates)
+
+  if (!midpoint)
+  {
+    return null
+  }
+
+  if (!Array.isArray(lineCoordinates) || lineCoordinates.length < 2)
+  {
+    return {
+      position: midpoint,
+      angle: 0,
+    }
+  }
+
+  const totalLength = getLineLength(lineCoordinates)
+
+  if (totalLength <= 0)
+  {
+    return {
+      position: midpoint,
+      angle: 0,
+    }
+  }
+
+  const midpointDistance = totalLength / 2
+  let traversedDistance = 0
+
+  for (let index = 1; index < lineCoordinates.length; index += 1)
+  {
+    const previousPoint = lineCoordinates[index - 1]
+    const currentPoint = lineCoordinates[index]
+
+    if (!Array.isArray(previousPoint) || !Array.isArray(currentPoint))
+    {
+      continue
+    }
+
+    if (previousPoint.length < 2 || currentPoint.length < 2)
+    {
+      continue
+    }
+
+    const previousLng = previousPoint[0]
+    const previousLat = previousPoint[1]
+    const currentLng = currentPoint[0]
+    const currentLat = currentPoint[1]
+
+    if (
+      typeof previousLng !== 'number'
+      || typeof previousLat !== 'number'
+      || typeof currentLng !== 'number'
+      || typeof currentLat !== 'number'
+    )
+    {
+      continue
+    }
+
+    const deltaLng = currentLng - previousLng
+    const deltaLat = currentLat - previousLat
+    const segmentLength = Math.sqrt((deltaLng * deltaLng) + (deltaLat * deltaLat))
+
+    if (segmentLength === 0)
+    {
+      continue
+    }
+
+    if (traversedDistance + segmentLength >= midpointDistance)
+    {
+      const rawAngle = (Math.atan2(deltaLat, deltaLng) * 180) / Math.PI
+      return {
+        position: midpoint,
+        angle: normalizeTextAngle(rawAngle),
+      }
+    }
+
+    traversedDistance += segmentLength
+  }
+
+  return {
+    position: midpoint,
+    angle: 0,
+  }
+}
+
+function getFeatureLabelPlacement(feature: GeoJSON.Feature): LabelPlacement | null
 {
   const geometry = feature.geometry
 
@@ -254,7 +531,7 @@ function getFeatureLabelPosition(feature: GeoJSON.Feature): [number, number] | n
 
   if (geometry.type === 'LineString')
   {
-    return getMidpointPosition(geometry.coordinates)
+    return getLineMidpointPlacement(geometry.coordinates)
   }
 
   if (geometry.type === 'MultiLineString')
@@ -267,6 +544,7 @@ function getFeatureLabelPosition(feature: GeoJSON.Feature): [number, number] | n
     }
 
     let longestLine: unknown[] | null = null
+    let longestLineLength = 0
 
     for (const line of lines)
     {
@@ -275,9 +553,12 @@ function getFeatureLabelPosition(feature: GeoJSON.Feature): [number, number] | n
         continue
       }
 
-      if (longestLine === null || line.length > longestLine.length)
+      const currentLength = getLineLength(line)
+
+      if (longestLine === null || currentLength > longestLineLength)
       {
         longestLine = line
+        longestLineLength = currentLength
       }
     }
 
@@ -286,10 +567,153 @@ function getFeatureLabelPosition(feature: GeoJSON.Feature): [number, number] | n
       return null
     }
 
-    return getMidpointPosition(longestLine)
+    return getLineMidpointPlacement(longestLine)
+  }
+
+  if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon')
+  {
+    const boundsCenter = getBoundsCenterFromCoordinates(geometry.coordinates)
+
+    if (!boundsCenter)
+    {
+      return null
+    }
+
+    return {
+      position: boundsCenter,
+      angle: getLongestSegmentAngleFromCoordinates(geometry.coordinates),
+    }
   }
 
   return null
+}
+
+function getBoundsCenterFromCoordinates(coordinates: unknown): [number, number] | null
+{
+  const points: number[][] = []
+
+  const collectPoints = (value: unknown) =>
+  {
+    if (!Array.isArray(value))
+    {
+      return
+    }
+
+    if (
+      value.length >= 2
+      && typeof value[0] === 'number'
+      && typeof value[1] === 'number'
+    )
+    {
+      points.push([value[0], value[1]])
+      return
+    }
+
+    for (const nestedValue of value)
+    {
+      collectPoints(nestedValue)
+    }
+  }
+
+  collectPoints(coordinates)
+
+  if (points.length === 0)
+  {
+    return null
+  }
+
+  let minLng = points[0][0]
+  let maxLng = points[0][0]
+  let minLat = points[0][1]
+  let maxLat = points[0][1]
+
+  for (let index = 1; index < points.length; index += 1)
+  {
+    const point = points[index]
+    const lng = point[0]
+    const lat = point[1]
+
+    if (lng < minLng)
+    {
+      minLng = lng
+    }
+
+    if (lng > maxLng)
+    {
+      maxLng = lng
+    }
+
+    if (lat < minLat)
+    {
+      minLat = lat
+    }
+
+    if (lat > maxLat)
+    {
+      maxLat = lat
+    }
+  }
+
+  return [
+    (minLat + maxLat) / 2,
+    (minLng + maxLng) / 2,
+  ]
+}
+
+function getLongestSegmentAngleFromCoordinates(coordinates: unknown): number
+{
+  let bestLength = 0
+  let bestAngle = 0
+
+  const visit = (value: unknown) =>
+  {
+    if (!Array.isArray(value))
+    {
+      return
+    }
+
+    let canTreatAsLine = value.length >= 2
+
+    if (canTreatAsLine)
+    {
+      for (const point of value)
+      {
+        if (!Array.isArray(point) || point.length < 2 || typeof point[0] !== 'number' || typeof point[1] !== 'number')
+        {
+          canTreatAsLine = false
+          break
+        }
+      }
+    }
+
+    if (canTreatAsLine)
+    {
+      for (let index = 1; index < value.length; index += 1)
+      {
+        const previousPoint = value[index - 1] as number[]
+        const currentPoint = value[index] as number[]
+        const deltaLng = currentPoint[0] - previousPoint[0]
+        const deltaLat = currentPoint[1] - previousPoint[1]
+        const segmentLength = Math.sqrt((deltaLng * deltaLng) + (deltaLat * deltaLat))
+
+        if (segmentLength > bestLength)
+        {
+          bestLength = segmentLength
+          bestAngle = normalizeTextAngle((Math.atan2(deltaLat, deltaLng) * 180) / Math.PI)
+        }
+      }
+
+      return
+    }
+
+    for (const nestedValue of value)
+    {
+      visit(nestedValue)
+    }
+  }
+
+  visit(coordinates)
+  return bestAngle
 }
 
 function extractStreetLabels(data: GeoJSON.GeoJsonObject, maxCount: number): StreetLabel[]
@@ -324,8 +748,24 @@ function extractStreetLabels(data: GeoJSON.GeoJsonObject, maxCount: number): Str
       continue
     }
 
-    // const streetName = properties.name
-    const streetName = 'Street Name'
+    const nameValue = properties.name
+    const altNameValue = properties.alt_name
+    let streetName = ''
+
+    if (typeof nameValue === 'string' && nameValue.trim() !== '')
+    {
+      streetName = nameValue
+    }
+    else if (typeof altNameValue === 'string' && altNameValue.trim() !== '')
+    {
+      streetName = altNameValue
+    }
+    else
+    {
+      // Keep fallback labels unique so de-duplication does not collapse them into one.
+      const fallbackIndex = index + 1
+      streetName = `${STREET_NAME_FALLBACK_PRIMARY} ${fallbackIndex} ${STREET_NAME_FALLBACK_SECONDARY}`
+    }
 
     if (typeof streetName !== 'string' || streetName.trim() === '')
     {
@@ -339,9 +779,9 @@ function extractStreetLabels(data: GeoJSON.GeoJsonObject, maxCount: number): Str
       continue
     }
 
-    const position = getFeatureLabelPosition(feature)
+    const placement = getFeatureLabelPlacement(feature)
 
-    if (!position)
+    if (!placement)
     {
       continue
     }
@@ -350,7 +790,8 @@ function extractStreetLabels(data: GeoJSON.GeoJsonObject, maxCount: number): Str
     labels.push({
       id: `${index}-${normalizedName}`,
       name: streetName.trim(),
-      position,
+      position: placement.position,
+      angle: placement.angle,
     })
   }
 
@@ -361,14 +802,6 @@ function StreetNameLabels({ entry, labelMinZoom, labelMaxCount }: { entry: Stree
 {
   const map = useMap()
   const [zoom, setZoom] = useState(map.getZoom())
-  const labelAnchorIcon = useMemo(() =>
-  {
-    return L.divIcon({
-      className: 'street-label-anchor',
-      iconSize: [1, 1],
-      iconAnchor: [0, 0],
-    })
-  }, [])
   const labels = useMemo(() =>
   {
     return extractStreetLabels(entry.data, labelMaxCount)
@@ -376,15 +809,22 @@ function StreetNameLabels({ entry, labelMinZoom, labelMaxCount }: { entry: Stree
 
   useEffect(() =>
   {
+    const handleZoom = () =>
+    {
+      setZoom(map.getZoom())
+    }
+
     const handleZoomEnd = () =>
     {
       setZoom(map.getZoom())
     }
 
+    map.on('zoom', handleZoom)
     map.on('zoomend', handleZoomEnd)
 
     return () =>
     {
+      map.off('zoom', handleZoom)
       map.off('zoomend', handleZoomEnd)
     }
   }, [map])
@@ -402,19 +842,11 @@ function StreetNameLabels({ entry, labelMinZoom, labelMaxCount }: { entry: Stree
           <Marker
             key={`${entry.id}-street-label-${label.id}`}
             position={label.position}
-            icon={labelAnchorIcon}
-            opacity={0}
+            icon={getStreetLabelIcon(label)}
+            opacity={1}
             interactive={false}
-          >
-            <Tooltip
-              permanent
-              direction='center'
-              opacity={0.95}
-              className='street-label-tooltip'
-            >
-              {label.name}
-            </Tooltip>
-          </Marker>
+            pane={STREET_LABEL_PANE}
+          />
         )
       })}
     </>
