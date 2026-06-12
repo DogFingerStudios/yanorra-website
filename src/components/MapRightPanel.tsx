@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './MapRightPanel.css'
 
-type BaseLayerOption =
+type LayerOption =
 {
     id: string
     label: string
@@ -9,12 +9,14 @@ type BaseLayerOption =
 
 type MapRightPanelProps =
 {
-    baseLayers: BaseLayerOption[]
+    baseLayers: LayerOption[]
     selectedBaseLayer: string
     onBaseLayerChange: (layer: string) => void
+    optionalLayers: LayerOption[]
+    onOptionalLayerChange: (layer: string) => void
 }
 
-const MapRightPanel = ({ baseLayers, selectedBaseLayer, onBaseLayerChange }: MapRightPanelProps) =>
+const MapRightPanel = ({ baseLayers, selectedBaseLayer, onBaseLayerChange, optionalLayers, onOptionalLayerChange }: MapRightPanelProps) =>
 {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -68,6 +70,21 @@ const MapRightPanel = ({ baseLayers, selectedBaseLayer, onBaseLayerChange }: Map
             <label className="map-right-panel-checkbox-label">
                 <input type="checkbox" name="points-of-interest-labels" />Points of Interest
             </label>
+            {optionalLayers.map((layer) =>
+            {
+              return (
+                <label key={layer.id} className="map-right-panel-radio-label">
+                <input
+                    type="checkbox"
+                    name="base-layer"
+                    value={layer.id}
+                    checked={selectedBaseLayer === layer.id}
+                    onChange={() => onOptionalLayerChange(layer.id)}
+                />
+                {layer.label}
+                </label>
+              )
+            })}
         </div>
     </div>
 </div>

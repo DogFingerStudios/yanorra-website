@@ -4,6 +4,7 @@ import { GeoJSON, ImageOverlay, LayerGroup, MapContainer, Marker, Polyline, Scal
 import MapRightPanel from './MapRightPanel'
 import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
+import { getHeightLayer } from './layers/HeightLayer'
 // import { getTownLayer } from './layers/TownLayer'
 import { getSettlementPointsLayer } from './layers/SettlmentPoints'
 import { getStatesLayer, getStatesColorsLayer } from './layers/States'
@@ -43,6 +44,8 @@ type GeoJsonLayerOptions =
     drawFunc?: (entry: GeoJsonEntry) => ReactNode
     popupFunc?: (feature: GeoJSON.Feature, entry: GeoJsonEntry) => string
     _renderPhase?: 'outline' | 'center' | 'both'
+    toggleable?: boolean,
+    visible?: boolean,
 }
 
 const DEFAULT_LAYER_OPTIONS =
@@ -96,7 +99,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         fillColor: '#ffffff',
         weight: 0.5,
         fillOpacity: .75,
-        // drawFunc: getBiomesLayer,
+        drawFunc: getHeightLayer,
     },
     {
         id: 'states',
@@ -144,6 +147,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#ffb47f',
         minZoom: 3,
         drawFunc: getStreetsLayer,
+        toggleable: true,
     },
     {
         // major roads that are important but not highways, such as long country roads
@@ -155,6 +159,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#ffb47f',
         minZoom: 4,
         drawFunc: getStreetsLayer,
+        toggleable: true,
     },
     {
         // minor roads connecting smaller towns but are not main routes
@@ -165,8 +170,8 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#5a5a5a',
         minZoom: 5,
         drawFunc: getStreetsLayer,
+        toggleable: true,
     },
-
     {
         id: 'streets_major',
         srcFile: '/geojson/streets_major.geojson',
@@ -174,6 +179,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#b9c8d6',
         minZoom: 7,
         drawFunc: getStreetsLayer,
+        toggleable: true,
     },
     {
         id: 'streets_minor',
@@ -182,6 +188,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#b9c8d6',
         minZoom: 7,
         drawFunc: getStreetsLayer,
+        toggleable: true,
     },
     {
         id: 'alleys',
@@ -190,6 +197,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#b9c8d6',
         minZoom: 14,
         drawFunc: getStreetsLayer,
+        toggleable: true,
     },
 
     {
@@ -197,6 +205,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         srcFile: '/geojson/seaways.geojson',
         minZoom: 5,
         drawFunc: getSeawayLayer,
+        toggleable: true,
     },
     {
         id: 'railways',
@@ -205,6 +214,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#5a5a5a',
         minZoom: 5,
         drawFunc: getRailwayLayer,
+        toggleable: true,
     },
 
     {
@@ -277,7 +287,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     /************************************************/
 ]
 
-type BaseLayerOption =
+type LayerOption =
 {
     id: string
     label: string
@@ -301,7 +311,7 @@ function formatLayerLabel(layerId: string): string
     return labelText.charAt(0).toUpperCase() + labelText.slice(1)
 }
 
-function getBaseLayerOptions(layers: GeoJsonLayerOptions[]): BaseLayerOption[]
+function getBaseLayerOptions(layers: GeoJsonLayerOptions[]): LayerOption[]
 {
     return layers
         .filter((layer) => layer.baseLayer)
@@ -317,7 +327,7 @@ function getBaseLayerOptions(layers: GeoJsonLayerOptions[]): BaseLayerOption[]
         })
 }
 
-function getInitialBaseLayer(baseLayers: BaseLayerOption[]): string
+function getInitialBaseLayer(baseLayers: LayerOption[]): string
 {
     const baseLayerIds = baseLayers.map((layer) => layer.id)
 
@@ -334,7 +344,7 @@ function getInitialBaseLayer(baseLayers: BaseLayerOption[]): string
     return DEFAULT_MAP_LAYER
 }
 
-function parseBaseLayerFromUrl(baseLayers: BaseLayerOption[]): string | null
+function parseBaseLayerFromUrl(baseLayers: LayerOption[]): string | null
 {
     const searchParams = new URLSearchParams(window.location.search)
     const rawLayer = searchParams.get(LAYER_QUERY_PARAM)
@@ -355,12 +365,38 @@ function parseBaseLayerFromUrl(baseLayers: BaseLayerOption[]): string | null
     return null
 }
 
-function hasBaseLayerInUrl(baseLayers: BaseLayerOption[]): boolean
+function hasBaseLayerInUrl(baseLayers: LayerOption[]): boolean
 {
     return parseBaseLayerFromUrl(baseLayers) !== null
 }
 
+function getToggleableLayers(layers: GeoJsonLayerOptions[]): LayerOption[]
+{
+    console.debug('Finding toggleable layers among:', layers.map((layer) => getGeoJsonLayerId(layer)))  
+    for (const layer of layers)
+    {
+        if (layer.toggleable === true)
+        {
+            console.debug('Toggleable layer found:', getGeoJsonLayerId(layer))
+        }
+    }
+
+    return layers
+        .filter((layer) => layer.toggleable)
+        .map((layer) =>
+        {
+            const id = getGeoJsonLayerId(layer)
+            const label = layer.label ?? id
+            console.log('Toggleable layer found:', id, 'with label:', label)
+            return {
+                id,
+                label: formatLayerLabel(label),
+            }
+        })
+}
+
 const BASE_LAYER_OPTIONS = getBaseLayerOptions(GEOJSON_FILES)
+const OPTIONAL_LAYER_OPTIONS = getToggleableLayers(GEOJSON_FILES)
 
 // Set this to your Earth raster path in /public.
 const EARTH_LAYER_FILE = '/geojson/Earth.png'
@@ -741,6 +777,32 @@ const GeoJsonFullScreen = (
             zoom: currentZoom,
             center: coords,
         }, nextLayer)
+    }
+
+    const handleOptionalLayerChange = (layerId: string) =>
+    {
+        setEntries((previousEntries) =>
+        {
+            return previousEntries.map((entry) =>
+            {
+                const entryLayerId = getGeoJsonLayerId(entry.options)
+
+                if (entryLayerId !== layerId)
+                {
+                    return entry
+                }
+
+                const isCurrentlyVisible = entry.options.visible ?? true
+
+                return {
+                    ...entry,
+                    options: {
+                        ...entry.options,
+                        visible: !isCurrentlyVisible,
+                    },
+                }
+            })
+        })
     }
 
     const navigateTo = (path: string) =>
@@ -1241,7 +1303,10 @@ const GeoJsonFullScreen = (
                     {earthLayerControlElement}
                     {measureControlElement}
                 </MapContainer>
-                {fullScreen && <MapRightPanel baseLayers={BASE_LAYER_OPTIONS} selectedBaseLayer={selectedBaseLayer} onBaseLayerChange={handleBaseLayerChange} />}
+                {fullScreen && <MapRightPanel 
+                    baseLayers={BASE_LAYER_OPTIONS} selectedBaseLayer={selectedBaseLayer} onBaseLayerChange={handleBaseLayerChange} 
+                    optionalLayers={OPTIONAL_LAYER_OPTIONS} onOptionalLayerChange={handleOptionalLayerChange}
+                    />}
                 {renderMeasureIndicator()}
                 {renderDebug()}
                 {loadError ? <div className="geojson-error-banner">{loadError}</div> : null}
