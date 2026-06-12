@@ -64,205 +64,217 @@ const STREET_LABEL_PANE_Z_INDEX = '650'
 // Add your GeoJSON file URLs here (must be publicly served paths, usually from /public).
 const GEOJSON_FILES : GeoJsonLayerOptions[] = 
 [
-        {
-                id: 'land',
-                srcFile: '/geojson/land.geojson',
-                // baseLayer: true,
-                pane: BASE_GEOJSON_PANE,
-                color: '#7bd5e9',
-                fillColor: '#ffffff',
-                weight: 1,
-                fillOpacity: 1,
-        },
-        {
-                id: 'biomes',
-                label: 'Biomes',
-                srcFile: '/geojson/BiomesData.geojson',
-                baseLayer: true,
-                pane: BASE_GEOJSON_PANE,
-                color: '#7bd5e9',
-                fillColor: '#ffffff',
-                weight: 1,
-                fillOpacity: .75,
-                drawFunc: getBiomesLayer,
-        },
-        {
-                id: 'states',
-                label: 'Borders Only',
-                srcFile: '/geojson/StatesData.geojson',
-                color: '#a6a6c8',
-                weight: 1.26,
-                fillOpacity: 0,
-                baseLayer: true,
-                pane: BASE_GEOJSON_PANE,
-                drawFunc: getStatesLayer,
-        },
-        {
-                id: 'states-color',
-                label: 'Political Map',
-                srcFile: '/geojson/StatesData.geojson',
-                color: '#a6a6c8',
-                weight: 1.26,
-                fillOpacity: 0,
-                baseLayer: true,
-                pane: BASE_GEOJSON_PANE,
-                drawFunc: getStatesColorsLayer,
-        },
+    {
+        id: 'land',
+        srcFile: '/geojson/land.geojson',
+        // baseLayer: true,
+        pane: BASE_GEOJSON_PANE,
+        color: '#7bd5e9',
+        fillColor: '#ffffff',
+        weight: 1,
+        fillOpacity: 1,
+    },
+    {
+        id: 'biomes',
+        label: 'Biomes',
+        srcFile: '/geojson/BiomesData.geojson',
+        baseLayer: true,
+        pane: BASE_GEOJSON_PANE,
+        color: '#7bd5e9',
+        fillColor: '#ffffff',
+        weight: 1,
+        fillOpacity: .75,
+        drawFunc: getBiomesLayer,
+    },
+    {
+        id: 'height',
+        label: 'Height',
+        srcFile: '/geojson/height.geojson',
+        baseLayer: true,
+        pane: BASE_GEOJSON_PANE,
+        color: '#a6a6c8',
+        fillColor: '#ffffff',
+        weight: 0.5,
+        fillOpacity: .75,
+        // drawFunc: getBiomesLayer,
+    },
+    {
+        id: 'states',
+        label: 'Borders Only',
+        srcFile: '/geojson/StatesData.geojson',
+        color: '#a6a6c8',
+        weight: 1.26,
+        fillOpacity: 0,
+        baseLayer: true,
+        pane: BASE_GEOJSON_PANE,
+        drawFunc: getStatesLayer,
+    },
+    {
+        id: 'states-color',
+        label: 'Political Map',
+        srcFile: '/geojson/StatesData.geojson',
+        color: '#a6a6c8',
+        weight: 1.26,
+        fillOpacity: 0,
+        baseLayer: true,
+        pane: BASE_GEOJSON_PANE,
+        drawFunc: getStatesColorsLayer,
+    },
 
-        {
-                id: 'lakes',
-                srcFile: '/geojson/Lakes.geojson',
-                color: '#7bd5e9',
-        },
-        {
-                id: 'rivers',
-                srcFile: '/geojson/Rivers.geojson',
-                color: '#7bd5e9',
-                weight: 1.5,
-        },
+    {
+        id: 'lakes',
+        srcFile: '/geojson/Lakes.geojson',
+        color: '#7bd5e9',
+    },
+    {
+        id: 'rivers',
+        srcFile: '/geojson/Rivers.geojson',
+        color: '#7bd5e9',
+        weight: 1.5,
+    },
 
-        // ****************************************************
-        {
-                // major roads spanning large regions and connecting major settlements, often highways 
-                // or primary routes
-                // real world examples: I95 east coast USA, 495 in the Washington DC area
-                id: 'roads_highway',
-                srcFile: '/geojson/roads_highway.geojson',
-                weight: 1.5,
-                color: '#ffb47f',
-                minZoom: 3,
-                drawFunc: getStreetsLayer,
-        },
-        {
-                // major roads that are important but not highways, such as long country roads
-                // connecting minor settlements or serving as main roads within larger regions
-                // real world examples: US Route 50, Rt 15 north of Frederick MD
-                id: 'roads_major',
-                srcFile: '/geojson/roads_major.geojson',
-                weight: 1.25,
-                color: '#ffb47f',
-                minZoom: 4,
-                drawFunc: getStreetsLayer,
-        },
-        {
-                // minor roads connecting smaller towns but are not main routes
-                // real world examples: route 77 in Maryland connecting Thurmont and Westminster
-                id: 'roads_minor',
-                srcFile: '/geojson/roads_minor.geojson',
-                weight: 1.0,
-                color: '#5a5a5a',
-                minZoom: 5,
-                drawFunc: getStreetsLayer,
-        },
+    // ****************************************************
+    {
+        // major roads spanning large regions and connecting major settlements, often highways 
+        // or primary routes
+        // real world examples: I95 east coast USA, 495 in the Washington DC area
+        id: 'roads_highway',
+        srcFile: '/geojson/roads_highway.geojson',
+        weight: 1.5,
+        color: '#ffb47f',
+        minZoom: 3,
+        drawFunc: getStreetsLayer,
+    },
+    {
+        // major roads that are important but not highways, such as long country roads
+        // connecting minor settlements or serving as main roads within larger regions
+        // real world examples: US Route 50, Rt 15 north of Frederick MD
+        id: 'roads_major',
+        srcFile: '/geojson/roads_major.geojson',
+        weight: 1.25,
+        color: '#ffb47f',
+        minZoom: 4,
+        drawFunc: getStreetsLayer,
+    },
+    {
+        // minor roads connecting smaller towns but are not main routes
+        // real world examples: route 77 in Maryland connecting Thurmont and Westminster
+        id: 'roads_minor',
+        srcFile: '/geojson/roads_minor.geojson',
+        weight: 1.0,
+        color: '#5a5a5a',
+        minZoom: 5,
+        drawFunc: getStreetsLayer,
+    },
 
-        {
-                id: 'streets_major',
-                srcFile: '/geojson/streets_major.geojson',
-                weight: 1.5,
-                color: '#b9c8d6',
-                minZoom: 7,
-                drawFunc: getStreetsLayer,
-        },
-        {
-                id: 'streets_minor',
-                srcFile: '/geojson/streets_minor.geojson',
-                weight: 1.25,
-                color: '#b9c8d6',
-                minZoom: 7,
-                drawFunc: getStreetsLayer,
-        },
-        {
-                id: 'alleys',
-                srcFile: '/geojson/alleys.geojson',
-                weight: 1.0,
-                color: '#b9c8d6',
-                minZoom: 14,
-                drawFunc: getStreetsLayer,
-        },
+    {
+        id: 'streets_major',
+        srcFile: '/geojson/streets_major.geojson',
+        weight: 1.5,
+        color: '#b9c8d6',
+        minZoom: 7,
+        drawFunc: getStreetsLayer,
+    },
+    {
+        id: 'streets_minor',
+        srcFile: '/geojson/streets_minor.geojson',
+        weight: 1.25,
+        color: '#b9c8d6',
+        minZoom: 7,
+        drawFunc: getStreetsLayer,
+    },
+    {
+        id: 'alleys',
+        srcFile: '/geojson/alleys.geojson',
+        weight: 1.0,
+        color: '#b9c8d6',
+        minZoom: 14,
+        drawFunc: getStreetsLayer,
+    },
 
-        {
-                id: 'seaways',
-                srcFile: '/geojson/seaways.geojson',
-                minZoom: 5,
-                drawFunc: getSeawayLayer,
-        },
-        {
-                id: 'railways',
-                srcFile: '/geojson/railways.geojson',
-                weight: 1.15,
-                color: '#5a5a5a',
-                minZoom: 5,
-                drawFunc: getRailwayLayer,
-        },
+    {
+        id: 'seaways',
+        srcFile: '/geojson/seaways.geojson',
+        minZoom: 5,
+        drawFunc: getSeawayLayer,
+    },
+    {
+        id: 'railways',
+        srcFile: '/geojson/railways.geojson',
+        weight: 1.15,
+        color: '#5a5a5a',
+        minZoom: 5,
+        drawFunc: getRailwayLayer,
+    },
 
-        {
-                id: 'buildings_major',
-                srcFile: '/geojson/buildings_major.geojson',
-                weight: 0.25,
-                color: '#000',
-                fillColor: '#e8e9ed',
-                minZoom: 14,
-                drawFunc: getBuildingsLayer,
-        },
+    {
+        id: 'buildings_major',
+        srcFile: '/geojson/buildings_major.geojson',
+        weight: 0.25,
+        color: '#000',
+        fillColor: '#e8e9ed',
+        minZoom: 14,
+        drawFunc: getBuildingsLayer,
+    },
 
-        {
-                id: 'parks',
-                srcFile: '/geojson/parks.geojson',
-                weight: 1.15,
-                color: '#a7d9b4',
-                minZoom: 7,
-                drawFunc: getParksLayer,
-        },
+    {
+        id: 'parks',
+        srcFile: '/geojson/parks.geojson',
+        weight: 1.15,
+        color: '#a7d9b4',
+        minZoom: 7,
+        drawFunc: getParksLayer,
+    },
 
-        {
-                id: 'settlements_points',
-                srcFile: '/geojson/settlements_points.geojson',
-                weight: 1.15,
-                color: '#5a5a5a',
-                drawFunc: getSettlementPointsLayer,
-                popupFunc: getSettlementPointsPopup,
-                minZoom: 3,
-        },
+    {
+        id: 'settlements_points',
+        srcFile: '/geojson/settlements_points.geojson',
+        weight: 1.15,
+        color: '#5a5a5a',
+        drawFunc: getSettlementPointsLayer,
+        popupFunc: getSettlementPointsPopup,
+        minZoom: 3,
+    },
 
-        /************************************************/
+    /************************************************/
 
-        {
-                id: 'water_labels',
-                srcFile: '/geojson/water_labels.geojson',
-                weight: 1.15,
-                color: '#5a5a5a',
-                drawFunc: getLabelsLayer,
-        },
-        {
-                id: 'landform_labels',
-                srcFile: '/geojson/landform_labels.geojson',
-                weight: 1.15,
-                color: '#5a5a5a',
-                drawFunc: getLabelsLayer,
-        },
-        // {
-        //   id: 'lore_labels',
-        //   srcFile: '/geojson/lore_labels.geojson',
-        //   weight: 1.15,
-        //   color: '#5a5a5a',
-        //   drawFunc: getLabelsLayer,
-        // },
-        {
-                id: 'political_line_labels',
-                srcFile: '/geojson/political_line_labels.geojson',
-                weight: 1.15,
-                color: '#5a5a5a',
-                drawFunc: getLabelsLayer,
-        },
-        // {
-        //   id: 'route_labels',
-        //   srcFile: '/geojson/route_labels.geojson',
-        //   weight: 1.15,
-        //   color: '#5a5a5a',
-        //   drawFunc: getLabelsLayer,
-        // },
+    {
+        id: 'water_labels',
+        srcFile: '/geojson/water_labels.geojson',
+        weight: 1.15,
+        color: '#5a5a5a',
+        drawFunc: getLabelsLayer,
+    },
+    {
+        id: 'landform_labels',
+        srcFile: '/geojson/landform_labels.geojson',
+        weight: 1.15,
+        color: '#5a5a5a',
+        drawFunc: getLabelsLayer,
+    },
+    // {
+    //   id: 'lore_labels',
+    //   srcFile: '/geojson/lore_labels.geojson',
+    //   weight: 1.15,
+    //   color: '#5a5a5a',
+    //   drawFunc: getLabelsLayer,
+    // },
+    {
+        id: 'political_line_labels',
+        srcFile: '/geojson/political_line_labels.geojson',
+        weight: 1.15,
+        color: '#5a5a5a',
+        drawFunc: getLabelsLayer,
+    },
+    // {
+    //   id: 'route_labels',
+    //   srcFile: '/geojson/route_labels.geojson',
+    //   weight: 1.15,
+    //   color: '#5a5a5a',
+    //   drawFunc: getLabelsLayer,
+    // },
 
-        /************************************************/
+    /************************************************/
 ]
 
 type BaseLayerOption =
