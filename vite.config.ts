@@ -61,6 +61,8 @@ function copyYamlWikiPlugin(): PluginOption
         console.warn('Warning: Yanorra root docs directory not found, skipping copy')
       }
 
+      // const imagesSrc = path.resolve(__dirname, 'yanorra-wiki', 'Images')
+
       const mapsSrc = path.resolve(__dirname, 'yanorra-maps', 'QGIS')
       if (fs.existsSync(mapsSrc))
       {
