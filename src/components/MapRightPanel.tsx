@@ -11,6 +11,7 @@ type ToggleGroup =
 {
     id: string;
     label: string;
+    visible: boolean;
     layerIds: readonly string[];
 };
 
@@ -21,7 +22,7 @@ type MapRightPanelProps =
     selectedBaseLayer: string
     onBaseLayerChange: (layer: string) => void
     optionalLayers: ToggleGroup[]
-  onOptionalLayerChange: (layer: string, isChecked: boolean) => void
+    onOptionalLayerChange: (layer: string, isChecked: boolean) => void
 }
 
 const MapRightPanel = ({ baseLayers, selectedBaseLayer, onBaseLayerChange, optionalLayers, onOptionalLayerChange }: MapRightPanelProps) =>
@@ -77,9 +78,14 @@ const MapRightPanel = ({ baseLayers, selectedBaseLayer, onBaseLayerChange, optio
                 <input
                     type="checkbox"
                     name={layer.id}
-                    // value={layer.id}
-                    // checked={selectedBaseLayer === layer.id}
-                  onChange={(event) => onOptionalLayerChange(layer.id, event.target.checked)}
+                    checked={layer.visible}
+                    // onChange={(event) => 
+                    //     {
+                    //         onOptionalLayerChange(layer.id, event.target.checked)
+                    //         event.target.checked = !event.target.checked
+                    //     }}
+                    onChange={() => 
+                        console.log(`Checkbox for ${layer.id} changed to ${!layer.visible}`)}
                 />
                 {layer.label}
                 </label>

@@ -290,8 +290,8 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
 type ToggleGroup = {
     id: string;
     label: string;
+    visible: boolean;
     layerIds: readonly string[];
-    visible?: boolean;
 };
 
 const TOGGLE_GROUPS: ToggleGroup[] = [
@@ -820,7 +820,7 @@ const GeoJsonFullScreen = (
     const handleOptionalLayerChange = (layerId: string, isChecked: boolean) =>
     {
         console.log(`Layer toggle change: ${layerId} is now ${isChecked ? 'ON' : 'OFF'}`)
-        console.log('otherEntries:', entries.map((entry) => ({ id: entry.id, visible: entry.options.visible })))
+        // console.log('otherEntries:', entries.map((entry) => ({ id: entry.id, visible: entry.options.visible })))
         // setEntries((previousEntries) =>
         // {
         //     return previousEntries.map((entry) =>
