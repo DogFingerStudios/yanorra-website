@@ -291,12 +291,14 @@ type ToggleGroup = {
     id: string;
     label: string;
     layerIds: readonly string[];
+    visible?: boolean;
 };
 
-const TOGGLE_GROUPS: readonly ToggleGroup[] = [
+const TOGGLE_GROUPS: ToggleGroup[] = [
     {
         id: 'streets',
         label: 'Streets',
+        visible: true,
         layerIds: [
             'roads_highway',
             'roads_major',
@@ -306,6 +308,22 @@ const TOGGLE_GROUPS: readonly ToggleGroup[] = [
             'alleys',
         ],
     },
+    {
+        id: 'railways',
+        label: 'Railways',
+        visible: false,
+        layerIds: [
+            'railways',
+        ],
+    },
+    {
+        id: 'seaways',
+        label: 'Seaways',
+        visible: false,
+        layerIds: [
+            'seaways',
+        ],
+    }
 ];
 
 type LayerOption =
@@ -391,33 +409,32 @@ function hasBaseLayerInUrl(baseLayers: LayerOption[]): boolean
     return parseBaseLayerFromUrl(baseLayers) !== null
 }
 
-function getToggleableLayers(layers: GeoJsonLayerOptions[]): LayerOption[]
-{
-    console.debug('Finding toggleable layers among:', layers.map((layer) => getGeoJsonLayerId(layer)))  
-    for (const layer of layers)
-    {
-        if (layer.toggleable === true)
-        {
-            console.debug('Toggleable layer found:', getGeoJsonLayerId(layer))
-        }
-    }
+// function getToggleableLayers(layers: GeoJsonLayerOptions[]): LayerOption[]
+// {
+//     console.debug('Finding toggleable layers among:', layers.map((layer) => getGeoJsonLayerId(layer)))  
+//     for (const layer of layers)
+//     {
+//         if (layer.toggleable === true)
+//         {
+//             console.debug('Toggleable layer found:', getGeoJsonLayerId(layer))
+//         }
+//     }
 
-    return layers
-        .filter((layer) => layer.toggleable)
-        .map((layer) =>
-        {
-            const id = getGeoJsonLayerId(layer)
-            const label = layer.label ?? id
-            console.log('Toggleable layer found:', id, 'with label:', label)
-            return {
-                id,
-                label: formatLayerLabel(label),
-            }
-        })
-}
+//     return layers
+//         .filter((layer) => layer.toggleable)
+//         .map((layer) =>
+//         {
+//             const id = getGeoJsonLayerId(layer)
+//             const label = layer.label ?? id
+//             console.log('Toggleable layer found:', id, 'with label:', label)
+//             return {
+//                 id,
+//                 label: formatLayerLabel(label),
+//             }
+//         })
+// }
 
 const BASE_LAYER_OPTIONS = getBaseLayerOptions(GEOJSON_FILES)
-const OPTIONAL_LAYER_OPTIONS = getToggleableLayers(GEOJSON_FILES)
 
 // Set this to your Earth raster path in /public.
 const EARTH_LAYER_FILE = '/geojson/Earth.png'
@@ -800,30 +817,30 @@ const GeoJsonFullScreen = (
         }, nextLayer)
     }
 
-    const handleOptionalLayerChange = (layerId: string) =>
+    const handleOptionalLayerChange = (layerId: string, isChecked: boolean) =>
     {
-        setEntries((previousEntries) =>
-        {
-            return previousEntries.map((entry) =>
-            {
-                const entryLayerId = getGeoJsonLayerId(entry.options)
+        console.log(`Layer toggle change: ${layerId} is now ${isChecked ? 'ON' : 'OFF'}`)
+        console.log('otherEntries:', entries.map((entry) => ({ id: entry.id, visible: entry.options.visible })))
+        // setEntries((previousEntries) =>
+        // {
+        //     return previousEntries.map((entry) =>
+        //     {
+        //         const entryLayerId = getGeoJsonLayerId(entry.options)
 
-                if (entryLayerId !== layerId)
-                {
-                    return entry
-                }
+        //         if (entryLayerId !== layerId)
+        //         {
+        //             return entry
+        //         }
 
-                const isCurrentlyVisible = entry.options.visible ?? true
-
-                return {
-                    ...entry,
-                    options: {
-                        ...entry.options,
-                        visible: !isCurrentlyVisible,
-                    },
-                }
-            })
-        })
+        //         return {
+        //             ...entry,
+        //             options: {
+        //                 ...entry.options,
+        //                 visible: isChecked,
+        //             },
+        //         }
+        //     })
+        // })
     }
 
     const navigateTo = (path: string) =>
@@ -1326,7 +1343,7 @@ const GeoJsonFullScreen = (
                 </MapContainer>
                 {fullScreen && <MapRightPanel 
                     baseLayers={BASE_LAYER_OPTIONS} selectedBaseLayer={selectedBaseLayer} onBaseLayerChange={handleBaseLayerChange} 
-                    optionalLayers={OPTIONAL_LAYER_OPTIONS} onOptionalLayerChange={handleOptionalLayerChange}
+                    optionalLayers={TOGGLE_GROUPS} onOptionalLayerChange={handleOptionalLayerChange}
                     />}
                 {renderMeasureIndicator()}
                 {renderDebug()}
