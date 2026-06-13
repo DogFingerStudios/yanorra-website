@@ -7,13 +7,21 @@ type LayerOption =
     label: string
 }
 
+type ToggleGroup = 
+{
+    id: string;
+    label: string;
+    layerIds: readonly string[];
+};
+
+
 type MapRightPanelProps =
 {
     baseLayers: LayerOption[]
     selectedBaseLayer: string
     onBaseLayerChange: (layer: string) => void
-    optionalLayers: LayerOption[]
-    onOptionalLayerChange: (layer: string) => void
+    optionalLayers: ToggleGroup[]
+  onOptionalLayerChange: (layer: string, isChecked: boolean) => void
 }
 
 const MapRightPanel = ({ baseLayers, selectedBaseLayer, onBaseLayerChange, optionalLayers, onOptionalLayerChange }: MapRightPanelProps) =>
@@ -61,25 +69,17 @@ const MapRightPanel = ({ baseLayers, selectedBaseLayer, onBaseLayerChange, optio
         <div className="map-right-panel-section">
             <div className="map-right-panel-section-title">
                 Places</div>
-            <label className="map-right-panel-checkbox-label">
-                <input type="checkbox" name="cities-labels" />Cities
-            </label>
-            <label className="map-right-panel-checkbox-label">
-                <input type="checkbox" name="countries-labels" />Countries
-            </label>
-            <label className="map-right-panel-checkbox-label">
-                <input type="checkbox" name="points-of-interest-labels" />Points of Interest
-            </label>
             {optionalLayers.map((layer) =>
             {
+              // console.log('Rendering optional layer:', layer.id)
               return (
                 <label key={layer.id} className="map-right-panel-radio-label">
                 <input
                     type="checkbox"
-                    name="base-layer"
-                    value={layer.id}
-                    checked={selectedBaseLayer === layer.id}
-                    onChange={() => onOptionalLayerChange(layer.id)}
+                    name={layer.id}
+                    // value={layer.id}
+                    // checked={selectedBaseLayer === layer.id}
+                  onChange={(event) => onOptionalLayerChange(layer.id, event.target.checked)}
                 />
                 {layer.label}
                 </label>
