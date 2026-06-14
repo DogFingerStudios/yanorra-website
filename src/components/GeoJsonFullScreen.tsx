@@ -303,7 +303,7 @@ const TOGGLE_GROUPS: ToggleGroup[] = [
     {
         id: 'railways',
         label: 'Railways',
-        visible: false,
+        visible: true,
         layerIds: [
             'railways',
         ],
@@ -311,7 +311,7 @@ const TOGGLE_GROUPS: ToggleGroup[] = [
     {
         id: 'seaways',
         label: 'Seaways',
-        visible: false,
+        visible: true,
         layerIds: [
             'seaways',
         ],
