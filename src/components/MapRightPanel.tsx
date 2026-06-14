@@ -1,20 +1,31 @@
 import { useState } from 'react'
 import './MapRightPanel.css'
 
-type BaseLayerOption =
+type LayerOption =
 {
     id: string
     label: string
 }
 
+type ToggleGroup = 
+{
+    id: string;
+    label: string;
+    visible: boolean;
+    layerIds: readonly string[];
+};
+
+
 type MapRightPanelProps =
 {
-    baseLayers: BaseLayerOption[]
+    baseLayers: LayerOption[]
     selectedBaseLayer: string
     onBaseLayerChange: (layer: string) => void
+    optionalLayers: ToggleGroup[]
+    onOptionalLayerChange: (layer: string, isChecked: boolean) => void
 }
 
-const MapRightPanel = ({ baseLayers, selectedBaseLayer, onBaseLayerChange }: MapRightPanelProps) =>
+const MapRightPanel = ({ baseLayers, selectedBaseLayer, onBaseLayerChange, optionalLayers, onOptionalLayerChange }: MapRightPanelProps) =>
 {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -59,15 +70,21 @@ const MapRightPanel = ({ baseLayers, selectedBaseLayer, onBaseLayerChange }: Map
         <div className="map-right-panel-section">
             <div className="map-right-panel-section-title">
                 Places</div>
-            <label className="map-right-panel-checkbox-label">
-                <input type="checkbox" name="cities-labels" />Cities
-            </label>
-            <label className="map-right-panel-checkbox-label">
-                <input type="checkbox" name="countries-labels" />Countries
-            </label>
-            <label className="map-right-panel-checkbox-label">
-                <input type="checkbox" name="points-of-interest-labels" />Points of Interest
-            </label>
+            {optionalLayers.map((layer) =>
+            {
+              // console.log('Rendering optional layer:', layer.id)
+              return (
+                <label key={layer.id} className="map-right-panel-radio-label">
+                <input
+                    type="checkbox"
+                    name={layer.id}
+                    checked={layer.visible}
+                  onChange={(event) => onOptionalLayerChange(layer.id, event.currentTarget.checked)}
+                />
+                {layer.label}
+                </label>
+              )
+            })}
         </div>
     </div>
 </div>

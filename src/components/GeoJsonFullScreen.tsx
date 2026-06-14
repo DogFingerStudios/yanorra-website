@@ -4,6 +4,7 @@ import { GeoJSON, ImageOverlay, LayerGroup, MapContainer, Marker, Polyline, Scal
 import MapRightPanel from './MapRightPanel'
 import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
+import { getHeightLayer } from './layers/HeightLayer'
 // import { getTownLayer } from './layers/TownLayer'
 import { getSettlementPointsLayer } from './layers/SettlmentPoints'
 import { getStatesLayer, getStatesColorsLayer } from './layers/States'
@@ -43,6 +44,8 @@ type GeoJsonLayerOptions =
     drawFunc?: (entry: GeoJsonEntry) => ReactNode
     popupFunc?: (feature: GeoJSON.Feature, entry: GeoJsonEntry) => string
     _renderPhase?: 'outline' | 'center' | 'both'
+    toggleable?: boolean,
+    visible?: boolean,
 }
 
 const DEFAULT_LAYER_OPTIONS =
@@ -96,7 +99,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         fillColor: '#ffffff',
         weight: 0.5,
         fillOpacity: .75,
-        // drawFunc: getBiomesLayer,
+        drawFunc: getHeightLayer,
     },
     {
         id: 'states',
@@ -166,7 +169,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         minZoom: 5,
         drawFunc: getStreetsLayer,
     },
-
     {
         id: 'streets_major',
         srcFile: '/geojson/streets_major.geojson',
@@ -277,7 +279,46 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     /************************************************/
 ]
 
-type BaseLayerOption =
+type ToggleGroup = {
+    id: string;
+    label: string;
+    visible: boolean;
+    layerIds: readonly string[];
+};
+
+const TOGGLE_GROUPS: ToggleGroup[] = [
+    {
+        id: 'streets',
+        label: 'Streets',
+        visible: true,
+        layerIds: [
+            'roads_highway',
+            'roads_major',
+            'roads_minor',
+            'streets_major',
+            'streets_minor',
+            'alleys',
+        ],
+    },
+    {
+        id: 'railways',
+        label: 'Railways',
+        visible: true,
+        layerIds: [
+            'railways',
+        ],
+    },
+    {
+        id: 'seaways',
+        label: 'Seaways',
+        visible: true,
+        layerIds: [
+            'seaways',
+        ],
+    }
+];
+
+type LayerOption =
 {
     id: string
     label: string
@@ -301,7 +342,7 @@ function formatLayerLabel(layerId: string): string
     return labelText.charAt(0).toUpperCase() + labelText.slice(1)
 }
 
-function getBaseLayerOptions(layers: GeoJsonLayerOptions[]): BaseLayerOption[]
+function getBaseLayerOptions(layers: GeoJsonLayerOptions[]): LayerOption[]
 {
     return layers
         .filter((layer) => layer.baseLayer)
@@ -317,7 +358,7 @@ function getBaseLayerOptions(layers: GeoJsonLayerOptions[]): BaseLayerOption[]
         })
 }
 
-function getInitialBaseLayer(baseLayers: BaseLayerOption[]): string
+function getInitialBaseLayer(baseLayers: LayerOption[]): string
 {
     const baseLayerIds = baseLayers.map((layer) => layer.id)
 
@@ -334,7 +375,7 @@ function getInitialBaseLayer(baseLayers: BaseLayerOption[]): string
     return DEFAULT_MAP_LAYER
 }
 
-function parseBaseLayerFromUrl(baseLayers: BaseLayerOption[]): string | null
+function parseBaseLayerFromUrl(baseLayers: LayerOption[]): string | null
 {
     const searchParams = new URLSearchParams(window.location.search)
     const rawLayer = searchParams.get(LAYER_QUERY_PARAM)
@@ -355,7 +396,7 @@ function parseBaseLayerFromUrl(baseLayers: BaseLayerOption[]): string | null
     return null
 }
 
-function hasBaseLayerInUrl(baseLayers: BaseLayerOption[]): boolean
+function hasBaseLayerInUrl(baseLayers: LayerOption[]): boolean
 {
     return parseBaseLayerFromUrl(baseLayers) !== null
 }
@@ -656,6 +697,7 @@ const GeoJsonFullScreen = (
     }: GeoJsonFullScreenProps
 ) =>
 {
+    const [toggleGroups, setToggleGroups] = useState<ToggleGroup[]>(TOGGLE_GROUPS)
     const [shouldFitBounds] = useState(() => !hasMapViewParamsInUrl())
     const [initialView] = useState<MapViewState>(() =>
     {
@@ -741,6 +783,48 @@ const GeoJsonFullScreen = (
             zoom: currentZoom,
             center: coords,
         }, nextLayer)
+    }
+
+    const handleOptionalLayerChange = (layerId: string, isChecked: boolean) =>
+    {
+        console.log(`Layer toggle change: ${layerId} is now ${isChecked ? 'ON' : 'OFF'}`)
+   
+        const temporaryGroups: typeof toggleGroups = [];
+
+        for (let i = 0; i < toggleGroups.length; i++) 
+        {
+            const currentGroup = toggleGroups[i];
+
+            if (currentGroup.id === layerId) 
+            {
+                // Create a temporary object for the modified group
+                const updatedGroup = 
+                {
+                    ...currentGroup,
+                    visible: isChecked
+                };
+
+                for (const layerId of currentGroup.layerIds)
+                {
+                    const layerEntry = entries.find((entry) => getGeoJsonLayerId(entry.options) === layerId)
+                    console.log(`Setting layer ${layerId} visibility to ${isChecked ? 'ON' : 'OFF'}`)
+                    if (layerEntry) 
+                    {
+                        layerEntry.options.visible = isChecked;
+                    }
+                }
+                
+                // Push the modified group into our temporary array
+                temporaryGroups.push(updatedGroup);
+            } 
+            else 
+            {
+                // Push the untouched group into our temporary array
+                temporaryGroups.push(currentGroup);
+            }
+        }
+
+        setToggleGroups(temporaryGroups);
     }
 
     const navigateTo = (path: string) =>
@@ -1137,6 +1221,11 @@ const GeoJsonFullScreen = (
 
     const renderEntryLayer = (entry: GeoJsonEntry) =>
     {
+        if (entry.options.visible === false)
+        {
+            return null
+        }
+
         const entryMinZoom = entry.options.minZoom ?? 0
         const entryMaxZoom = entry.options.maxZoom ?? Number.POSITIVE_INFINITY
 
@@ -1210,6 +1299,7 @@ const GeoJsonFullScreen = (
                     
                     {/* Render all road layer outlines first */}
                     {otherEntries
+                        .filter((entry) => (entry.options.visible == null || entry.options.visible === true))
                         .filter((entry) => entry.options.drawFunc === getStreetsLayer)
                         .map((entry) => (
                             <LayerGroup key={`${entry.id}-outline-phase`}>
@@ -1219,6 +1309,7 @@ const GeoJsonFullScreen = (
                     
                     {/* Render all non-road entries */}
                     {otherEntries
+                        .filter((entry) => (entry.options.visible == null || entry.options.visible === true))
                         .filter((entry) => entry.options.drawFunc !== getStreetsLayer)
                         .map((entry) => (
                             <LayerGroup key={entry.id}>
@@ -1228,6 +1319,7 @@ const GeoJsonFullScreen = (
                     
                     {/* Render all road layer centers last */}
                     {otherEntries
+                        .filter((entry) => (entry.options.visible == null || entry.options.visible === true))
                         .filter((entry) => entry.options.drawFunc === getStreetsLayer)
                         .map((entry) => (
                             <LayerGroup key={`${entry.id}-center-phase`}>
@@ -1241,7 +1333,10 @@ const GeoJsonFullScreen = (
                     {earthLayerControlElement}
                     {measureControlElement}
                 </MapContainer>
-                {fullScreen && <MapRightPanel baseLayers={BASE_LAYER_OPTIONS} selectedBaseLayer={selectedBaseLayer} onBaseLayerChange={handleBaseLayerChange} />}
+                {fullScreen && <MapRightPanel 
+                    baseLayers={BASE_LAYER_OPTIONS} selectedBaseLayer={selectedBaseLayer} onBaseLayerChange={handleBaseLayerChange} 
+                    optionalLayers={toggleGroups} onOptionalLayerChange={handleOptionalLayerChange}
+                    />}
                 {renderMeasureIndicator()}
                 {renderDebug()}
                 {loadError ? <div className="geojson-error-banner">{loadError}</div> : null}
