@@ -730,6 +730,7 @@ const GeoJsonFullScreen = (
     }: GeoJsonFullScreenProps
 ) =>
 {
+    const [toggleGroups, setToggleGroups] = useState<ToggleGroup[]>(TOGGLE_GROUPS)
     const [shouldFitBounds] = useState(() => !hasMapViewParamsInUrl())
     const [initialView] = useState<MapViewState>(() =>
     {
@@ -820,6 +821,34 @@ const GeoJsonFullScreen = (
     const handleOptionalLayerChange = (layerId: string, isChecked: boolean) =>
     {
         console.log(`Layer toggle change: ${layerId} is now ${isChecked ? 'ON' : 'OFF'}`)
+
+   
+        // Step 1: Create a temporary array to hold the next state
+        const temporaryGroups: typeof toggleGroups = [];
+
+        // Step 2: Loop through the existing toggleGroups state array
+        for (let i = 0; i < toggleGroups.length; i++) {
+            const currentGroup = toggleGroups[i];
+
+            if (currentGroup.id === layerId) {
+                // Create a temporary object for the modified group
+                const updatedGroup = {
+                    ...currentGroup,
+                    visible: isChecked
+                };
+                
+                // Push the modified group into our temporary array
+                temporaryGroups.push(updatedGroup);
+            } else {
+                // Push the untouched group into our temporary array
+                temporaryGroups.push(currentGroup);
+            }
+        }
+
+        // Step 3: Pass the completely finished temporary array to the state setter
+        setToggleGroups(temporaryGroups);
+
+
         // console.log('otherEntries:', entries.map((entry) => ({ id: entry.id, visible: entry.options.visible })))
         // setEntries((previousEntries) =>
         // {
@@ -1343,7 +1372,7 @@ const GeoJsonFullScreen = (
                 </MapContainer>
                 {fullScreen && <MapRightPanel 
                     baseLayers={BASE_LAYER_OPTIONS} selectedBaseLayer={selectedBaseLayer} onBaseLayerChange={handleBaseLayerChange} 
-                    optionalLayers={TOGGLE_GROUPS} onOptionalLayerChange={handleOptionalLayerChange}
+                    optionalLayers={toggleGroups} onOptionalLayerChange={handleOptionalLayerChange}
                     />}
                 {renderMeasureIndicator()}
                 {renderDebug()}

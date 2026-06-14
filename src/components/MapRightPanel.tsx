@@ -79,13 +79,7 @@ const MapRightPanel = ({ baseLayers, selectedBaseLayer, onBaseLayerChange, optio
                     type="checkbox"
                     name={layer.id}
                     checked={layer.visible}
-                    // onChange={(event) => 
-                    //     {
-                    //         onOptionalLayerChange(layer.id, event.target.checked)
-                    //         event.target.checked = !event.target.checked
-                    //     }}
-                    onChange={() => 
-                        console.log(`Checkbox for ${layer.id} changed to ${!layer.visible}`)}
+                  onChange={(event) => onOptionalLayerChange(layer.id, event.currentTarget.checked)}
                 />
                 {layer.label}
                 </label>
