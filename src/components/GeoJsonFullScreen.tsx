@@ -147,7 +147,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#ffb47f',
         minZoom: 3,
         drawFunc: getStreetsLayer,
-        toggleable: true,
     },
     {
         // major roads that are important but not highways, such as long country roads
@@ -159,7 +158,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#ffb47f',
         minZoom: 4,
         drawFunc: getStreetsLayer,
-        toggleable: true,
     },
     {
         // minor roads connecting smaller towns but are not main routes
@@ -170,7 +168,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#5a5a5a',
         minZoom: 5,
         drawFunc: getStreetsLayer,
-        toggleable: true,
     },
     {
         id: 'streets_major',
@@ -179,7 +176,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#b9c8d6',
         minZoom: 7,
         drawFunc: getStreetsLayer,
-        toggleable: true,
     },
     {
         id: 'streets_minor',
@@ -188,7 +184,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#b9c8d6',
         minZoom: 7,
         drawFunc: getStreetsLayer,
-        toggleable: true,
     },
     {
         id: 'alleys',
@@ -197,7 +192,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#b9c8d6',
         minZoom: 14,
         drawFunc: getStreetsLayer,
-        toggleable: true,
     },
 
     {
@@ -205,7 +199,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         srcFile: '/geojson/seaways.geojson',
         minZoom: 5,
         drawFunc: getSeawayLayer,
-        toggleable: true,
     },
     {
         id: 'railways',
@@ -214,7 +207,6 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         color: '#5a5a5a',
         minZoom: 5,
         drawFunc: getRailwayLayer,
-        toggleable: true,
     },
 
     {
@@ -408,31 +400,6 @@ function hasBaseLayerInUrl(baseLayers: LayerOption[]): boolean
 {
     return parseBaseLayerFromUrl(baseLayers) !== null
 }
-
-// function getToggleableLayers(layers: GeoJsonLayerOptions[]): LayerOption[]
-// {
-//     console.debug('Finding toggleable layers among:', layers.map((layer) => getGeoJsonLayerId(layer)))  
-//     for (const layer of layers)
-//     {
-//         if (layer.toggleable === true)
-//         {
-//             console.debug('Toggleable layer found:', getGeoJsonLayerId(layer))
-//         }
-//     }
-
-//     return layers
-//         .filter((layer) => layer.toggleable)
-//         .map((layer) =>
-//         {
-//             const id = getGeoJsonLayerId(layer)
-//             const label = layer.label ?? id
-//             console.log('Toggleable layer found:', id, 'with label:', label)
-//             return {
-//                 id,
-//                 label: formatLayerLabel(label),
-//             }
-//         })
-// }
 
 const BASE_LAYER_OPTIONS = getBaseLayerOptions(GEOJSON_FILES)
 
@@ -821,55 +788,43 @@ const GeoJsonFullScreen = (
     const handleOptionalLayerChange = (layerId: string, isChecked: boolean) =>
     {
         console.log(`Layer toggle change: ${layerId} is now ${isChecked ? 'ON' : 'OFF'}`)
-
    
-        // Step 1: Create a temporary array to hold the next state
         const temporaryGroups: typeof toggleGroups = [];
 
-        // Step 2: Loop through the existing toggleGroups state array
-        for (let i = 0; i < toggleGroups.length; i++) {
+        for (let i = 0; i < toggleGroups.length; i++) 
+        {
             const currentGroup = toggleGroups[i];
 
-            if (currentGroup.id === layerId) {
+            if (currentGroup.id === layerId) 
+            {
                 // Create a temporary object for the modified group
-                const updatedGroup = {
+                const updatedGroup = 
+                {
                     ...currentGroup,
                     visible: isChecked
                 };
+
+                for (const layerId of currentGroup.layerIds)
+                {
+                    const layerEntry = entries.find((entry) => getGeoJsonLayerId(entry.options) === layerId)
+                    console.log(`Setting layer ${layerId} visibility to ${isChecked ? 'ON' : 'OFF'}`)
+                    if (layerEntry) 
+                    {
+                        layerEntry.options.visible = isChecked;
+                    }
+                }
                 
                 // Push the modified group into our temporary array
                 temporaryGroups.push(updatedGroup);
-            } else {
+            } 
+            else 
+            {
                 // Push the untouched group into our temporary array
                 temporaryGroups.push(currentGroup);
             }
         }
 
-        // Step 3: Pass the completely finished temporary array to the state setter
         setToggleGroups(temporaryGroups);
-
-
-        // console.log('otherEntries:', entries.map((entry) => ({ id: entry.id, visible: entry.options.visible })))
-        // setEntries((previousEntries) =>
-        // {
-        //     return previousEntries.map((entry) =>
-        //     {
-        //         const entryLayerId = getGeoJsonLayerId(entry.options)
-
-        //         if (entryLayerId !== layerId)
-        //         {
-        //             return entry
-        //         }
-
-        //         return {
-        //             ...entry,
-        //             options: {
-        //                 ...entry.options,
-        //                 visible: isChecked,
-        //             },
-        //         }
-        //     })
-        // })
     }
 
     const navigateTo = (path: string) =>
@@ -1266,6 +1221,11 @@ const GeoJsonFullScreen = (
 
     const renderEntryLayer = (entry: GeoJsonEntry) =>
     {
+        if (entry.options.visible === false)
+        {
+            return null
+        }
+
         const entryMinZoom = entry.options.minZoom ?? 0
         const entryMaxZoom = entry.options.maxZoom ?? Number.POSITIVE_INFINITY
 
@@ -1339,6 +1299,7 @@ const GeoJsonFullScreen = (
                     
                     {/* Render all road layer outlines first */}
                     {otherEntries
+                        .filter((entry) => (entry.options.visible == null || entry.options.visible === true))
                         .filter((entry) => entry.options.drawFunc === getStreetsLayer)
                         .map((entry) => (
                             <LayerGroup key={`${entry.id}-outline-phase`}>
@@ -1348,6 +1309,7 @@ const GeoJsonFullScreen = (
                     
                     {/* Render all non-road entries */}
                     {otherEntries
+                        .filter((entry) => (entry.options.visible == null || entry.options.visible === true))
                         .filter((entry) => entry.options.drawFunc !== getStreetsLayer)
                         .map((entry) => (
                             <LayerGroup key={entry.id}>
@@ -1357,6 +1319,7 @@ const GeoJsonFullScreen = (
                     
                     {/* Render all road layer centers last */}
                     {otherEntries
+                        .filter((entry) => (entry.options.visible == null || entry.options.visible === true))
                         .filter((entry) => entry.options.drawFunc === getStreetsLayer)
                         .map((entry) => (
                             <LayerGroup key={`${entry.id}-center-phase`}>
