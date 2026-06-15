@@ -332,6 +332,23 @@ const TOGGLE_GROUPS: ToggleGroup[] = [
         layerIds: [
             'settlements_points',
         ],
+    },
+    {
+        id: 'water_labels',
+        label: 'Water',
+        visible: true,
+        layerIds: [
+            'water_labels',
+        ],
+    },
+    {
+        id: 'structures',
+        label: 'Structures',
+        visible: true,
+        layerIds: [
+            'buildings_major',
+            'parks',
+        ],
     }
 ];
 
@@ -356,10 +373,13 @@ const TOGGLE_GROUP_CONTAINERS: ToogleGroupContainer[] = [
         id: 'labels',
         label: 'Labels',
         groupIds: [
-            'country_labels',
             'city_labels',
+            'country_labels',
+            'structures',
+            'water_labels',
         ]
-    }
+    },
+
 ]
 
 type LayerOption =
