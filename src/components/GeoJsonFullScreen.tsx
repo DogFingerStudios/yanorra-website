@@ -279,7 +279,8 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
     /************************************************/
 ]
 
-type ToggleGroup = {
+type ToggleGroup = 
+{
     id: string;
     label: string;
     visible: boolean;
@@ -315,8 +316,51 @@ const TOGGLE_GROUPS: ToggleGroup[] = [
         layerIds: [
             'seaways',
         ],
+    },
+    {
+        id: 'country_labels',
+        label: 'Countries',
+        visible: true,
+        layerIds: [
+            'political_line_labels',
+        ],
+    },
+    {
+        id: 'city_labels',
+        label: 'Cities',
+        visible: true,
+        layerIds: [
+            'settlements_points',
+        ],
     }
 ];
+
+type ToogleGroupContainer = 
+{
+    id: string;
+    label: string;
+    groupIds: readonly string[];
+}
+
+const TOGGLE_GROUP_CONTAINERS: ToogleGroupContainer[] = [
+    {
+        id: 'transit',
+        label: 'Transit',
+        groupIds: [
+            'streets',
+            'railways',
+            'seaways',
+        ]
+    },
+    {
+        id: 'labels',
+        label: 'Labels',
+        groupIds: [
+            'country_labels',
+            'city_labels',
+        ]
+    }
+]
 
 type LayerOption =
 {
@@ -1336,6 +1380,7 @@ const GeoJsonFullScreen = (
                 {fullScreen && <MapRightPanel 
                     baseLayers={BASE_LAYER_OPTIONS} selectedBaseLayer={selectedBaseLayer} onBaseLayerChange={handleBaseLayerChange} 
                     optionalLayers={toggleGroups} onOptionalLayerChange={handleOptionalLayerChange}
+                    toggleGroupContainers={TOGGLE_GROUP_CONTAINERS}
                     />}
                 {renderMeasureIndicator()}
                 {renderDebug()}
