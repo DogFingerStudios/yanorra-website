@@ -18,6 +18,7 @@ const QAMAR_TABLE_ROW_NAMES =
     "Soleil",
 ];
 
+// epoch of the Axial Count in Earth date is October 16, 1607.
 const AXIAL_EPOCH = 
 {
     year: 1607,
