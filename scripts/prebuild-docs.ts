@@ -11,6 +11,7 @@ interface DocLink
 
 const docLinks: DocLink[] = []
 const nationLinks: DocLink[] = []
+const settlementLinks: DocLink[] = []
 const excludedFiles = ['TEMPLATE']
 
 const isExcludedFile = (fileName: string): boolean =>
@@ -24,34 +25,31 @@ const isExcludedFile = (fileName: string): boolean =>
 
 const FRONT_MATTER_PATTERN = /^---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/
 
-const isNationFile = (filePath: string, fileName: string): boolean =>
+const getYaml = (filePath: string): Record<string, any> | null =>
 {
     const fileContents = fs.readFileSync(filePath, 'utf-8')
     const match = fileContents.match(FRONT_MATTER_PATTERN)
 
     if (!match)
     {
-        return false
+        return null
     }
 
     const yamlSource = match[1]
 
     try
     {
-        const parsedYaml = parseYaml(yamlSource)
-        // console.log(`[frontmatter] ${fileName}`)
-        // console.log(parsedYaml)
-        return parsedYaml.subcategory === 'nations'
+        return parseYaml(yamlSource)
     }
     catch (error)
     {
-        console.warn(`[frontmatter] Failed to parse YAML in ${fileName}`)
+        console.warn(`Failed to parse YAML in ${filePath}`)
         if (error instanceof Error)
         {
             console.warn(error.message)
         }
 
-        return false
+        return null
     }
 }
 
@@ -82,13 +80,26 @@ const generateDocLinks = async (): Promise<void> =>
         {
             console.log(`Adding file: ${file} from Wiki folder`)
             const filePath = path.join(wikiDir, file)
-            if (isNationFile(filePath, file))
+            const yaml = getYaml(filePath)
+
+            if (yaml && yaml.category === 'places')
             {
-                nationLinks.push(
-                    {
-                        title: file.replace(/\.md$/i, '').replace(/_/g, ' '),
-                        path: `/wiki/${file.replace(/\.md$/i, '')}`
-                    })
+                if (yaml.subcategory === 'countries')
+                {
+                    nationLinks.push(
+                        {
+                            title: file.replace(/\.md$/i, '').replace(/_/g, ' '),
+                            path: `/wiki/${file.replace(/\.md$/i, '')}`
+                        })
+                }
+                else if (yaml.subcategory === 'settlements')
+                {
+                    settlementLinks.push(
+                        {
+                            title: file.replace(/\.md$/i, '').replace(/_/g, ' '),
+                            path: `/wiki/${file.replace(/\.md$/i, '')}`
+                        })
+                }
             }
 
             docLinks.push(
@@ -116,6 +127,7 @@ export interface DocLink
 
 export const docLinks: DocLink[] = ${JSON.stringify(docLinks, null, 2)}
 export const nationLinks: DocLink[] = ${JSON.stringify(nationLinks, null, 2)}
+export const settlementLinks: DocLink[] = ${JSON.stringify(settlementLinks, null, 2)}
 `
 
     const outputPath = path.join(process.cwd(), 'src', 'docsConfig.ts')

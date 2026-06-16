@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './SideColumn.css'
-import { docLinks, nationLinks } from './docsConfig'
+import { docLinks, nationLinks, settlementLinks } from './docsConfig'
 import { Link } from 'react-router-dom'
 
 const encodeDocPath = (docPath: string): string =>
@@ -36,11 +36,26 @@ function SideColumn()
           </button>
         ) : null}
         
+        <h1 className="side-column-heading">Yanorra</h1>
+
         {isOpen && nationLinks.length > 0 ? (
           <h3 className="side-column-title">Nations</h3>
         ) : null}
         <ul className="side-column-list">
           {nationLinks.map((doc) => (
+            <li key={doc.path} className="side-column-list-item">
+              <Link className="side-column-link" to={`/${encodeDocPath(doc.path)}`}>
+                {doc.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        {isOpen && settlementLinks.length > 0 ? (
+          <h3 className="side-column-title">Settlements</h3>
+        ) : null}
+        <ul className="side-column-list">
+          {settlementLinks.map((doc) => (
             <li key={doc.path} className="side-column-list-item">
               <Link className="side-column-link" to={`/${encodeDocPath(doc.path)}`}>
                 {doc.title}
