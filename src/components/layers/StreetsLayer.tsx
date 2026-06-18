@@ -205,7 +205,7 @@ export function getStreetsLayer(entry: StreetsLayerEntry)
       {renderPhase !== 'outline' && (
         <StreetNameLabels
           entry={entry}
-          labelMinZoom={entry.options.labelMinZoom ?? 17}
+          labelMinZoom={entry.options.labelMinZoom ?? 16}
           labelMaxCount={entry.options.labelMaxCount ?? 200}
         />
       )}
