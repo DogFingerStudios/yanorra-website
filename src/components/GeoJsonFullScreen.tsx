@@ -41,6 +41,9 @@ type GeoJsonLayerOptions =
     fillOpacity?: number
     minZoom?: number
     maxZoom?: number
+    labelMinZoom?: number
+    labelMaxCount?: number
+    labelRepeatDistance?: number
     drawFunc?: (entry: GeoJsonEntry) => ReactNode
     popupFunc?: (feature: GeoJSON.Feature, entry: GeoJsonEntry) => string
     _renderPhase?: 'outline' | 'center' | 'both'
@@ -146,6 +149,9 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         weight: 1.5,
         color: '#ffb47f',
         minZoom: 3,
+        labelMinZoom: 8,
+        labelMaxCount: 450,
+        labelRepeatDistance: 320,
         drawFunc: getStreetsLayer,
     },
     {
@@ -157,6 +163,9 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         weight: 1.25,
         color: '#ffb47f',
         minZoom: 4,
+        labelMinZoom: 9,
+        labelMaxCount: 450,
+        labelRepeatDistance: 300,
         drawFunc: getStreetsLayer,
     },
     {
@@ -167,6 +176,9 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         weight: 1.0,
         color: '#5a5a5a',
         minZoom: 5,
+        labelMinZoom: 10,
+        labelMaxCount: 400,
+        labelRepeatDistance: 280,
         drawFunc: getStreetsLayer,
     },
     {
@@ -175,6 +187,9 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         weight: 1.5,
         color: '#b9c8d6',
         minZoom: 7,
+        labelMinZoom: 10,
+        labelMaxCount: 500,
+        labelRepeatDistance: 300,
         drawFunc: getStreetsLayer,
     },
     {
@@ -183,6 +198,9 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         weight: 1.25,
         color: '#b9c8d6',
         minZoom: 7,
+        labelMinZoom: 11,
+        labelMaxCount: 450,
+        labelRepeatDistance: 280,
         drawFunc: getStreetsLayer,
     },
     {
@@ -191,6 +209,9 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         weight: 1.0,
         color: '#b9c8d6',
         minZoom: 14,
+        labelMinZoom: 14,
+        labelMaxCount: 220,
+        labelRepeatDistance: 220,
         drawFunc: getStreetsLayer,
     },
 
