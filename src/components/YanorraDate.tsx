@@ -26,12 +26,12 @@ const AXIAL_EPOCH =
     day: 16,
 };
 
-// Yanorran month lengths. You can rename these later in your UI.
-// Month 1, Day 1 = Veyrath 1, AC 1.
-const YANORRAN_MONTH_LENGTHS = 
+// Yanorran month lengths in days, indexed to QAMAR_TABLE_ROW_NAMES (months 1–9).
+// The Yanorran year is 365 days: five months of 41 days and four months of 40 days.
+const YANORRAN_MONTH_LENGTHS =
 [
-    31, 28, 31, 30, 31, 30,
-    31, 31, 30, 31, 30, 31,
+    41, 40, 41, 40, 41,
+    40, 41, 40, 41,
 ];
 
 const EARTH_MONTH_LENGTHS = 
