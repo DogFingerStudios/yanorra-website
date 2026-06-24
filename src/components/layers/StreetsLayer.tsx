@@ -6,6 +6,9 @@ import './StreetsLayer.css'
 export const STREET_OUTLINE_PANE = 'streetOutlinePane'
 export const STREET_CENTER_PANE = 'streetCenterPane'
 export const STREET_LABEL_PANE = 'streetLabelPane'
+const RENDER_STREET_NAMES = true
+const STREET_NAME_MIN_ZOOM = 18
+const STREET_NAME_MAX_LABEL_COUNT = 200
 const STREET_NAME_FALLBACK_PRIMARY = 'Test Street'
 const STREET_NAME_FALLBACK_SECONDARY = 'Unnamed Road'
 
@@ -205,8 +208,8 @@ export function getStreetsLayer(entry: StreetsLayerEntry)
       {renderPhase !== 'outline' && (
         <StreetNameLabels
           entry={entry}
-          labelMinZoom={entry.options.labelMinZoom ?? 16}
-          labelMaxCount={entry.options.labelMaxCount ?? 200}
+          labelMinZoom={entry.options.labelMinZoom ?? STREET_NAME_MIN_ZOOM}
+          labelMaxCount={entry.options.labelMaxCount ?? STREET_NAME_MAX_LABEL_COUNT}
         />
       )}
     </>
@@ -718,6 +721,11 @@ function getLongestSegmentAngleFromCoordinates(coordinates: unknown): number
 
 function extractStreetLabels(data: GeoJSON.GeoJsonObject, maxCount: number): StreetLabel[]
 {
+  if (!RENDER_STREET_NAMES)
+  {
+    return []
+  }
+
   const labels: StreetLabel[] = []
   const seenNames = new Set<string>()
   const safeMaxCount = Math.max(maxCount, 0)
