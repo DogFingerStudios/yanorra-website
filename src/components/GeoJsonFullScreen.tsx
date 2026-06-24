@@ -145,7 +145,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         srcFile: '/geojson/roads_highway.geojson',
         weight: 1.5,
         color: '#ffb47f',
-        minZoom: 3,
+        minZoom: 4,
         drawFunc: getStreetsLayer,
     },
     {
@@ -166,7 +166,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         srcFile: '/geojson/roads_minor.geojson',
         weight: 1.0,
         color: '#5a5a5a',
-        minZoom: 5,
+        minZoom: 4,
         drawFunc: getStreetsLayer,
     },
     {
@@ -190,14 +190,14 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         srcFile: '/geojson/alleys.geojson',
         weight: 1.0,
         color: '#b9c8d6',
-        minZoom: 14,
+        minZoom: 10,
         drawFunc: getStreetsLayer,
     },
 
     {
         id: 'seaways',
         srcFile: '/geojson/seaways.geojson',
-        minZoom: 5,
+        minZoom: 7,
         drawFunc: getSeawayLayer,
     },
     {
@@ -205,7 +205,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         srcFile: '/geojson/railways.geojson',
         weight: 1.15,
         color: '#5a5a5a',
-        minZoom: 5,
+        minZoom: 7,
         drawFunc: getRailwayLayer,
     },
 
@@ -215,7 +215,7 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         weight: 0.25,
         color: '#000',
         fillColor: '#e8e9ed',
-        minZoom: 14,
+        minZoom: 10,
         drawFunc: getBuildingsLayer,
     },
 
@@ -964,21 +964,25 @@ const GeoJsonFullScreen = (
 
         const loadGeoJsonFiles = async () =>
         {
-            const loadedEntries: GeoJsonEntry[] = []
-
-            for (const filePath of GEOJSON_FILES)
-            {
-                const response = await fetch(filePath.srcFile)
-
-                if (!response.ok)
+            const loadedEntries = await Promise.all(
+                GEOJSON_FILES.map(async (filePath) =>
                 {
-                    console.error(`Failed to load ${filePath.srcFile}: ${response.statusText}`)
-                    throw new Error(`Unable to load ${filePath.srcFile} (${response.status})`)
-                }
+                    const response = await fetch(filePath.srcFile)
 
-                const payload = (await response.json()) as GeoJSON.GeoJsonObject
-                loadedEntries.push({ id: filePath.srcFile, data: payload, options: filePath})
-            }
+                    if (!response.ok)
+                    {
+                        throw new Error(`Unable to load ${filePath.srcFile} (${response.status})`)
+                    }
+
+                    const payload = (await response.json()) as GeoJSON.GeoJsonObject
+
+                    return {
+                        id: getGeoJsonLayerId(filePath),
+                        data: payload,
+                        options: { ...filePath },
+                    }
+                })
+            )
 
             if (isMounted)
             {
