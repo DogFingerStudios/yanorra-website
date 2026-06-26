@@ -967,14 +967,20 @@ const GeoJsonFullScreen = (
             const loadedEntries = await Promise.all(
                 GEOJSON_FILES.map(async (filePath) =>
                 {
+                    const fetchStart = performance.now()
                     const response = await fetch(filePath.srcFile)
+                    const fetchEnd = performance.now()
+                    console.log(`Fetched ${filePath.srcFile} in ${(fetchEnd - fetchStart).toFixed(2)} ms`)
 
                     if (!response.ok)
                     {
                         throw new Error(`Unable to load ${filePath.srcFile} (${response.status})`)
                     }
 
+                    const parseStart = performance.now()
                     const payload = (await response.json()) as GeoJSON.GeoJsonObject
+                    const parseEnd = performance.now()
+                    console.log(`Parsed ${filePath.srcFile} in ${(parseEnd - parseStart).toFixed(2)} ms`)
 
                     return {
                         id: getGeoJsonLayerId(filePath),
