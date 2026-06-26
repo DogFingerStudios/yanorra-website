@@ -958,6 +958,7 @@ const GeoJsonFullScreen = (
         setIsEarthLayerVisible(true)
     }
 
+    const geoJsonObjectMap: { [key: string]: Promise<GeoJSON.GeoJsonObject> } = {};
     useEffect(() =>
     {
         let isMounted = true
@@ -967,20 +968,35 @@ const GeoJsonFullScreen = (
             const loadedEntries = await Promise.all(
                 GEOJSON_FILES.map(async (filePath) =>
                 {
-                    const fetchStart = performance.now()
-                    const response = await fetch(filePath.srcFile)
-                    const fetchEnd = performance.now()
-                    console.log(`Fetched ${filePath.srcFile} in ${(fetchEnd - fetchStart).toFixed(2)} ms`)
-
-                    if (!response.ok)
+                    // Synchronously check if the promise already exists
+                    if (!(filePath.srcFile in geoJsonObjectMap))
                     {
-                        throw new Error(`Unable to load ${filePath.srcFile} (${response.status})`)
+                        // Notice the 'async' keyword right before the function expression
+                        geoJsonObjectMap[filePath.srcFile] = (async () => {
+                            const fetchStart = performance.now()
+                            const response = await fetch(filePath.srcFile)
+                            const fetchEnd = performance.now()
+                            console.log(`Fetched ${filePath.srcFile} in ${(fetchEnd - fetchStart).toFixed(2)} ms`)
+
+                            if (!response.ok)
+                            {
+                                delete geoJsonObjectMap[filePath.srcFile];
+                                throw new Error(`Unable to load ${filePath.srcFile} (${response.status})`)
+                            }
+
+                            const parseStart = performance.now()
+                            const payload = (await response.json()) as GeoJSON.GeoJsonObject
+                            const parseEnd = performance.now()
+                            console.log(`Parsed ${filePath.srcFile} in ${(parseEnd - parseStart).toFixed(2)} ms`)
+
+                            return payload
+                        })();
+                    } else {
+                        console.log(`Using cached or pending GeoJSON Promise for ${filePath.srcFile}`)
                     }
 
-                    const parseStart = performance.now()
-                    const payload = (await response.json()) as GeoJSON.GeoJsonObject
-                    const parseEnd = performance.now()
-                    console.log(`Parsed ${filePath.srcFile} in ${(parseEnd - parseStart).toFixed(2)} ms`)
+                    // Safely await the promise here (inside the outer async map callback)
+                    const payload = await geoJsonObjectMap[filePath.srcFile];
 
                     return {
                         id: getGeoJsonLayerId(filePath),
@@ -1025,6 +1041,7 @@ const GeoJsonFullScreen = (
             isMounted = false
         }
     }, [])
+
 
     const copyToClipboard = async (value: string) =>
     {
