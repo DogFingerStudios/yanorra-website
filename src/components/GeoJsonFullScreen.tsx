@@ -4,7 +4,7 @@ import { GeoJSON, ImageOverlay, LayerGroup, MapContainer, Marker, Polyline, Scal
 import MapRightPanel from './MapRightPanel'
 import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
-import { getHeightLayer } from './layers/HeightLayer'
+// import { getHeightLayer } from './layers/HeightLayer'
 // import { getTownLayer } from './layers/TownLayer'
 import { getSettlementPointsLayer } from './layers/SettlmentPoints'
 import { getStatesLayer, getStatesColorsLayer } from './layers/States'
