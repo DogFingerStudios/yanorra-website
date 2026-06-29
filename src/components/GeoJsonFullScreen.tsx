@@ -984,9 +984,12 @@ const GeoJsonFullScreen = (
                                 delete geoJsonObjectMap[filePath.srcFile];
                                 throw new Error(`Unable to load ${filePath.srcFile} (${response.status})`)
                             }
+                            const arrayBuffer = await response.arrayBuffer(); 
+                            const decoder = new TextDecoder('utf-8');
+                            const flatString = decoder.decode(arrayBuffer);
 
                             const parseStart = performance.now()
-                            const payload = (await response.json()) as GeoJSON.GeoJsonObject
+                            const payload = JSON.parse(flatString) as GeoJSON.GeoJsonObject
                             const parseEnd = performance.now()
                             console.log(`Parsed ${filePath.srcFile} in ${(parseEnd - parseStart).toFixed(2)} ms`)
 
