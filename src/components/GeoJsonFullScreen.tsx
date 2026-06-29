@@ -4,7 +4,7 @@ import { GeoJSON, ImageOverlay, LayerGroup, MapContainer, Marker, Polyline, Scal
 import MapRightPanel from './MapRightPanel'
 import L from 'leaflet'
 import { getBiomesLayer } from './layers/Biomes'
-// import { getHeightLayer } from './layers/HeightLayer'
+import { getHeightLayer } from './layers/HeightLayer'
 // import { getTownLayer } from './layers/TownLayer'
 import { getSettlementPointsLayer } from './layers/SettlmentPoints'
 import { getStatesLayer, getStatesColorsLayer } from './layers/States'
@@ -89,19 +89,18 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         fillOpacity: .75,
         drawFunc: getBiomesLayer,
     },
-    // DISABLING HEIGHT LAYER FOR NOW, AS IT IS SLOW TO LOAD AND RENDER
-    // {
-    //     id: 'height',
-    //     label: 'Height',
-    //     srcFile: '/geojson/height.geojson',
-    //     baseLayer: true,
-    //     pane: BASE_GEOJSON_PANE,
-    //     color: '#a6a6c8',
-    //     fillColor: '#ffffff',
-    //     weight: 0.5,
-    //     fillOpacity: .75,
-    //     drawFunc: getHeightLayer,
-    // },
+    {
+        id: 'height',
+        label: 'Height',
+        srcFile: '/geojson/height.geojson',
+        baseLayer: true,
+        pane: BASE_GEOJSON_PANE,
+        color: '#a6a6c8',
+        fillColor: '#ffffff',
+        weight: 0.5,
+        fillOpacity: .75,
+        drawFunc: getHeightLayer,
+    },
     {
         id: 'states',
         label: 'Borders Only',
