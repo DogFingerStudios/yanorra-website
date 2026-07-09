@@ -47,21 +47,22 @@ function shouldShowTown(properties: GeoJSON.GeoJsonProperties, zoom: number): bo
     const minZoom = properties?.min_zoom;
 
     // print out the burg name, the population, the max zoom, min zoom, and the current zoom
-    // const burgName = properties?.Burg ?? 'Unknown'
+    // const burgName = properties?.name ?? 'Unknown'
     // const population2 = getTownPopulation(properties) ?? 'Unknown'
-    // console.log(`Burg: ${burgName}, Population: ${population2}, MaxZoom: ${maxZoom}, MinZoom: ${minZoom}, Current Zoom: ${zoom}`)
+    // console.log(`Burg: ${burgName}, Population: ${population2}, MinZoom: ${minZoom}, MaxZoom: ${maxZoom}, Current Zoom: ${zoom}`)
+    // console.log(`typeof minZoom: ${typeof minZoom}, typeof maxZoom: ${typeof maxZoom}`)
 
-    // When the data has an explicit zoom window, respect it for the upper range (zoomed in
-    // detail view). Below min_zoom, fall through to population-based logic so major cities
-    // still appear when zoomed out.
-    if (typeof maxZoom === 'number' && zoom > maxZoom) 
+    if (typeof maxZoom === 'number' && typeof minZoom === 'number')
     {
-        return false
+        return zoom <= maxZoom && zoom >= minZoom
     }
-
-    if (typeof minZoom === 'number' && zoom >= minZoom) 
+    else if (typeof maxZoom === 'number')
     {
-        return true
+        if (zoom > maxZoom) return false
+    }
+    else if (typeof minZoom === 'number')
+    {
+        if (zoom >= minZoom) return true
     }
 
     const population = getTownPopulation(properties)
