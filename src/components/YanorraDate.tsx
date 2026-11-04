@@ -8,7 +8,7 @@ export interface YanorranDate
 const QAMAR_TABLE_ROW_NAMES =
 [
     "Nandi",
-    "Samari",
+    "Henna",
     "Kotlega",
     "Irosha",
     "Cassia",
