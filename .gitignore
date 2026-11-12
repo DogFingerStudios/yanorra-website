@@ -71,4 +71,5 @@ coverage/
 # =========================
 *.log
 src/docsConfig.ts
-public/*
+public/**
+**/search_index.json

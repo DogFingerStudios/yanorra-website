@@ -134,6 +134,15 @@ function copyYamlWikiPlugin(): PluginOption
         fs.copyFileSync(aboutSrc, aboutDest)
         console.log('✓ Copied ABOUT.md to public')
       }
+
+      const searchIndexSrc = path.resolve(__dirname, 'src', 'content', 'search_index.json')
+      if (fs.existsSync(searchIndexSrc))
+      {
+        const searchIndexDest = path.resolve(__dirname, 'public', 'search_index.json')
+        fs.copyFileSync(searchIndexSrc, searchIndexDest)
+        console.log('✓ Copied search_index.json to public')
+      }
+
     }
   }
 }
