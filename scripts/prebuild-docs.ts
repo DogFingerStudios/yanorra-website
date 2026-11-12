@@ -53,6 +53,30 @@ const getYaml = (filePath: string): Record<string, any> | null =>
     }
 }
 
+const generateLinks = (file: string, yaml: Record<string, any> | null): void =>
+{
+    const linkTitle = file.replace(/\.md$/i, '').replace(/_/g, ' ')
+    const linkPath = `/wiki/${file.replace(/\.md$/i, '')}`
+    const link: DocLink = {
+        title: linkTitle,
+        path: linkPath
+    }
+
+    if (yaml && yaml.category === 'places')
+    {
+        if (yaml.subcategory === 'countries')
+        {
+            nationLinks.push(link)
+        }
+        else if (yaml.subcategory === 'settlements')
+        {
+            settlementLinks.push(link)
+        }
+    }
+
+    docLinks.push(link)
+}
+
 const generateDocLinks = async (): Promise<void> =>
 {
     const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -67,7 +91,7 @@ const generateDocLinks = async (): Promise<void> =>
     }
 
     const files = fs.readdirSync(wikiDir)
-    files.forEach((file) =>
+    files.forEach((file: string) =>
     {
         const isMarkdownFile = file.toLowerCase().endsWith('.md')
 
@@ -78,35 +102,11 @@ const generateDocLinks = async (): Promise<void> =>
 
         if (!isExcludedFile(file))
         {
-            console.log(`Adding file: ${file} from Wiki folder`)
+            console.log(`Adding file!: ${file} from Wiki folder`)
             const filePath = path.join(wikiDir, file)
             const yaml = getYaml(filePath)
 
-            if (yaml && yaml.category === 'places')
-            {
-                if (yaml.subcategory === 'countries')
-                {
-                    nationLinks.push(
-                        {
-                            title: file.replace(/\.md$/i, '').replace(/_/g, ' '),
-                            path: `/wiki/${file.replace(/\.md$/i, '')}`
-                        })
-                }
-                else if (yaml.subcategory === 'settlements')
-                {
-                    settlementLinks.push(
-                        {
-                            title: file.replace(/\.md$/i, '').replace(/_/g, ' '),
-                            path: `/wiki/${file.replace(/\.md$/i, '')}`
-                        })
-                }
-            }
-
-            docLinks.push(
-                {
-                    title: file.replace(/\.md$/i, '').replace(/_/g, ' '),
-                    path: `/wiki/${file.replace(/\.md$/i, '')}`
-                })
+            generateLinks(file, yaml)
         }
     })
 }
