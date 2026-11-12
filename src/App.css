@@ -195,27 +195,22 @@
   }
 }
 
-.zoom-indicator 
+.debug-indicators
 {
   position: absolute;
-  top: 13px;
-  left: 55px;
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 10px 15px;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  pointer-events: auto;
-  cursor: pointer;
+  bottom: 48px;
+  left: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+  max-width: calc(100% - 24px);
   z-index: 999;
 }
 
-.coords-indicator {
-  position: absolute;
-  top: 13px;
-  left: 200px;
+.zoom-indicator
+{
+  position: static;
   background-color: rgba(255, 255, 255, 0.9);
   padding: 10px 15px;
   border-radius: 4px;
@@ -225,13 +220,26 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   pointer-events: auto;
   cursor: pointer;
-  z-index: 999;
+}
+
+.coords-indicator
+{
+  position: static;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .copy-notification {
   position: absolute;
-  bottom: 62px;
-  left: 20px;
+  bottom: 95px;
+  left: 13px;
   background-color: rgba(0, 0, 0, 0.8);
   color: #fff;
   padding: 6px 10px;

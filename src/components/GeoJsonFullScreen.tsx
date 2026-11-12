@@ -1088,11 +1088,13 @@ const GeoJsonFullScreen = (
 
         return (
             <>
-                <div className="zoom-indicator" onClick={copyZoom} title="Click to copy zoom value">
-                    Zoom Level: {typeof currentZoom === 'number' ? currentZoom.toFixed(1) : Number(currentZoom).toFixed(2)}
-                </div>
-                <div className="coords-indicator" onClick={copyCenter} title="Click to copy center value">
-                    Center: [{coords[0].toFixed(2)}, {coords[1].toFixed(2)}]
+                <div className="debug-indicators">
+                    <div className="zoom-indicator" onClick={copyZoom} title="Click to copy zoom value">
+                        Zoom Level: {typeof currentZoom === 'number' ? currentZoom.toFixed(1) : Number(currentZoom).toFixed(2)}
+                    </div>
+                    <div className="coords-indicator" onClick={copyCenter} title="Click to copy center value">
+                        Center: [{coords[0].toFixed(2)}, {coords[1].toFixed(2)}]
+                    </div>
                 </div>
                 {copyMessage ? <div className="copy-notification">{copyMessage}</div> : null}
             </>
