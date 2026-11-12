@@ -126,7 +126,7 @@ const processSettlementSearchIndex = (searchRecords: any[]): void =>
     for (const feature of jsonobj.features) 
     {
         if (!feature || !feature.properties || !feature.geometry) continue;
-        console.log("feature: ", feature.properties.id, " geo: ", feature.geometry.coordinates);
+        // console.log("feature: ", feature.properties.id, " geo: ", feature.geometry.coordinates);
 
         // search `searchRecords` for an entry where the id matches the feature's id and if
         // it exists then skip adding a new entry to avoid duplicates
