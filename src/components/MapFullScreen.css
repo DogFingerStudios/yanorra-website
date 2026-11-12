@@ -131,6 +131,40 @@
   pointer-events: none;
 }
 
+.yanorra-search-suggestions
+{
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  margin: 0;
+  padding: 4px 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+  list-style: none;
+}
+
+.yanorra-search-suggestions button
+{
+  width: 100%;
+  padding: 10px 16px;
+  border: 0;
+  background: transparent;
+  color: #333;
+  font: inherit;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.yanorra-search-suggestions button:hover,
+.yanorra-search-suggestions [aria-selected="true"] button
+{
+  background-color: #e8f3f4;
+}
+
 .geojson-error-banner {
   position: absolute;
   left: 12px;

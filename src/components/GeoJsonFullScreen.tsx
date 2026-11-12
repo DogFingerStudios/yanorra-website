@@ -698,16 +698,164 @@ const RecenterControl = ({ cachedView }: { cachedView: MapViewState }) =>
     )
 }
 
+type SearchCountry =
+{
+    id: string
+    name: string
+    coordinates: [number, number]
+    zoom: number
+    alternate_names?: string[]
+}
+
+const MAX_SEARCH_SUGGESTIONS = 5
+
+const normalizeSearchText = (value: string) => value.trim().toLocaleLowerCase()
+
+const getSearchMatch = (country: SearchCountry, query: string) =>
+{
+    const name = normalizeSearchText(country.name)
+    const aliases = country.alternate_names ?? []
+    const matches = [name, ...aliases.map(normalizeSearchText)]
+        .map((candidate, index) =>
+        {
+            let tier = Number.POSITIVE_INFINITY
+
+            if (candidate === query)
+            {
+                tier = 0
+            }
+            else if (candidate.startsWith(query))
+            {
+                tier = 1
+            }
+            else if (candidate.includes(query))
+            {
+                tier = 2
+            }
+
+            return { tier, isName: index === 0 }
+        })
+
+    matches.sort((first, second) => first.tier - second.tier || Number(second.isName) - Number(first.isName))
+    return matches[0]
+}
+
 const SearchControl = () =>
 {
+    const map = useMap()
+    const [countries, setCountries] = useState<SearchCountry[]>([])
+    const [query, setQuery] = useState('')
+    const [activeSuggestion, setActiveSuggestion] = useState(0)
+    const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false)
+
+    useEffect(() =>
+    {
+        const controller = new AbortController()
+
+        fetch('/geojson/countries.json', { signal: controller.signal })
+            .then((response) =>
+            {
+                if (!response.ok)
+                {
+                    throw new Error('Failed to load country search data.')
+                }
+
+                return response.json() as Promise<SearchCountry[]>
+            })
+            .then(setCountries)
+            .catch((error: unknown) =>
+            {
+                if (error instanceof DOMException && error.name === 'AbortError')
+                {
+                    return
+                }
+
+                console.error(error)
+            })
+
+        return () => controller.abort()
+    }, [])
+
+    const normalizedQuery = normalizeSearchText(query)
+    const suggestions = normalizedQuery
+        ? countries
+            .map((country) => ({ country, match: getSearchMatch(country, normalizedQuery) }))
+            .filter((result) => Number.isFinite(result.match.tier))
+            .sort((first, second) => first.match.tier - second.match.tier || Number(second.match.isName) - Number(first.match.isName))
+            .slice(0, MAX_SEARCH_SUGGESTIONS)
+        : []
+
+    const selectCountry = (country: SearchCountry) =>
+    {
+        map.setView(country.coordinates, country.zoom)
+        setQuery(country.name)
+        setActiveSuggestion(0)
+        setIsSuggestionsOpen(false)
+    }
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) =>
+    {
+        event.stopPropagation()
+
+        if (event.key === 'ArrowDown' && suggestions.length > 0)
+        {
+            event.preventDefault()
+            setActiveSuggestion((current) => (current + 1) % suggestions.length)
+        }
+        else if (event.key === 'ArrowUp' && suggestions.length > 0)
+        {
+            event.preventDefault()
+            setActiveSuggestion((current) => (current - 1 + suggestions.length) % suggestions.length)
+        }
+        else if (event.key === 'Enter' && suggestions[activeSuggestion])
+        {
+            event.preventDefault()
+            selectCountry(suggestions[activeSuggestion].country)
+        }
+        else if (event.key === 'Escape')
+        {
+            setIsSuggestionsOpen(false)
+            setActiveSuggestion(0)
+        }
+    }
+
     return (
         <div className="yanorra-search-control">
             <input
                 type="search"
                 aria-label="Search Yanorra"
                 placeholder="Search Yanorra"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded={isSuggestionsOpen && suggestions.length > 0}
+                aria-controls="yanorra-search-suggestions"
+                value={query}
+                onChange={(event) =>
+                {
+                    setQuery(event.target.value)
+                    setActiveSuggestion(0)
+                    setIsSuggestionsOpen(true)
+                }}
+                onFocus={() => setIsSuggestionsOpen(true)}
+                onKeyDown={handleKeyDown}
+                onKeyUp={(event) => event.stopPropagation()}
             />
             <span aria-hidden="true">🔍</span>
+            {isSuggestionsOpen && suggestions.length > 0 && (
+                <ul className="yanorra-search-suggestions" id="yanorra-search-suggestions" role="listbox">
+                    {suggestions.map(({ country }, index) => (
+                        <li key={country.id} role="option" aria-selected={index === activeSuggestion}>
+                            <button
+                                type="button"
+                                onMouseDown={(event) => event.preventDefault()}
+                                onClick={() => selectCountry(country)}
+                            >
+                                {country.name}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     )
 }
