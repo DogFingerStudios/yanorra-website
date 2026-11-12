@@ -110,6 +110,42 @@ const generateSearchRecord = (yaml: Record<string, any> | null, searchRecords: a
     searchRecords.push(searchEntry);
 }
 
+const processSettlementSearchIndex = (searchRecords: any[]): void =>
+{
+    const __dirname = path.dirname(fileURLToPath(import.meta.url))
+    const settlementSrc = path.resolve(__dirname, '..', 'yanorra-maps', 'QGIS', 
+        'layers', 'settlements', 'settlements_points.geojson')
+
+    if (!fs.existsSync(settlementSrc))
+    {
+        console.warn(`Warning: Settlement source not found at ${settlementSrc}`)
+        return
+    }
+
+    const jsonobj: any = JSON.parse(fs.readFileSync(settlementSrc, 'utf-8'));
+    for (const feature of jsonobj.features) 
+    {
+        if (!feature || !feature.properties || !feature.geometry) continue;
+        console.log("feature: ", feature.properties.id, " geo: ", feature.geometry.coordinates);
+
+        // search `searchRecords` for an entry where the id matches the feature's id and if
+        // it exists then skip adding a new entry to avoid duplicates
+        const existingEntry = searchRecords.find(record => record.id === feature.properties.id);
+        if (existingEntry) continue;
+
+        const searchEntry = {
+            id: feature.properties.id,
+            name: feature.properties.name,
+            coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]],
+            zoom: 8,
+            type: "settlements",
+            alternate_names: []
+        };
+
+        searchRecords.push(searchEntry);
+    }
+}
+
 const generateDocArtifacts = async (): Promise<void> =>
 {
     const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -144,6 +180,8 @@ const generateDocArtifacts = async (): Promise<void> =>
             generateSearchRecord(yaml, searchRecords)
         }
     })
+
+    processSettlementSearchIndex(searchRecords)
 
     const destFile = path.resolve(__dirname, '..', 'src', 'content', 'search_index.json')
     fs.writeFileSync(destFile, JSON.stringify(searchRecords, null, 2));
