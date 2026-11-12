@@ -133,13 +133,21 @@ const processSettlementSearchIndex = (searchRecords: any[]): void =>
         const existingEntry = searchRecords.find(record => record.id === feature.properties.id);
         if (existingEntry) continue;
 
+        // convert the CSV string  `feature.properties.tags` into an array that I can set 
+        // equal to the `alternate_names` field in the search entry
+        const alternateNames = []
+        if (feature.properties.tags)
+        {
+            alternateNames.push(...feature.properties.tags.split(',').map((tag: string) => tag.trim()))
+        }
+
         const searchEntry = {
             id: feature.properties.id,
             name: feature.properties.name,
             coordinates: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]],
-            zoom: 8,
+            zoom: feature.properties.default_zoom ?? 8,
             type: "settlements",
-            alternate_names: []
+            alternate_names: alternateNames
         };
 
         searchRecords.push(searchEntry);
