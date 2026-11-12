@@ -698,6 +698,20 @@ const RecenterControl = ({ cachedView }: { cachedView: MapViewState }) =>
     )
 }
 
+const SearchControl = () =>
+{
+    return (
+        <div className="yanorra-search-control">
+            <input
+                type="search"
+                aria-label="Search Yanorra"
+                placeholder="Search Yanorra"
+            />
+            <span aria-hidden="true">🔍</span>
+        </div>
+    )
+}
+
 const GeoJsonBoundsFitter = ({ entries }: { entries: GeoJsonEntry[] }) =>
 {
     const map = useMap()
@@ -1388,6 +1402,7 @@ const GeoJsonFullScreen = (
                         maxWidth={180}
                         updateWhenIdle={true}
                     />
+                    {fullScreen && <SearchControl />}
                     <EnsureMapPanes />
                     {earthLayerElement}
                     {baseLayerElement}
