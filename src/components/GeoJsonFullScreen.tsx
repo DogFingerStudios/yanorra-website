@@ -709,7 +709,15 @@ type SearchCountry =
 
 const MAX_SEARCH_SUGGESTIONS = 5
 
-const normalizeSearchText = (value: string) => value.trim().toLocaleLowerCase()
+const normalizeSearchText = (value: string) => 
+{
+    if (!value)
+    {
+        return ''
+    }
+
+    return value.trim().toLocaleLowerCase()
+}
 
 const getSearchMatch = (country: SearchCountry, query: string) =>
 {
