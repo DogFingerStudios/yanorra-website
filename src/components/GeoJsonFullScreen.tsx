@@ -752,7 +752,7 @@ const SearchControl = () =>
     {
         const controller = new AbortController()
 
-        fetch('/geojson/countries.json', { signal: controller.signal })
+        fetch('/search_index.json', { signal: controller.signal })
             .then((response) =>
             {
                 if (!response.ok)
