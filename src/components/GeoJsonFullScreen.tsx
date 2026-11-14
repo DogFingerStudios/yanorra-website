@@ -848,18 +848,28 @@ const SearchControl = () =>
                 onKeyDown={handleKeyDown}
                 onKeyUp={(event) => event.stopPropagation()}
             />
-            <span aria-hidden="true">🔍</span>
+            <span className="yanorra-search-icon" aria-hidden="true">🔍</span>
             {isSuggestionsOpen && suggestions.length > 0 && (
                 <ul className="yanorra-search-suggestions" id="yanorra-search-suggestions" role="listbox">
                     {suggestions.map(({ country }, index) => (
                         <li key={country.id} role="option" aria-selected={index === activeSuggestion}>
                             <button
                                 type="button"
+                                className="yanorra-search-suggestion-map"
                                 onMouseDown={(event) => event.preventDefault()}
                                 onClick={() => selectCountry(country)}
                             >
-                                {country.name}
+                                <span aria-hidden="true">🗺️</span>
+                                <span>{country.name}</span>
                             </button>
+                            <a
+                                className="yanorra-search-suggestion-book"
+                                href="https://yanorra.world"
+                                aria-label={`Read about ${country.name} on Yanorra`}
+                                title="Open yanorra.world"
+                            >
+                                📖
+                            </a>
                         </li>
                     ))}
                 </ul>
