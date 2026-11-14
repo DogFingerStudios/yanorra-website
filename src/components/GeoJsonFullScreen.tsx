@@ -948,6 +948,8 @@ const GeoJsonFullScreen = (
     
     const [entries, setEntries] = useState<GeoJsonEntry[]>([])
     const [loadError, setLoadError] = useState('')
+    const [loadedLayerCount, setLoadedLayerCount] = useState(0)
+    const [isLoadingMapData, setIsLoadingMapData] = useState(GEOJSON_FILES.length > 0)
     const [isEarthLayerVisible, setIsEarthLayerVisible] = useState(false)
     const [currentZoom, setCurrentZoom] = useState(initialView.zoom)
     const [coords, setCoords] = useState<[number, number]>(initialView.center)
@@ -1132,6 +1134,7 @@ const GeoJsonFullScreen = (
     useEffect(() =>
     {
         let isMounted = true
+        let completedLayers = 0
 
         const loadGeoJsonFiles = async () =>
         {
@@ -1171,6 +1174,12 @@ const GeoJsonFullScreen = (
                     // Safely await the promise here (inside the outer async map callback)
                     const payload = await geoJsonObjectMap[filePath.srcFile];
 
+                    if (isMounted)
+                    {
+                        completedLayers += 1
+                        setLoadedLayerCount(completedLayers)
+                    }
+
                     return {
                         id: getGeoJsonLayerId(filePath),
                         data: payload,
@@ -1191,6 +1200,7 @@ const GeoJsonFullScreen = (
                 if (isMounted)
                 {
                     setLoadError('')
+                    setIsLoadingMapData(false)
                 }
             })
             .catch((error: unknown) =>
@@ -1199,6 +1209,8 @@ const GeoJsonFullScreen = (
                 {
                     return
                 }
+
+                setIsLoadingMapData(false)
 
                 if (error instanceof Error)
                 {
@@ -1607,6 +1619,13 @@ const GeoJsonFullScreen = (
                     />}
                 {renderMeasureIndicator()}
                 {renderDebug()}
+                {isLoadingMapData && (
+                    <div className="geojson-loading">
+                        <label htmlFor="geojson-loading-progress">Loading map data</label>
+                        <progress id="geojson-loading-progress" value={loadedLayerCount} max={GEOJSON_FILES.length} />
+                        <span aria-hidden="true">{loadedLayerCount} / {GEOJSON_FILES.length}</span>
+                    </div>
+                )}
                 {loadError ? <div className="geojson-error-banner">{loadError}</div> : null}
             </div>
         </div>
