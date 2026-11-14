@@ -164,9 +164,9 @@ const GEOJSON_FILES : GeoJsonLayerOptions[] =
         // real world examples: route 77 in Maryland connecting Thurmont and Westminster
         id: 'roads_minor',
         srcFile: '/geojson/roads_minor.geojson',
-        weight: 1.0,
-        color: '#5a5a5a',
-        minZoom: 4,
+        weight: 0.85,
+        color: '#818181',
+        minZoom: 6,
         drawFunc: getStreetsLayer,
     },
     {
