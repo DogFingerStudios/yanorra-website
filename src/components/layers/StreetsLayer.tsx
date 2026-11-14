@@ -159,16 +159,59 @@ function convertLinesToPolygons(
   return { outlines: outlineData, centers: centerData }
 }
 
+function getMinorRoadDashArray(feature?: GeoJSON.Feature): string | undefined
+{
+  const group = feature?.properties?.group
+
+  // first number defines the length of the dash, 
+  // second number defines the length of the gap
+  if (group === 'gravel')
+  {
+    return '6 10' 
+  }
+  else if (group === 'dirt')
+  {
+    return '1 7'
+  }
+
+  return undefined
+}
+
 export function getStreetsLayer(entry: StreetsLayerEntry)
 {
-  const roadWidth = (entry.options.weight ?? 1) / 2 / 111320 // Convert pixels to lat/lng approximation
-  const { outlines, centers } = convertLinesToPolygons(entry.data, roadWidth)
+  const isMinorRoadLayer = entry.id === 'roads_minor'
+  let outlines: GeoJSON.GeoJsonObject
+  let centers: GeoJSON.GeoJsonObject
+
+  if (isMinorRoadLayer)
+  {
+    outlines = entry.data
+    centers = entry.data
+  }
+  else
+  {
+    const roadWidth = (entry.options.weight ?? 1) / 2 / 111320 // Convert pixels to lat/lng approximation
+    const convertedData = convertLinesToPolygons(entry.data, roadWidth)
+    outlines = convertedData.outlines
+    centers = convertedData.centers
+  }
 
   const roadColor = entry.options.color ?? '#000000'
   const renderPhase = entry.options._renderPhase ?? 'both'
 
-  const outlineStyle = (): L.PathOptions =>
+  const outlineStyle = (feature?: GeoJSON.Feature): L.PathOptions =>
   {
+    if (isMinorRoadLayer)
+    {
+      return {
+        color: roadColor,
+        weight: entry.options.weight ?? 1,
+        dashArray: getMinorRoadDashArray(feature),
+        lineCap: 'round',
+        lineJoin: 'round',
+      }
+    }
+
     return {
       color: roadColor,
       weight: 2.5,
@@ -197,7 +240,7 @@ export function getStreetsLayer(entry: StreetsLayerEntry)
           pane={STREET_OUTLINE_PANE}
         />
       )}
-      {(renderPhase === 'center' || renderPhase === 'both') && (
+      {!isMinorRoadLayer && (renderPhase === 'center' || renderPhase === 'both') && (
         <GeoJSON
           key={`${entry.id}-center`}
           data={centers}
